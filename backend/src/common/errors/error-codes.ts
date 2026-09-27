@@ -22,6 +22,17 @@ export const ERROR_CODES = Object.freeze({
   ACCOUNT_SUSPENDED: 'تم إيقاف حسابك، يرجى التواصل مع الإدارة',
   TOKEN_EXPIRED: 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى',
   TOKEN_INVALID: 'جلسة غير صالحة، يرجى تسجيل الدخول مرة أخرى',
+
+  // --- Catalog & warehouse (Phase 2) ---
+  CATEGORY_DEPTH_EXCEEDED: 'لا يمكن إضافة أكثر من ثلاثة مستويات للأقسام',
+  CATEGORY_NOT_EMPTY: 'لا يمكن حذف قسم يحتوي على أقسام أو أصناف',
+  PARENT_NOT_FOUND: 'القسم الأعلى غير موجود',
+  ITEM_NOT_FOUND: 'الصنف غير موجود',
+  BOX_SIZE_FROZEN: 'لا يمكن تغيير عدد الوحدات في العلبة بعد استلام تشغيلات لهذا الصنف',
+  BATCH_NUMBER_TAKEN: 'رقم التشغيلة مستخدم بالفعل لهذا الصنف بنفس تاريخ الانتهاء',
+  BATCH_ALREADY_EXPIRED: 'تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل',
+  INVALID_IMAGE: 'الملف ليس صورة صالحة',
+  IMAGE_TOO_LARGE: 'حجم الصورة أكبر من الحد المسموح',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

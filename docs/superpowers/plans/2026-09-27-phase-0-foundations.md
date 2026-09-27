@@ -254,12 +254,22 @@ describe('envSchema', () => {
 });
 ```
 
-- [ ] **Step 3: Run it and verify it fails**
+- [ ] **Step 3: Set `rootDir` in `tsconfig.json`**
+
+TypeScript 6 refuses to infer a common source directory when a tool compiles a single file, which is exactly what ts-jest does. Without this, **every** test in the project fails with `TS5011` before a single assertion runs. Add to `compilerOptions`:
+
+```jsonc
+"rootDir": ".",
+```
+
+Safe for builds: `tsconfig.build.json` already overrides it with `"./src"` and excludes `test/`, so `nest build` still emits `dist/main.js` rather than `dist/src/main.js`. Confirm that after building.
+
+- [ ] **Step 4: Run the test and verify it fails**
 
 Run: `cd backend && npx jest test/unit/env.schema.spec.ts`
-Expected: FAIL — `Cannot find module '../../src/config/env.schema'`.
+Expected: FAIL — `Cannot find module '../../src/config/env.schema'`. If you instead see `TS5011`, Step 3 was skipped.
 
-- [ ] **Step 4: Create `backend/src/config/env.schema.ts`**
+- [ ] **Step 5: Create `backend/src/config/env.schema.ts`**
 
 ```ts
 import { z } from 'zod';
@@ -275,12 +285,12 @@ export const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 ```
 
-- [ ] **Step 5: Run the test and verify it passes**
+- [ ] **Step 6: Run the test and verify it passes**
 
 Run: `cd backend && npx jest test/unit/env.schema.spec.ts`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 6: Create `backend/src/config/config.module.ts`**
+- [ ] **Step 7: Create `backend/src/config/config.module.ts`**
 
 ```ts
 import { Global, Module } from '@nestjs/common';
@@ -300,7 +310,7 @@ import { envSchema } from './env.schema';
 export class AppConfigModule {}
 ```
 
-- [ ] **Step 7: Rewrite `backend/src/app.module.ts`**
+- [ ] **Step 8: Rewrite `backend/src/app.module.ts`**
 
 `@nestjs/observe` has **already been removed** in commit `229aa11` — module, startup instrument and dependency. Do not re-add it and do not expect to find it. This step only wires in `AppConfigModule`.
 
@@ -314,7 +324,7 @@ import { AppConfigModule } from './config/config.module';
 export class AppModule {}
 ```
 
-- [ ] **Step 8: Simplify `backend/src/main.ts`**
+- [ ] **Step 9: Simplify `backend/src/main.ts`**
 
 ```ts
 import { NestFactory } from '@nestjs/core';
@@ -330,26 +340,28 @@ async function bootstrap() {
 void bootstrap();
 ```
 
-- [ ] **Step 9: Delete the scaffold's hello-world files**
+- [ ] **Step 10: Delete the scaffold's hello-world files**
 
-Run: `cd backend && rm src/app.controller.ts src/app.service.ts src/app.controller.spec.ts`
+Run: `cd backend && rm src/app.controller.ts src/app.service.ts src/app.controller.spec.ts test/app.e2e-spec.ts`
 Expected: gone. They are the `flutter create`-equivalent boilerplate and nothing imports them now.
 
-- [ ] **Step 10: Confirm no telemetry vendor remains**
+`test/app.e2e-spec.ts` goes with them — it asserts `GET /` returns `Hello World!` from the controller being deleted, so leaving it behind means an e2e suite that fails for a reason unrelated to any real defect. Task 3 replaces it with `health.e2e-spec.ts`.
+
+- [ ] **Step 11: Confirm no telemetry vendor remains**
 
 Run: `cd backend && grep -rni "observe" src/ package.json || echo clean`
 Expected: `clean`. Already removed in `229aa11`; this step only guards against reintroduction.
 
 Note `@nestjs/mau` is still present as a devDependency with a `deploy` script. It is unused. Left alone because deployment is Phase 7's decision, not this task's — flag it there.
 
-- [ ] **Step 11: Verify the app boots**
+- [ ] **Step 12: Verify the app boots**
 
 Run: `cd backend && npm run start` (Ctrl-C once it logs)
 Expected: starts clean with no Nest errors. Then confirm validation actually bites:
 Run: `cd backend && DATABASE_URL= npm run start`
 Expected: **fails at boot** with a Zod error naming `DATABASE_URL`.
 
-- [ ] **Step 12: Commit**
+- [ ] **Step 13: Commit**
 
 ```bash
 git add backend/src backend/test backend/package.json backend/package-lock.json

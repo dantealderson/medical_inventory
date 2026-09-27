@@ -13,6 +13,12 @@
     "target": "ES2023",
     "types": ["node", "jest"],
     "sourceMap": true,
+    // TypeScript 6 refuses to infer a common source directory when a tool
+    // compiles a single file (ts-jest does exactly this), failing with TS5011.
+    // Sources span src/, test/ and prisma/, so the project root is the honest
+    // root. tsconfig.build.json overrides this with ./src, so `nest build`
+    // still emits dist/main.js rather than dist/src/main.js.
+    "rootDir": ".",
     "outDir": "./dist",
     "incremental": true,
     "skipLibCheck": true,

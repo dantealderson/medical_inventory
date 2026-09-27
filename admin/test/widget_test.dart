@@ -1,30 +1,37 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:admin/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:admin/main.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('AdminApp', () {
+    testWidgets('renders right-to-left', (tester) async {
+      await tester.pumpWidget(const AdminApp());
+      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(Scaffold));
+      expect(Directionality.of(context), TextDirection.rtl);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    testWidgets('uses the Arabic locale', (tester) async {
+      await tester.pumpWidget(const AdminApp());
+      await tester.pumpAndSettle();
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(app.locale, const Locale('ar'));
+      expect(app.supportedLocales, contains(const Locale('ar')));
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('applies the ui_kit theme tokens', (tester) async {
+      await tester.pumpWidget(const AdminApp());
+      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(Scaffold));
+      expect(Theme.of(context).extension<AppColors>(), isNotNull);
+      expect(context.appColors.primary, AppColors.light.primary);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('shows a localised title from the ARB file', (tester) async {
+      await tester.pumpWidget(const AdminApp());
+      await tester.pumpAndSettle();
+      expect(find.text('إدارة المخزون الطبي'), findsOneWidget);
+    });
   });
 }

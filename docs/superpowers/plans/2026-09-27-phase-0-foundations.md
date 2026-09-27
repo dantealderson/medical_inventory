@@ -2207,7 +2207,9 @@ And `client/lib/l10n/app_ar.arb` — identical but:
 - [ ] **Step 4: Fetch packages and generate localisations**
 
 Run in each app directory: `flutter pub get && flutter gen-l10n`
-Expected: generates `.dart_tool/flutter_gen/gen_l10n/app_localizations.dart`. No errors.
+Expected: generates `lib/l10n/app_localizations.dart` and `lib/l10n/app_localizations_ar.dart`.
+
+Note the location. Flutter 3.32 removed the synthetic `package:flutter_gen`; generated localisations are now **ordinary source files under `lib/`**, so they are imported relatively and they **are committed** — a fresh clone builds without anyone remembering to run `gen-l10n`.
 
 - [ ] **Step 5: Write the failing test**
 
@@ -2264,8 +2266,7 @@ Mirror for `client/lib/main.dart`, swapping the class name to `ClientApp`.
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 void main() => runApp(const AdminApp());
@@ -2282,13 +2283,8 @@ class AdminApp extends StatelessWidget {
 
       // Arabic only — no language switcher (spec §10.3).
       locale: const Locale('ar'),
-      supportedLocales: const [Locale('ar')],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
 
       // Belt and braces: the Arabic locale already implies RTL, but pinning it
       // means a stray Locale never silently flips the whole app to LTR.
@@ -2339,7 +2335,9 @@ Expected: `OK` and exit 0 in both.
 - [ ] **Step 10: Run both apps once**
 
 Run: `cd admin && flutter run -d windows` (or `-d chrome`), and `cd client && flutter run -d android`
-Expected: app boots, title bar in Arabic, **app bar title right-aligned** — visual proof RTL is live. Note `.dart_tool/` is gitignored, so generated l10n is never committed.
+Expected: app boots, title bar in Arabic, **app bar title right-aligned** — visual proof RTL is live.
+
+For a non-interactive check, `flutter build web --release` in `admin/` must succeed. `build/` is gitignored; `lib/l10n/` is not, and is committed.
 
 - [ ] **Step 11: Commit**
 

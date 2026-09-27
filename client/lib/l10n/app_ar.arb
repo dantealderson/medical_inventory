@@ -1,0 +1,7 @@
+{
+  "@@locale": "ar",
+  "appTitle": "المخزون الطبي",
+  "@appTitle": { "description": "Client application title" },
+  "loading": "جارٍ التحميل...",
+  "@loading": { "description": "Generic loading indicator label" }
+}

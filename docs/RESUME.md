@@ -55,15 +55,13 @@ backend *cannot* reach the Windows install by accident. If both listened on
 5432, the backend could read and write the wrong database while every test
 still passed — the worst kind of bug, because nothing looks broken.
 
-## Awaiting user confirmation
+## Confirmed by the user (2026-09-27)
 
-Asked at the last checkpoint, not yet answered:
+- **Sky blue approved** — `#4FC3F7` primary, `#0288D1` dark accent, in `packages/ui_kit/lib/src/theme/palette.dart`.
+- **Arabic copy approved** — «إدارة المخزون الطبي» (admin), «المخزون الطبي» (client).
 
-1. **Sky blue** — `#4FC3F7` primary, `#0288D1` dark accent. Right, or too light?
-2. **Arabic copy** — «إدارة المخزون الطبي» (admin), «المخزون الطبي» (client). Natural?
-
-Both live in `packages/ui_kit/lib/src/theme/palette.dart` and the two
-`lib/l10n/app_ar.arb` files. Changing either is a one-file edit by design.
+Both remain one-file edits if that changes later; the token architecture exists
+precisely so it stays that way.
 
 ## Deviations from the plan, already corrected in the plan file
 

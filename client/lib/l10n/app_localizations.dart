@@ -237,6 +237,96 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم إرسال طلبك بنجاح'**
   String get registerSuccess;
+
+  /// Phase 2 catalog: search
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث'**
+  String get search;
+
+  /// Phase 2 catalog: searchHint
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن صنف...'**
+  String get searchHint;
+
+  /// Phase 2 catalog: noResults
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد نتائج'**
+  String get noResults;
+
+  /// Phase 2 catalog: categories
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقسام'**
+  String get categories;
+
+  /// Phase 2 catalog: items
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصناف'**
+  String get items;
+
+  /// Phase 2 catalog: noItemsInCategory
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف في هذا القسم'**
+  String get noItemsInCategory;
+
+  /// Phase 2 catalog: pricePerBox
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر العلبة'**
+  String get pricePerBox;
+
+  /// Phase 2 catalog: unitsPerBox
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الوحدات في العلبة'**
+  String get unitsPerBox;
+
+  /// Phase 2 catalog: boxesShort
+  ///
+  /// In ar, this message translates to:
+  /// **'علبة'**
+  String get boxesShort;
+
+  /// Phase 2 catalog: home
+  ///
+  /// In ar, this message translates to:
+  /// **'الرئيسية'**
+  String get home;
+
+  /// Phase 2 catalog: back
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get back;
+
+  /// Phase 2 catalog: noCategoriesYet
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تتم إضافة أقسام بعد'**
+  String get noCategoriesYet;
+
+  /// Phase 2 catalog: searchFailed
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر البحث، حاول مرة أخرى'**
+  String get searchFailed;
+
+  /// Phase 2 catalog: matchingCategories
+  ///
+  /// In ar, this message translates to:
+  /// **'أقسام مطابقة'**
+  String get matchingCategories;
+
+  /// Phase 2 catalog: matchingItems
+  ///
+  /// In ar, this message translates to:
+  /// **'أصناف مطابقة'**
+  String get matchingItems;
 }
 
 class _AppLocalizationsDelegate

@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pending_approval_screen.dart';
 import '../features/auth/register_screen.dart';
-import '../features/home/home_screen.dart';
+import '../features/catalog/browse_screen.dart';
+import '../features/catalog/category_screen.dart';
+import '../features/catalog/item_detail_screen.dart';
+import '../features/catalog/search_screen.dart';
 import 'auth_controller.dart';
 
 abstract final class Routes {
@@ -14,6 +17,9 @@ abstract final class Routes {
   static const register = '/register';
   static const pending = '/pending';
   static const home = '/';
+  static const search = '/search';
+  static String category(String id) => '/category/$id';
+  static String item(String id) => '/item/$id';
 }
 
 /// Routes reachable without a session.
@@ -57,7 +63,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
       GoRoute(path: Routes.register, builder: (_, _) => const RegisterScreen()),
       GoRoute(path: Routes.pending, builder: (_, _) => const PendingApprovalScreen()),
-      GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
+      GoRoute(path: Routes.home, builder: (_, _) => const BrowseScreen()),
+      GoRoute(path: Routes.search, builder: (_, _) => const SearchScreen()),
+      GoRoute(
+        path: '/category/:id',
+        builder: (_, state) => CategoryScreen(categoryId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/item/:id',
+        builder: (_, state) => ItemDetailScreen(itemId: state.pathParameters['id']!),
+      ),
     ],
   );
 });

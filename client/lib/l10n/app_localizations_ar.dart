@@ -81,4 +81,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get registerSuccess => 'تم إرسال طلبك بنجاح';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get searchHint => 'ابحث عن صنف...';
+
+  @override
+  String get noResults => 'لا توجد نتائج';
+
+  @override
+  String get categories => 'الأقسام';
+
+  @override
+  String get items => 'الأصناف';
+
+  @override
+  String get noItemsInCategory => 'لا توجد أصناف في هذا القسم';
+
+  @override
+  String get pricePerBox => 'سعر العلبة';
+
+  @override
+  String get unitsPerBox => 'عدد الوحدات في العلبة';
+
+  @override
+  String get boxesShort => 'علبة';
+
+  @override
+  String get home => 'الرئيسية';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get noCategoriesYet => 'لم تتم إضافة أقسام بعد';
+
+  @override
+  String get searchFailed => 'تعذر البحث، حاول مرة أخرى';
+
+  @override
+  String get matchingCategories => 'أقسام مطابقة';
+
+  @override
+  String get matchingItems => 'أصناف مطابقة';
 }

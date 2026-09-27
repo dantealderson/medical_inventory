@@ -38,10 +38,12 @@ void main() {
 
       await pumpApp(tester, (req) {
         if (req.path == '/auth/me') return [200, activeUser];
+        if (req.path == '/categories') return [200, <dynamic>[]];
         return [404, null];
       }, store: store);
 
-      expect(find.text('مختبر النور'), findsOneWidget);
+      // Home is BrowseScreen since Phase 2: a search bar and the catalog.
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.text('اسم المستخدم'), findsNothing);
     });
 
@@ -113,6 +115,7 @@ void main() {
       await pumpApp(tester, (req) {
         if (req.path == '/auth/login') return [200, {'user': activeUser, ...tokens}];
         if (req.path == '/auth/me') return [200, activeUser];
+        if (req.path == '/categories') return [200, <dynamic>[]];
         return [404, null];
       }, store: store);
 
@@ -121,7 +124,8 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
       await tester.pumpAndSettle();
 
-      expect(find.text('مختبر النور'), findsOneWidget);
+      // Lands on BrowseScreen, which carries the catalog search bar.
+      expect(find.byType(TextField), findsOneWidget);
       await expectLater(store.readAccess(), completion('access-1'));
     });
   });
@@ -226,10 +230,11 @@ void main() {
       await pumpApp(tester, (req) {
         if (req.path == '/auth/me') return [200, activeUser];
         if (req.path == '/auth/logout') return [204, null];
+        if (req.path == '/categories') return [200, <dynamic>[]];
         return [404, null];
       }, store: store);
 
-      expect(find.text('مختبر النور'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.logout));
       await tester.pumpAndSettle();

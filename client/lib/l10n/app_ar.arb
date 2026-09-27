@@ -1,59 +1,159 @@
 {
   "@@locale": "ar",
-
   "appTitle": "المخزون الطبي",
-  "@appTitle": { "description": "Client application title" },
+  "@appTitle": {
+    "description": "Client application title"
+  },
   "loading": "جارٍ التحميل...",
-  "@loading": { "description": "Generic loading indicator label" },
-
+  "@loading": {
+    "description": "Generic loading indicator label"
+  },
   "login": "تسجيل الدخول",
-  "@login": { "description": "Login button and screen title" },
+  "@login": {
+    "description": "Login button and screen title"
+  },
   "username": "اسم المستخدم",
-  "@username": { "description": "Username field label" },
+  "@username": {
+    "description": "Username field label"
+  },
   "password": "كلمة المرور",
-  "@password": { "description": "Password field label" },
+  "@password": {
+    "description": "Password field label"
+  },
   "register": "إنشاء حساب",
-  "@register": { "description": "Register button and screen title" },
+  "@register": {
+    "description": "Register button and screen title"
+  },
   "haveAccountLogin": "لديك حساب؟ تسجيل الدخول",
-  "@haveAccountLogin": { "description": "Link from register to login" },
+  "@haveAccountLogin": {
+    "description": "Link from register to login"
+  },
   "noAccountRegister": "ليس لديك حساب؟ إنشاء حساب جديد",
-  "@noAccountRegister": { "description": "Link from login to register" },
-
+  "@noAccountRegister": {
+    "description": "Link from login to register"
+  },
   "clinicName": "اسم المختبر",
-  "@clinicName": { "description": "Clinic name field label" },
+  "@clinicName": {
+    "description": "Clinic name field label"
+  },
   "contactName": "اسم المسؤول",
-  "@contactName": { "description": "Contact person field label" },
+  "@contactName": {
+    "description": "Contact person field label"
+  },
   "phone": "رقم الهاتف",
-  "@phone": { "description": "Phone field label, contact use only" },
+  "@phone": {
+    "description": "Phone field label, contact use only"
+  },
   "address": "العنوان",
-  "@address": { "description": "Address field label" },
+  "@address": {
+    "description": "Address field label"
+  },
   "optional": "اختياري",
-  "@optional": { "description": "Suffix marking an optional field" },
-
+  "@optional": {
+    "description": "Suffix marking an optional field"
+  },
   "pendingTitle": "حسابك قيد المراجعة",
-  "@pendingTitle": { "description": "Awaiting admin approval screen title" },
+  "@pendingTitle": {
+    "description": "Awaiting admin approval screen title"
+  },
   "pendingBody": "سيتم تفعيل حسابك بعد موافقة الإدارة. يرجى التواصل مع الإدارة لأي استفسار.",
-  "@pendingBody": { "description": "Awaiting approval explanation" },
+  "@pendingBody": {
+    "description": "Awaiting approval explanation"
+  },
   "backToLogin": "العودة لتسجيل الدخول",
-  "@backToLogin": { "description": "Return to login from the pending screen" },
-
+  "@backToLogin": {
+    "description": "Return to login from the pending screen"
+  },
   "logout": "تسجيل الخروج",
-  "@logout": { "description": "Logout action" },
-
+  "@logout": {
+    "description": "Logout action"
+  },
   "usernameRequired": "اسم المستخدم مطلوب",
-  "@usernameRequired": { "description": "Validation: username empty" },
+  "@usernameRequired": {
+    "description": "Validation: username empty"
+  },
   "usernameHint": "أحرف إنجليزية صغيرة وأرقام وشرطة سفلية فقط",
-  "@usernameHint": { "description": "Validation: username format" },
+  "@usernameHint": {
+    "description": "Validation: username format"
+  },
   "passwordRequired": "كلمة المرور مطلوبة",
-  "@passwordRequired": { "description": "Validation: password empty" },
+  "@passwordRequired": {
+    "description": "Validation: password empty"
+  },
   "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
-  "@passwordTooShort": { "description": "Validation: password under 8 chars" },
-
+  "@passwordTooShort": {
+    "description": "Validation: password under 8 chars"
+  },
   "forgotPassword": "نسيت كلمة المرور؟ تواصل مع الإدارة لإعادة تعيينها",
-  "@forgotPassword": { "description": "Static text, NOT a button. There is no self-service reset (requirement 17); a tappable control implying otherwise would generate support calls." },
-
+  "@forgotPassword": {
+    "description": "Static text, NOT a button. There is no self-service reset (requirement 17); a tappable control implying otherwise would generate support calls."
+  },
   "retry": "إعادة المحاولة",
-  "@retry": { "description": "Retry action on an error state" },
+  "@retry": {
+    "description": "Retry action on an error state"
+  },
   "registerSuccess": "تم إرسال طلبك بنجاح",
-  "@registerSuccess": { "description": "Shown after a successful registration" }
+  "@registerSuccess": {
+    "description": "Shown after a successful registration"
+  },
+  "search": "بحث",
+  "@search": {
+    "description": "Phase 2 catalog: search"
+  },
+  "searchHint": "ابحث عن صنف...",
+  "@searchHint": {
+    "description": "Phase 2 catalog: searchHint"
+  },
+  "noResults": "لا توجد نتائج",
+  "@noResults": {
+    "description": "Phase 2 catalog: noResults"
+  },
+  "categories": "الأقسام",
+  "@categories": {
+    "description": "Phase 2 catalog: categories"
+  },
+  "items": "الأصناف",
+  "@items": {
+    "description": "Phase 2 catalog: items"
+  },
+  "noItemsInCategory": "لا توجد أصناف في هذا القسم",
+  "@noItemsInCategory": {
+    "description": "Phase 2 catalog: noItemsInCategory"
+  },
+  "pricePerBox": "سعر العلبة",
+  "@pricePerBox": {
+    "description": "Phase 2 catalog: pricePerBox"
+  },
+  "unitsPerBox": "عدد الوحدات في العلبة",
+  "@unitsPerBox": {
+    "description": "Phase 2 catalog: unitsPerBox"
+  },
+  "boxesShort": "علبة",
+  "@boxesShort": {
+    "description": "Phase 2 catalog: boxesShort"
+  },
+  "home": "الرئيسية",
+  "@home": {
+    "description": "Phase 2 catalog: home"
+  },
+  "back": "رجوع",
+  "@back": {
+    "description": "Phase 2 catalog: back"
+  },
+  "noCategoriesYet": "لم تتم إضافة أقسام بعد",
+  "@noCategoriesYet": {
+    "description": "Phase 2 catalog: noCategoriesYet"
+  },
+  "searchFailed": "تعذر البحث، حاول مرة أخرى",
+  "@searchFailed": {
+    "description": "Phase 2 catalog: searchFailed"
+  },
+  "matchingCategories": "أقسام مطابقة",
+  "@matchingCategories": {
+    "description": "Phase 2 catalog: matchingCategories"
+  },
+  "matchingItems": "أصناف مطابقة",
+  "@matchingItems": {
+    "description": "Phase 2 catalog: matchingItems"
+  }
 }

@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7 removed `url` from the datasource block. The connection string for
+// Migrate lives in prisma.config.ts; the runtime client gets it through a
+// driver adapter (see src/prisma/prisma.service.ts).
+datasource db {
+  provider = "postgresql"
+}
+
+/// Runtime-tunable values (spec §9). Thresholds and windows live here rather
+/// than in code so retuning is a settings change, not a rebuild and redeploy.
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}

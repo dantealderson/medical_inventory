@@ -385,21 +385,28 @@ git commit -m "feat(backend): add zod-validated config, drop scaffold boilerplat
 
 - [ ] **Step 1: Install Prisma**
 
-Run: `cd backend && npm install @prisma/client && npm install -D prisma`
-Expected: both installed.
+Run: `cd backend && npm install @prisma/client@^7.10.0 && npm install -D prisma@^7.10.0`
+Expected: both report `7.10.0` from `npx prisma --version`.
+
+**Pin the versions explicitly.** The `prisma` CLI's `latest` dist-tag currently points at `8.0.0-rc.17` — a release candidate — while `@prisma/client`'s `latest` is the stable `7.10.0`. A plain `npm install prisma` therefore gives you a pre-release CLI driving a stable client. Check with `npm view prisma dist-tags` before trusting `latest`.
 
 - [ ] **Step 2: Create `backend/prisma/schema.prisma`**
 
 Phase 0 defines only `Setting`. Each later phase adds its own models with its own migration — that keeps migrations reviewable and tied to the phase that needs them.
+
+**Prisma 7 removed `url` from the datasource block.** The connection string moves to `prisma.config.ts`, and the runtime client now requires a driver adapter. Install those too:
+
+Run: `npm install @prisma/adapter-pg pg && npm install -D @types/pg`
 
 ```prisma
 generator client {
   provider = "prisma-client-js"
 }
 
+// Prisma 7 removed `url` here. Migrate reads it from prisma.config.ts; the
+// runtime client gets it through a driver adapter.
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 /// Runtime-tunable values (spec §9). Thresholds and windows live here rather
@@ -457,12 +464,35 @@ Expected: FAIL — 404, because no health route exists yet.
 
 - [ ] **Step 6: Create `backend/src/prisma/prisma.service.ts`**
 
+Also create `backend/prisma.config.ts`:
+
 ```ts
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import 'dotenv/config';
+import { defineConfig, env } from 'prisma/config';
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  datasource: { url: env('DATABASE_URL') },
+  migrations: { path: 'prisma/migrations' },
+});
+```
+
+```ts
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+
+import type { Env } from '../config/env.schema';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor(config: ConfigService<Env, true>) {
+    // Taking the URL from ConfigService rather than letting Prisma read
+    // process.env means it has already passed boot-time zod validation.
+    super({ adapter: new PrismaPg(config.get('DATABASE_URL', { infer: true })) });
+  }
+
   async onModuleInit(): Promise<void> {
     await this.$connect();
   }
@@ -472,6 +502,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 }
 ```
+
+Note: with a driver adapter, `$connect()` is lazy — the app boots even with the database down and fails at query time instead. That is why the health endpoint returns a 500 envelope rather than the process refusing to start.
 
 - [ ] **Step 7: Create `backend/src/prisma/prisma.module.ts`**
 
@@ -991,7 +1023,25 @@ export const SETTING_DEFAULTS = Object.freeze({
 } as const);
 
 export type SettingKey = keyof typeof SETTING_DEFAULTS;
-export type SettingValue<K extends SettingKey> = (typeof SETTING_DEFAULTS)[K];
+
+/**
+ * Widen a literal back to its primitive. `as const` gives the key union and
+ * readonly defaults, but also types each value as the literal it defaults to
+ * — so SettingValue<'stock.redDaysOfCover'> would be `7` and set() could only
+ * ever assign 7. Widening keeps the useful half: a numeric setting still
+ * rejects a string.
+ *
+ * No runtime test catches this; only `tsc --noEmit` does. Run it.
+ */
+type Widen<T> = T extends number
+  ? number
+  : T extends string
+    ? string
+    : T extends boolean
+      ? boolean
+      : T;
+
+export type SettingValue<K extends SettingKey> = Widen<(typeof SETTING_DEFAULTS)[K]>;
 
 export const SETTING_KEYS = Object.keys(SETTING_DEFAULTS) as SettingKey[];
 ```

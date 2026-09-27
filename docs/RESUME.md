@@ -77,6 +77,17 @@ Phases 1–7 are defined in `docs/superpowers/specs/2026-09-27-medical-inventory
 
 **Phase 1's plan is already written** — `docs/superpowers/plans/2026-09-27-phase-1-auth-accounts.md`, 10 tasks, 69 steps. It was written after Phase 0's code was committed, so its `Consumes:` table cites real signatures (`PrismaService`, `SettingsService`, `AppException`, `ERROR_CODES`, `applyAppConfig`, `ApiClient`, `ApiException`, `AppTheme`, `Breakpoints`) rather than guesses.
 
-It can start the moment Phase 0's four DB commands pass. Its own Task 1 begins with a Prisma migration, so it needs the same container.
+**Three of its ten tasks are already done** — the ones that need no database:
+
+| Phase 1 task | Status |
+|---|---|
+| 2 — argon2id password hashing | ✅ 7 tests |
+| 3a — audit redaction (pure function) | ✅ 11 tests |
+| 8 — api_client auth, token store, refresh interceptor | ✅ 13 tests |
+| 1, 3b, 4, 5, 6, 7 — schema, AuditService, register, login, guards, admin | ⛔ need Postgres |
+| 9, 10 — Flutter auth screens | ⛔ depend on tasks 4–7 being runnable |
+
+Remaining Phase 1 work resumes at **Task 1** (the `auth_accounts` migration),
+which needs the same container as Phase 0.
 
 Phases 2–7 still get their plans written immediately before they are built.

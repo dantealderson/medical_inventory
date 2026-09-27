@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medinv_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: medinv
+      POSTGRES_PASSWORD: medinv_dev
+      POSTGRES_DB: medinv
+    ports:
+      # Host 5433, NOT 5432.
+      #
+      # A native PostgreSQL 18 service (postgresql-x64-18) runs on this machine
+      # and already owns 5432. Publishing the container there would either fail
+      # to bind or — far worse — leave DATABASE_URL ambiguous, so the backend
+      # could silently read and write the wrong database while appearing to
+      # work perfectly.
+      #
+      # 5433 is served only by this container, so the project cannot reach the
+      # Windows install even by accident. Isolation by construction, not by
+      # remembering.
+      - "5433:5432"
+    volumes:
+      - medinv_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medinv -d medinv"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  medinv_pgdata:

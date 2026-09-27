@@ -83,7 +83,7 @@ These apply to **every** task in this and all later phases. Copied verbatim from
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: a reachable Postgres at `postgresql://medinv:medinv_dev@localhost:5432/medinv`, and `backend/.env` containing `DATABASE_URL`, `PORT`, `NODE_ENV`, `BUSINESS_TIMEZONE`.
+- Produces: a reachable Postgres at `postgresql://medinv:medinv_dev@localhost:5433/medinv`, and `backend/.env` containing `DATABASE_URL`, `PORT`, `NODE_ENV`, `BUSINESS_TIMEZONE`.
 
 - [ ] **Step 1: Create `docker-compose.yml`**
 
@@ -98,7 +98,7 @@ services:
       POSTGRES_PASSWORD: medinv_dev
       POSTGRES_DB: medinv
     ports:
-      - "5432:5432"
+      - "5433:5432"   # host 5433 — native Windows Postgres owns 5432
     volumes:
       - medinv_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -129,7 +129,7 @@ NODE_ENV=development
 PORT=3000
 
 # PostgreSQL — matches docker-compose.yml
-DATABASE_URL="postgresql://medinv:medinv_dev@localhost:5432/medinv?schema=public"
+DATABASE_URL="postgresql://medinv:medinv_dev@localhost:5433/medinv?schema=public"
 
 # Business timezone. All timestamps are stored UTC; nightly jobs and all
 # "days" arithmetic resolve against this zone so "nightly" means nightly locally.

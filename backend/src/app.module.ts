@@ -9,6 +9,7 @@ import { AppConfigModule } from './config/config.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SettingsModule } from './settings/settings.module';
     SettingsModule,
     AuditModule,
     AuthModule,
+    UsersModule,
     HealthModule,
   ],
   providers: [

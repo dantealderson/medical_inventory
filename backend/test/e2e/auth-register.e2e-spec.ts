@@ -109,6 +109,30 @@ describe('Registration (e2e)', () => {
     expect(await prisma.user.count({ where: { status: 'ACTIVE' } })).toBe(0);
   });
 
+  it('round-trips Arabic text through the API and the database unchanged', async () => {
+    // The entire product is Arabic-only, so a silent encoding problem here
+    // would corrupt every clinic name in the system. Asserted end to end:
+    // request body -> database column -> response body.
+    const arabic = {
+      username: 'lab_utf8',
+      password: 'goodpassword1',
+      clinicName: 'مختبر النور',
+      contactName: 'أحمد عبد الله',
+      address: 'بغداد - الكرادة',
+    };
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send(arabic)
+      .expect(201);
+    expect(res.body.clinicName).toBe('مختبر النور');
+
+    const stored = await prisma.user.findUniqueOrThrow({ where: { username: 'lab_utf8' } });
+    expect(stored.clinicName).toBe('مختبر النور');
+    expect(stored.contactName).toBe('أحمد عبد الله');
+    expect(stored.address).toBe('بغداد - الكرادة');
+  });
+
   it('stores the phone as contact data', async () => {
     await request(app.getHttpServer()).post('/api/v1/auth/register').send(valid).expect(201);
     const user = await prisma.user.findUniqueOrThrow({ where: { username: 'lab_alnoor' } });

@@ -132,7 +132,7 @@ DATABASE_URL="postgresql://medinv:medinv_dev@localhost:5432/medinv?schema=public
 
 # Business timezone. All timestamps are stored UTC; nightly jobs and all
 # "days" arithmetic resolve against this zone so "nightly" means nightly locally.
-BUSINESS_TIMEZONE=Africa/Cairo
+BUSINESS_TIMEZONE=Asia/Baghdad
 ```
 
 - [ ] **Step 5: Create the real `.env`**
@@ -221,7 +221,7 @@ const valid = {
   NODE_ENV: 'development',
   PORT: '3000',
   DATABASE_URL: 'postgresql://u:p@localhost:5432/db?schema=public',
-  BUSINESS_TIMEZONE: 'Africa/Cairo',
+  BUSINESS_TIMEZONE: 'Asia/Baghdad',
 };
 
 describe('envSchema', () => {
@@ -244,7 +244,7 @@ describe('envSchema', () => {
     const parsed = envSchema.parse({ DATABASE_URL: valid.DATABASE_URL });
     expect(parsed.NODE_ENV).toBe('development');
     expect(parsed.PORT).toBe(3000);
-    expect(parsed.BUSINESS_TIMEZONE).toBe('Africa/Cairo');
+    expect(parsed.BUSINESS_TIMEZONE).toBe('Asia/Baghdad');
   });
 
   it('rejects an unknown NODE_ENV', () => {
@@ -268,7 +268,7 @@ export const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.string().url(),
   // All timestamps are stored UTC. This zone resolves "days" and job schedules.
-  BUSINESS_TIMEZONE: z.string().min(1).default('Africa/Cairo'),
+  BUSINESS_TIMEZONE: z.string().min(1).default('Asia/Baghdad'),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -301,7 +301,7 @@ export class AppConfigModule {}
 
 - [ ] **Step 7: Rewrite `backend/src/app.module.ts`**
 
-The scaffold wires `@nestjs/observe` with literal `'YOUR_APP_KEY'` / `'YOUR_APP_SECRET'` placeholders. Remove it — it is a third-party telemetry client we did not choose, configured with fake credentials.
+`@nestjs/observe` has **already been removed** in commit `229aa11` — module, startup instrument and dependency. Do not re-add it and do not expect to find it. This step only wires in `AppConfigModule`.
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -334,10 +334,12 @@ void bootstrap();
 Run: `cd backend && rm src/app.controller.ts src/app.service.ts src/app.controller.spec.ts`
 Expected: gone. They are the `flutter create`-equivalent boilerplate and nothing imports them now.
 
-- [ ] **Step 10: Remove the unused observe dependency**
+- [ ] **Step 10: Confirm no telemetry vendor remains**
 
-Run: `cd backend && npm uninstall @nestjs/observe`
-Expected: removed from `package.json`.
+Run: `cd backend && grep -rni "observe" src/ package.json || echo clean`
+Expected: `clean`. Already removed in `229aa11`; this step only guards against reintroduction.
+
+Note `@nestjs/mau` is still present as a devDependency with a `deploy` script. It is unused. Left alone because deployment is Phase 7's decision, not this task's — flag it there.
 
 - [ ] **Step 11: Verify the app boots**
 
@@ -963,7 +965,7 @@ export const SETTING_DEFAULTS = Object.freeze({
   'hotDeals.frequentWindowDays': 60,
   'hotDeals.newItemDays': 30,
   'hotDeals.maxEntries': 10,
-  'business.timezone': 'Africa/Cairo',
+  'business.timezone': 'Asia/Baghdad',
 } as const);
 
 export type SettingKey = keyof typeof SETTING_DEFAULTS;
@@ -1016,7 +1018,7 @@ describe('SettingsService (integration)', () => {
   });
 
   it('handles string-valued settings', async () => {
-    await expect(settings.get('business.timezone')).resolves.toBe('Africa/Cairo');
+    await expect(settings.get('business.timezone')).resolves.toBe('Asia/Baghdad');
     await settings.set('business.timezone', 'Asia/Riyadh');
     await expect(settings.get('business.timezone')).resolves.toBe('Asia/Riyadh');
   });

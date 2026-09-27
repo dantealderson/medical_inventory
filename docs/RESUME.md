@@ -1,102 +1,124 @@
 # Resume Point
 
 **Last updated:** 2026-09-27
-**Branch:** `phase-0-foundations` (26 commits, clean tree, `main` untouched)
+**Branch:** `phase-0-foundations` (29 commits, clean tree, `main` untouched)
 **Blocked on:** nothing
+
+---
+
+## ⚠️ Raise the effort level before Phases 3 and 4
+
+The user asked to be reminded (2026-09-27). Phase 2 runs at normal high effort;
+**Phases 3 and 4 should be run at ultracode.**
+
+Not because the code is harder — because of how the bugs fail. Phase 2 fails
+loudly: bad Arabic normalisation returns no search results, a miscategorised item
+is visible on screen. Phases 3 and 4 fail silently: FEFO allocating the wrong
+batch ships stock expiring in 20 days instead of 8 months and nobody notices
+until it expires on a shelf; an off-by-one in the usage estimator quietly drifts
+every client's inventory for weeks, filling the ledger with wrong decrements
+before anyone questions the number.
+
+Maximum effort belongs where the failure is invisible. **Do not silently start
+Phase 3 at the current level — say so first.**
 
 ---
 
 ## Where we are
 
-**Phase 0 and Phase 1 are both complete and verified.** Next up is Phase 2 (catalog and warehouse), whose plan is not written yet.
+**Phases 0 and 1 are complete and verified.** Phase 2 (catalog and warehouse) is
+next; its plan is written immediately before it is built.
 
-| | Tests |
+| Suite | Tests |
 |---|---|
 | backend unit | 33 |
-| backend e2e + integration | 60 |
+| backend e2e + integration | 66 |
 | `packages/api_client` | 30 |
 | `packages/ui_kit` | 22 |
-| `client` | 15 |
+| `client` | 19 |
 | `admin` | 14 |
-| **total** | **174** |
+| **total** | **184** |
 
 Typecheck clean, no-email gate clean, `.env` untracked.
 
-### Phase 1 status
+### Phase status
 
-| Task | Status |
+| Phase | State |
 |---|---|
-| 1 — User / RefreshToken / AuditLog + migration | ✅ |
-| 2 — argon2id password hashing | ✅ |
-| 3 — audit log with credential redaction | ✅ |
-| 4 — registration into PENDING | ✅ |
-| 5 — login, JWT, rotating refresh + throttling | ✅ |
-| 6 — deny-by-default auth / role / ownership guards | ✅ |
-| 7 — admin approve, reject, suspend, reset password | ✅ |
-| 8 — api_client auth, token store, refresh interceptor | ✅ |
-| 9 — client app: login, register, pending screens | ✅ |
-| 10 — admin app: login + approvals queue | ✅ |
+| 0 — Foundations | ✅ complete |
+| 1 — Auth & accounts | ✅ complete |
+| **2 — Catalog & warehouse** | **⬜ next** |
+| 3 — Ordering & FEFO | ⬜ **raise effort first** |
+| 4 — Inventory & estimation | ⬜ **raise effort first** |
+| 5 — Automation & notifications | ⬜ |
+| 6 — Admin dashboard | ⬜ |
+| 7 — Hardening | ⬜ |
 
-### Starting the environment
+Plans written so far: `2026-09-27-phase-0-foundations.md`,
+`2026-09-27-phase-1-auth-accounts.md`.
+
+---
+
+## Running it
 
 ```bash
 cd D:\PROJECTS\medical_inventory
-docker compose up -d          # postgres on 5433
+docker compose up -d
 cd backend && npm run start:dev
+
+cd admin  && flutter run -d chrome     # admin is web-only
+cd client && flutter run -d chrome     # or an android device/emulator
 ```
 
-Docker Desktop is installed **per-user**, so its binary is not on a shell PATH
-captured before installation. If `docker` is not found:
+Dev admin: `admin` / `devadminpassword1` (from `.env`, local only).
+
+Docker Desktop is installed **per-user**, so its binary is missing from a shell
+whose PATH was captured before installation:
 
 ```bash
 export PATH="$PATH:/c/Users/ACER PC/AppData/Local/Programs/DockerDesktop/resources/bin"
 ```
 
-Dev admin credentials (from `.env`, local only): `admin` / `devadminpassword1`.
+---
 
-## The one thing that must not be changed
+## Things that will bite if forgotten
 
-`DATABASE_URL` points at **port 5433**, not 5432.
+**Postgres is on port 5433, not 5432.** A native `postgresql-x64-18` Windows
+service owns 5432 and the user asked not to use it. If both listened on 5432 the
+backend could read and write the wrong database while every test still passed.
+Verified: 5433 is the container (v16), 5432 rejects the `medinv` credentials.
 
-A native `postgresql-x64-18` Windows service owns 5432 on this machine and the
-user explicitly instructed not to use it. The container publishes 5433 so the
-backend *cannot* reach the Windows install by accident. If both listened on
-5432, the backend could read and write the wrong database while every test
-still passed — the worst kind of bug, because nothing looks broken.
+**Three databases, on purpose.** `medinv` (development), `medinv_test` (the e2e
+and integration suites, which truncate tables), `medinv_shadow` (Prisma migration
+diffs). With a single database, `npm run test:e2e` silently deletes the seeded
+admin. `test/global-setup.ts` refuses to run if `TEST_DATABASE_URL` is unset or
+equals `DATABASE_URL`. All three are created on a fresh volume by `docker/init`.
 
-## Confirmed by the user (2026-09-27)
+**CORS is required for the admin**, which is web-only — without it the browser
+blocks every request and the app can only report «تعذر الاتصال بالخادم». Any
+localhost origin is allowed outside production; production needs `CORS_ORIGINS`.
 
-- **Sky blue approved** — `#4FC3F7` primary, `#0288D1` dark accent, in `packages/ui_kit/lib/src/theme/palette.dart`.
+**The client's API URL is platform-dependent.** `10.0.2.2` is the Android
+emulator's host alias and is meaningless on web or desktop. A *physical* Android
+device needs the machine's LAN address via
+`--dart-define=API_BASE_URL=http://192.168.1.x:3000/api/v1`.
+
+---
+
+## Confirmed by the user
+
+- **Sky blue approved** — `#4FC3F7` primary, `#0288D1` dark accent, in
+  `packages/ui_kit/lib/src/theme/palette.dart`.
 - **Arabic copy approved** — «إدارة المخزون الطبي» (admin), «المخزون الطبي» (client).
 
-Both remain one-file edits if that changes later; the token architecture exists
-precisely so it stays that way.
+---
 
-## Deviations from the plan, already corrected in the plan file
+## Deviations from the original plans, all corrected in the plan files
 
-1. **NestJS 12 is ESM-only** → jest cannot test it. Switched to Vitest + swc (user approved). `vi.fn()`, never `jest.fn()`.
+1. **NestJS 12 is ESM-only** → jest cannot test it. Uses Vitest + swc; `vi.fn()`, never `jest.fn()`.
 2. **TypeScript 6 needs an explicit `rootDir`** → otherwise `TS5011` before any assertion runs.
-3. **Flutter 3.32 removed `package:flutter_gen`** → generated l10n lives in `lib/l10n/` as committed source; imports are relative.
-4. **Prisma 7 removed `url` from the datasource** → connection config in `prisma.config.ts`, runtime client needs `@prisma/adapter-pg`. Adapters connect lazily, so the app boots with the DB down.
-5. **`npm install prisma` pulls a release candidate** — its `latest` tag points at `8.0.0-rc.17` while the client's is stable `7.10.0`. Both pinned to `^7.10.0`. Re-check with `npm view prisma dist-tags` before any upgrade.
-
-## After Phase 0
-
-Phases 1–7 are defined in `docs/superpowers/specs/2026-09-27-medical-inventory-design.md` §15.
-
-**Phase 1's plan is already written** — `docs/superpowers/plans/2026-09-27-phase-1-auth-accounts.md`, 10 tasks, 69 steps. It was written after Phase 0's code was committed, so its `Consumes:` table cites real signatures (`PrismaService`, `SettingsService`, `AppException`, `ERROR_CODES`, `applyAppConfig`, `ApiClient`, `ApiException`, `AppTheme`, `Breakpoints`) rather than guesses.
-
-**Three of its ten tasks are already done** — the ones that need no database:
-
-| Phase 1 task | Status |
-|---|---|
-| 2 — argon2id password hashing | ✅ 7 tests |
-| 3a — audit redaction (pure function) | ✅ 11 tests |
-| 8 — api_client auth, token store, refresh interceptor | ✅ 13 tests |
-| 1, 3b, 4, 5, 6, 7 — schema, AuditService, register, login, guards, admin | ⛔ need Postgres |
-| 9, 10 — Flutter auth screens | ⛔ depend on tasks 4–7 being runnable |
-
-Remaining Phase 1 work resumes at **Task 1** (the `auth_accounts` migration),
-which needs the same container as Phase 0.
-
-Phases 2–7 still get their plans written immediately before they are built.
+3. **Flutter 3.32 removed `package:flutter_gen`** → generated l10n lives in `lib/l10n/` as committed source.
+4. **Prisma 7 removed `url` from the datasource** → config in `prisma.config.ts`, client needs `@prisma/adapter-pg`. Adapters connect lazily, so the app boots with the DB down.
+5. **`npm install prisma` pulls a release candidate** — its `latest` tag points at an `8.0.0-rc`. Both packages pinned to `^7.10.0`.
+6. **Riverpod 3 removed `StateProvider`** → use `NotifierProvider`.
+7. **swc does not typecheck** → tests can pass while `tsc --noEmit` fails. Run the typecheck separately.

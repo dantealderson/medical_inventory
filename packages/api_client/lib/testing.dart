@@ -23,12 +23,18 @@ class SeenRequest {
     required this.method,
     required this.path,
     required this.headers,
+    required this.query,
     required this.body,
   });
 
   final String method;
   final String path;
   final Map<String, dynamic> headers;
+
+  /// Query parameters, so tests can assert what was actually sent — notably
+  /// that a search query goes out un-mangled.
+  final Map<String, dynamic> query;
+
   final Object? body;
 }
 
@@ -65,6 +71,7 @@ class FakeApiBackend implements HttpClientAdapter {
       method: options.method,
       path: options.path,
       headers: options.headers,
+      query: options.queryParameters,
       body: options.data,
     );
     seen.add(req);

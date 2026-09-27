@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ItemsModule } from './items/items.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AppConfigModule } from './config/config.module';
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     CategoriesModule,
+    ItemsModule,
     HealthModule,
   ],
   providers: [

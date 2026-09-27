@@ -285,6 +285,252 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إعادة المحاولة'**
   String get retry;
+
+  /// Phase 2 catalog: catalog
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقسام والأصناف'**
+  String get catalog;
+
+  /// Phase 2 catalog: categories
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقسام'**
+  String get categories;
+
+  /// Phase 2 catalog: items
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصناف'**
+  String get items;
+
+  /// Phase 2 catalog: batches
+  ///
+  /// In ar, this message translates to:
+  /// **'التشغيلات'**
+  String get batches;
+
+  /// Phase 2 catalog: addCategory
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة قسم'**
+  String get addCategory;
+
+  /// Phase 2 catalog: addSubCategory
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة قسم فرعي'**
+  String get addSubCategory;
+
+  /// Phase 2 catalog: addItem
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة صنف'**
+  String get addItem;
+
+  /// Phase 2 catalog: receiveBatch
+  ///
+  /// In ar, this message translates to:
+  /// **'استلام تشغيلة'**
+  String get receiveBatch;
+
+  /// Phase 2 catalog: nameArLabel
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم بالعربية'**
+  String get nameArLabel;
+
+  /// Phase 2 catalog: nameEnLabel
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم بالإنجليزية'**
+  String get nameEnLabel;
+
+  /// Phase 2 catalog: parentCategory
+  ///
+  /// In ar, this message translates to:
+  /// **'القسم الأعلى'**
+  String get parentCategory;
+
+  /// Phase 2 catalog: noParent
+  ///
+  /// In ar, this message translates to:
+  /// **'قسم رئيسي'**
+  String get noParent;
+
+  /// Phase 2 catalog: unitsPerBox
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الوحدات في العلبة'**
+  String get unitsPerBox;
+
+  /// Phase 2 catalog: unitLabel
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الوحدة'**
+  String get unitLabel;
+
+  /// Phase 2 catalog: pricePerBox
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر العلبة'**
+  String get pricePerBox;
+
+  /// Phase 2 catalog: minStockBoxes
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الأدنى (علب)'**
+  String get minStockBoxes;
+
+  /// Phase 2 catalog: batchNumber
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم التشغيلة'**
+  String get batchNumber;
+
+  /// Phase 2 catalog: expiryDate
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ انتهاء الصلاحية'**
+  String get expiryDate;
+
+  /// Phase 2 catalog: quantityBoxes
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية (علب)'**
+  String get quantityBoxes;
+
+  /// Phase 2 catalog: inStock
+  ///
+  /// In ar, this message translates to:
+  /// **'المتوفر'**
+  String get inStock;
+
+  /// Phase 2 catalog: expiringSoon
+  ///
+  /// In ar, this message translates to:
+  /// **'قارب على الانتهاء'**
+  String get expiringSoon;
+
+  /// Phase 2 catalog: expired
+  ///
+  /// In ar, this message translates to:
+  /// **'منتهي الصلاحية'**
+  String get expired;
+
+  /// Phase 2 catalog: noCategories
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أقسام بعد'**
+  String get noCategories;
+
+  /// Phase 2 catalog: noItems
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف بعد'**
+  String get noItems;
+
+  /// Phase 2 catalog: noBatches
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تشغيلات'**
+  String get noBatches;
+
+  /// Phase 2 catalog: save
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get save;
+
+  /// Phase 2 catalog: delete
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get delete;
+
+  /// Phase 2 catalog: deactivate
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء التفعيل'**
+  String get deactivate;
+
+  /// Phase 2 catalog: edit
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get edit;
+
+  /// Phase 2 catalog: categoryDepthHint
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثة مستويات كحد أقصى'**
+  String get categoryDepthHint;
+
+  /// Phase 2 catalog: boxesShort
+  ///
+  /// In ar, this message translates to:
+  /// **'علبة'**
+  String get boxesShort;
+
+  /// Phase 2 catalog: unitsShort
+  ///
+  /// In ar, this message translates to:
+  /// **'وحدة'**
+  String get unitsShort;
+
+  /// Phase 2 catalog: requiredField
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الحقل مطلوب'**
+  String get requiredField;
+
+  /// Phase 2 catalog: invalidPrice
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر يجب أن يكون رقماً بمنزلتين عشريتين على الأكثر'**
+  String get invalidPrice;
+
+  /// Phase 2 catalog: mustBePositive
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب أن يكون رقماً أكبر من صفر'**
+  String get mustBePositive;
+
+  /// Phase 2 catalog: nameRequiredOneOf
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب إدخال الاسم بالعربية أو بالإنجليزية'**
+  String get nameRequiredOneOf;
+
+  /// Phase 2 catalog: expiryMustBeFuture
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل'**
+  String get expiryMustBeFuture;
+
+  /// Phase 2 catalog: pickDate
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر التاريخ'**
+  String get pickDate;
+
+  /// Phase 2 catalog: itemSaved
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الصنف'**
+  String get itemSaved;
+
+  /// Phase 2 catalog: categorySaved
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ القسم'**
+  String get categorySaved;
+
+  /// Phase 2 catalog: batchReceived
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تسجيل التشغيلة'**
+  String get batchReceived;
 }
 
 class _AppLocalizationsDelegate

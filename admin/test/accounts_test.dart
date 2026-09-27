@@ -57,7 +57,9 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
       await tester.pumpAndSettle();
 
-      expect(find.text('طلبات الحسابات'), findsOneWidget);
+      // Appears twice now: as the screen title and as its nav tab in
+      // AdminShell, which every admin screen shares.
+      expect(find.text('طلبات الحسابات'), findsWidgets);
       expect(find.text('مختبر النور'), findsOneWidget);
     });
   });

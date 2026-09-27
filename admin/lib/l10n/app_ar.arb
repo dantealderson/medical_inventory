@@ -1,75 +1,295 @@
 {
   "@@locale": "ar",
-
   "appTitle": "إدارة المخزون الطبي",
-  "@appTitle": { "description": "Admin application title" },
+  "@appTitle": {
+    "description": "Admin application title"
+  },
   "loading": "جارٍ التحميل...",
-  "@loading": { "description": "Generic loading indicator label" },
-
+  "@loading": {
+    "description": "Generic loading indicator label"
+  },
   "login": "تسجيل الدخول",
-  "@login": { "description": "Login button and screen title" },
+  "@login": {
+    "description": "Login button and screen title"
+  },
   "username": "اسم المستخدم",
-  "@username": { "description": "Username field label" },
+  "@username": {
+    "description": "Username field label"
+  },
   "password": "كلمة المرور",
-  "@password": { "description": "Password field label" },
+  "@password": {
+    "description": "Password field label"
+  },
   "logout": "تسجيل الخروج",
-  "@logout": { "description": "Logout action" },
-
+  "@logout": {
+    "description": "Logout action"
+  },
   "usernameRequired": "اسم المستخدم مطلوب",
-  "@usernameRequired": { "description": "Validation: username empty" },
+  "@usernameRequired": {
+    "description": "Validation: username empty"
+  },
   "passwordRequired": "كلمة المرور مطلوبة",
-  "@passwordRequired": { "description": "Validation: password empty" },
+  "@passwordRequired": {
+    "description": "Validation: password empty"
+  },
   "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
-  "@passwordTooShort": { "description": "Validation: password under 8 chars" },
-
+  "@passwordTooShort": {
+    "description": "Validation: password under 8 chars"
+  },
   "pendingAccounts": "طلبات الحسابات",
-  "@pendingAccounts": { "description": "Pending approvals screen title" },
+  "@pendingAccounts": {
+    "description": "Pending approvals screen title"
+  },
   "noPendingAccounts": "لا توجد طلبات جديدة",
-  "@noPendingAccounts": { "description": "Empty state for the approvals queue" },
+  "@noPendingAccounts": {
+    "description": "Empty state for the approvals queue"
+  },
   "approve": "موافقة",
-  "@approve": { "description": "Approve a pending account" },
+  "@approve": {
+    "description": "Approve a pending account"
+  },
   "reject": "رفض",
-  "@reject": { "description": "Reject a pending account" },
+  "@reject": {
+    "description": "Reject a pending account"
+  },
   "suspend": "إيقاف",
-  "@suspend": { "description": "Suspend an active account" },
+  "@suspend": {
+    "description": "Suspend an active account"
+  },
   "reactivate": "إعادة تفعيل",
-  "@reactivate": { "description": "Reactivate a suspended account" },
+  "@reactivate": {
+    "description": "Reactivate a suspended account"
+  },
   "resetPassword": "إعادة تعيين كلمة المرور",
-  "@resetPassword": { "description": "Reset a client's password" },
+  "@resetPassword": {
+    "description": "Reset a client's password"
+  },
   "newPassword": "كلمة المرور الجديدة",
-  "@newPassword": { "description": "New password field label" },
+  "@newPassword": {
+    "description": "New password field label"
+  },
   "cancel": "إلغاء",
-  "@cancel": { "description": "Cancel a dialog" },
+  "@cancel": {
+    "description": "Cancel a dialog"
+  },
   "confirm": "تأكيد",
-  "@confirm": { "description": "Confirm a dialog" },
-
+  "@confirm": {
+    "description": "Confirm a dialog"
+  },
   "accountDetails": "تفاصيل الحساب",
-  "@accountDetails": { "description": "Account detail screen title" },
+  "@accountDetails": {
+    "description": "Account detail screen title"
+  },
   "clinicName": "اسم المختبر",
-  "@clinicName": { "description": "Clinic name label" },
+  "@clinicName": {
+    "description": "Clinic name label"
+  },
   "status": "الحالة",
-  "@status": { "description": "Account status label" },
-
+  "@status": {
+    "description": "Account status label"
+  },
   "statusPending": "قيد المراجعة",
-  "@statusPending": { "description": "UserStatus PENDING" },
+  "@statusPending": {
+    "description": "UserStatus PENDING"
+  },
   "statusActive": "مفعّل",
-  "@statusActive": { "description": "UserStatus ACTIVE" },
+  "@statusActive": {
+    "description": "UserStatus ACTIVE"
+  },
   "statusSuspended": "موقوف",
-  "@statusSuspended": { "description": "UserStatus SUSPENDED" },
+  "@statusSuspended": {
+    "description": "UserStatus SUSPENDED"
+  },
   "statusRejected": "مرفوض",
-  "@statusRejected": { "description": "UserStatus REJECTED" },
-
+  "@statusRejected": {
+    "description": "UserStatus REJECTED"
+  },
   "resetPasswordDone": "تم تعيين كلمة المرور الجديدة وإنهاء جميع الجلسات",
-  "@resetPasswordDone": { "description": "Confirmation after a password reset" },
+  "@resetPasswordDone": {
+    "description": "Confirmation after a password reset"
+  },
   "resetPasswordHint": "اقرأ كلمة المرور الجديدة للعميل عبر الهاتف. لن تظهر مرة أخرى.",
-  "@resetPasswordHint": { "description": "Warns the admin the password is shown once" },
+  "@resetPasswordHint": {
+    "description": "Warns the admin the password is shown once"
+  },
   "confirmApprove": "هل تريد الموافقة على هذا الحساب؟",
-  "@confirmApprove": { "description": "Approve confirmation prompt" },
+  "@confirmApprove": {
+    "description": "Approve confirmation prompt"
+  },
   "confirmReject": "هل تريد رفض هذا الطلب؟",
-  "@confirmReject": { "description": "Reject confirmation prompt" },
+  "@confirmReject": {
+    "description": "Reject confirmation prompt"
+  },
   "confirmSuspend": "سيتم إنهاء جميع جلسات هذا الحساب فوراً. هل تريد المتابعة؟",
-  "@confirmSuspend": { "description": "Suspend confirmation, warns sessions end" },
-
+  "@confirmSuspend": {
+    "description": "Suspend confirmation, warns sessions end"
+  },
   "retry": "إعادة المحاولة",
-  "@retry": { "description": "Retry action on an error state" }
+  "@retry": {
+    "description": "Retry action on an error state"
+  },
+  "catalog": "الأقسام والأصناف",
+  "@catalog": {
+    "description": "Phase 2 catalog: catalog"
+  },
+  "categories": "الأقسام",
+  "@categories": {
+    "description": "Phase 2 catalog: categories"
+  },
+  "items": "الأصناف",
+  "@items": {
+    "description": "Phase 2 catalog: items"
+  },
+  "batches": "التشغيلات",
+  "@batches": {
+    "description": "Phase 2 catalog: batches"
+  },
+  "addCategory": "إضافة قسم",
+  "@addCategory": {
+    "description": "Phase 2 catalog: addCategory"
+  },
+  "addSubCategory": "إضافة قسم فرعي",
+  "@addSubCategory": {
+    "description": "Phase 2 catalog: addSubCategory"
+  },
+  "addItem": "إضافة صنف",
+  "@addItem": {
+    "description": "Phase 2 catalog: addItem"
+  },
+  "receiveBatch": "استلام تشغيلة",
+  "@receiveBatch": {
+    "description": "Phase 2 catalog: receiveBatch"
+  },
+  "nameArLabel": "الاسم بالعربية",
+  "@nameArLabel": {
+    "description": "Phase 2 catalog: nameArLabel"
+  },
+  "nameEnLabel": "الاسم بالإنجليزية",
+  "@nameEnLabel": {
+    "description": "Phase 2 catalog: nameEnLabel"
+  },
+  "parentCategory": "القسم الأعلى",
+  "@parentCategory": {
+    "description": "Phase 2 catalog: parentCategory"
+  },
+  "noParent": "قسم رئيسي",
+  "@noParent": {
+    "description": "Phase 2 catalog: noParent"
+  },
+  "unitsPerBox": "عدد الوحدات في العلبة",
+  "@unitsPerBox": {
+    "description": "Phase 2 catalog: unitsPerBox"
+  },
+  "unitLabel": "اسم الوحدة",
+  "@unitLabel": {
+    "description": "Phase 2 catalog: unitLabel"
+  },
+  "pricePerBox": "سعر العلبة",
+  "@pricePerBox": {
+    "description": "Phase 2 catalog: pricePerBox"
+  },
+  "minStockBoxes": "الحد الأدنى (علب)",
+  "@minStockBoxes": {
+    "description": "Phase 2 catalog: minStockBoxes"
+  },
+  "batchNumber": "رقم التشغيلة",
+  "@batchNumber": {
+    "description": "Phase 2 catalog: batchNumber"
+  },
+  "expiryDate": "تاريخ انتهاء الصلاحية",
+  "@expiryDate": {
+    "description": "Phase 2 catalog: expiryDate"
+  },
+  "quantityBoxes": "الكمية (علب)",
+  "@quantityBoxes": {
+    "description": "Phase 2 catalog: quantityBoxes"
+  },
+  "inStock": "المتوفر",
+  "@inStock": {
+    "description": "Phase 2 catalog: inStock"
+  },
+  "expiringSoon": "قارب على الانتهاء",
+  "@expiringSoon": {
+    "description": "Phase 2 catalog: expiringSoon"
+  },
+  "expired": "منتهي الصلاحية",
+  "@expired": {
+    "description": "Phase 2 catalog: expired"
+  },
+  "noCategories": "لا توجد أقسام بعد",
+  "@noCategories": {
+    "description": "Phase 2 catalog: noCategories"
+  },
+  "noItems": "لا توجد أصناف بعد",
+  "@noItems": {
+    "description": "Phase 2 catalog: noItems"
+  },
+  "noBatches": "لا توجد تشغيلات",
+  "@noBatches": {
+    "description": "Phase 2 catalog: noBatches"
+  },
+  "save": "حفظ",
+  "@save": {
+    "description": "Phase 2 catalog: save"
+  },
+  "delete": "حذف",
+  "@delete": {
+    "description": "Phase 2 catalog: delete"
+  },
+  "deactivate": "إلغاء التفعيل",
+  "@deactivate": {
+    "description": "Phase 2 catalog: deactivate"
+  },
+  "edit": "تعديل",
+  "@edit": {
+    "description": "Phase 2 catalog: edit"
+  },
+  "categoryDepthHint": "ثلاثة مستويات كحد أقصى",
+  "@categoryDepthHint": {
+    "description": "Phase 2 catalog: categoryDepthHint"
+  },
+  "boxesShort": "علبة",
+  "@boxesShort": {
+    "description": "Phase 2 catalog: boxesShort"
+  },
+  "unitsShort": "وحدة",
+  "@unitsShort": {
+    "description": "Phase 2 catalog: unitsShort"
+  },
+  "requiredField": "هذا الحقل مطلوب",
+  "@requiredField": {
+    "description": "Phase 2 catalog: requiredField"
+  },
+  "invalidPrice": "السعر يجب أن يكون رقماً بمنزلتين عشريتين على الأكثر",
+  "@invalidPrice": {
+    "description": "Phase 2 catalog: invalidPrice"
+  },
+  "mustBePositive": "يجب أن يكون رقماً أكبر من صفر",
+  "@mustBePositive": {
+    "description": "Phase 2 catalog: mustBePositive"
+  },
+  "nameRequiredOneOf": "يجب إدخال الاسم بالعربية أو بالإنجليزية",
+  "@nameRequiredOneOf": {
+    "description": "Phase 2 catalog: nameRequiredOneOf"
+  },
+  "expiryMustBeFuture": "تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل",
+  "@expiryMustBeFuture": {
+    "description": "Phase 2 catalog: expiryMustBeFuture"
+  },
+  "pickDate": "اختر التاريخ",
+  "@pickDate": {
+    "description": "Phase 2 catalog: pickDate"
+  },
+  "itemSaved": "تم حفظ الصنف",
+  "@itemSaved": {
+    "description": "Phase 2 catalog: itemSaved"
+  },
+  "categorySaved": "تم حفظ القسم",
+  "@categorySaved": {
+    "description": "Phase 2 catalog: categorySaved"
+  },
+  "batchReceived": "تم تسجيل التشغيلة",
+  "@batchReceived": {
+    "description": "Phase 2 catalog: batchReceived"
+  }
 }

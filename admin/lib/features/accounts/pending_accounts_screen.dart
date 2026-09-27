@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/accounts_controller.dart';
-import '../../core/auth_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../shell/admin_shell.dart';
 import 'account_status_chip.dart';
 
 class PendingAccountsScreen extends ConsumerWidget {
@@ -18,18 +18,9 @@ class PendingAccountsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final accounts = ref.watch(accountsProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.pendingAccounts),
-        actions: [
-          IconButton(
-            tooltip: l10n.logout,
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authControllerProvider.notifier).logout(),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
+    return AdminShell(
+      title: l10n.pendingAccounts,
+      child: RefreshIndicator(
         onRefresh: () async => ref.invalidate(accountsProvider),
         child: accounts.when(
           loading: () => const Center(child: CircularProgressIndicator()),

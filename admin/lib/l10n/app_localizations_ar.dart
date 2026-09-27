@@ -106,4 +106,129 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get retry => 'إعادة المحاولة';
+
+  @override
+  String get catalog => 'الأقسام والأصناف';
+
+  @override
+  String get categories => 'الأقسام';
+
+  @override
+  String get items => 'الأصناف';
+
+  @override
+  String get batches => 'التشغيلات';
+
+  @override
+  String get addCategory => 'إضافة قسم';
+
+  @override
+  String get addSubCategory => 'إضافة قسم فرعي';
+
+  @override
+  String get addItem => 'إضافة صنف';
+
+  @override
+  String get receiveBatch => 'استلام تشغيلة';
+
+  @override
+  String get nameArLabel => 'الاسم بالعربية';
+
+  @override
+  String get nameEnLabel => 'الاسم بالإنجليزية';
+
+  @override
+  String get parentCategory => 'القسم الأعلى';
+
+  @override
+  String get noParent => 'قسم رئيسي';
+
+  @override
+  String get unitsPerBox => 'عدد الوحدات في العلبة';
+
+  @override
+  String get unitLabel => 'اسم الوحدة';
+
+  @override
+  String get pricePerBox => 'سعر العلبة';
+
+  @override
+  String get minStockBoxes => 'الحد الأدنى (علب)';
+
+  @override
+  String get batchNumber => 'رقم التشغيلة';
+
+  @override
+  String get expiryDate => 'تاريخ انتهاء الصلاحية';
+
+  @override
+  String get quantityBoxes => 'الكمية (علب)';
+
+  @override
+  String get inStock => 'المتوفر';
+
+  @override
+  String get expiringSoon => 'قارب على الانتهاء';
+
+  @override
+  String get expired => 'منتهي الصلاحية';
+
+  @override
+  String get noCategories => 'لا توجد أقسام بعد';
+
+  @override
+  String get noItems => 'لا توجد أصناف بعد';
+
+  @override
+  String get noBatches => 'لا توجد تشغيلات';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get deactivate => 'إلغاء التفعيل';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get categoryDepthHint => 'ثلاثة مستويات كحد أقصى';
+
+  @override
+  String get boxesShort => 'علبة';
+
+  @override
+  String get unitsShort => 'وحدة';
+
+  @override
+  String get requiredField => 'هذا الحقل مطلوب';
+
+  @override
+  String get invalidPrice =>
+      'السعر يجب أن يكون رقماً بمنزلتين عشريتين على الأكثر';
+
+  @override
+  String get mustBePositive => 'يجب أن يكون رقماً أكبر من صفر';
+
+  @override
+  String get nameRequiredOneOf => 'يجب إدخال الاسم بالعربية أو بالإنجليزية';
+
+  @override
+  String get expiryMustBeFuture =>
+      'تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل';
+
+  @override
+  String get pickDate => 'اختر التاريخ';
+
+  @override
+  String get itemSaved => 'تم حفظ الصنف';
+
+  @override
+  String get categorySaved => 'تم حفظ القسم';
+
+  @override
+  String get batchReceived => 'تم تسجيل التشغيلة';
 }

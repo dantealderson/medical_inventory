@@ -1,5 +1,6 @@
 library;
 
+export 'src/admin/admin_users_api.dart';
 export 'src/api_client_base.dart';
 export 'src/api_exception.dart';
 export 'src/auth/auth_api.dart';

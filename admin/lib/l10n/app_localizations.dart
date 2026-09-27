@@ -105,6 +105,186 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'جارٍ التحميل...'**
   String get loading;
+
+  /// Login button and screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الدخول'**
+  String get login;
+
+  /// Username field label
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المستخدم'**
+  String get username;
+
+  /// Password field label
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور'**
+  String get password;
+
+  /// Logout action
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get logout;
+
+  /// Validation: username empty
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المستخدم مطلوب'**
+  String get usernameRequired;
+
+  /// Validation: password empty
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور مطلوبة'**
+  String get passwordRequired;
+
+  /// Validation: password under 8 chars
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور يجب أن تكون 8 أحرف على الأقل'**
+  String get passwordTooShort;
+
+  /// Pending approvals screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات الحسابات'**
+  String get pendingAccounts;
+
+  /// Empty state for the approvals queue
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات جديدة'**
+  String get noPendingAccounts;
+
+  /// Approve a pending account
+  ///
+  /// In ar, this message translates to:
+  /// **'موافقة'**
+  String get approve;
+
+  /// Reject a pending account
+  ///
+  /// In ar, this message translates to:
+  /// **'رفض'**
+  String get reject;
+
+  /// Suspend an active account
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف'**
+  String get suspend;
+
+  /// Reactivate a suspended account
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تفعيل'**
+  String get reactivate;
+
+  /// Reset a client's password
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تعيين كلمة المرور'**
+  String get resetPassword;
+
+  /// New password field label
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور الجديدة'**
+  String get newPassword;
+
+  /// Cancel a dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get cancel;
+
+  /// Confirm a dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get confirm;
+
+  /// Account detail screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'تفاصيل الحساب'**
+  String get accountDetails;
+
+  /// Clinic name label
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المختبر'**
+  String get clinicName;
+
+  /// Account status label
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالة'**
+  String get status;
+
+  /// UserStatus PENDING
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد المراجعة'**
+  String get statusPending;
+
+  /// UserStatus ACTIVE
+  ///
+  /// In ar, this message translates to:
+  /// **'مفعّل'**
+  String get statusActive;
+
+  /// UserStatus SUSPENDED
+  ///
+  /// In ar, this message translates to:
+  /// **'موقوف'**
+  String get statusSuspended;
+
+  /// UserStatus REJECTED
+  ///
+  /// In ar, this message translates to:
+  /// **'مرفوض'**
+  String get statusRejected;
+
+  /// Confirmation after a password reset
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تعيين كلمة المرور الجديدة وإنهاء جميع الجلسات'**
+  String get resetPasswordDone;
+
+  /// Warns the admin the password is shown once
+  ///
+  /// In ar, this message translates to:
+  /// **'اقرأ كلمة المرور الجديدة للعميل عبر الهاتف. لن تظهر مرة أخرى.'**
+  String get resetPasswordHint;
+
+  /// Approve confirmation prompt
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد الموافقة على هذا الحساب؟'**
+  String get confirmApprove;
+
+  /// Reject confirmation prompt
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد رفض هذا الطلب؟'**
+  String get confirmReject;
+
+  /// Suspend confirmation, warns sessions end
+  ///
+  /// In ar, this message translates to:
+  /// **'سيتم إنهاء جميع جلسات هذا الحساب فوراً. هل تريد المتابعة؟'**
+  String get confirmSuspend;
+
+  /// Retry action on an error state
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

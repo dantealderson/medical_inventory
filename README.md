@@ -31,10 +31,40 @@ because nothing looks broken. Never change `DATABASE_URL` to 5432.
     docker compose up -d
     cd backend && cp .env.example .env && npm install
     npx prisma migrate dev
+    npm run db:seed            # settings + the first admin
     npm run start:dev          # http://localhost:3000/api/v1/health
 
     cd ../admin  && flutter pub get && flutter run -d chrome
     cd ../client && flutter pub get && flutter run
+
+Set `SEED_ADMIN_PASSWORD` in `.env` before seeding, or the admin is skipped.
+Re-seeding never resets an existing admin's password.
+
+## Three databases, on purpose
+
+| Database | Used by |
+|---|---|
+| `medinv` | development — the app you run |
+| `medinv_test` | the e2e and integration suites |
+| `medinv_shadow` | Prisma, when diffing migrations |
+
+The suites truncate tables between tests, so they get their own database. With
+a single one, `npm run test:e2e` silently deletes the seeded admin and
+everything else you were working with. `test/global-setup.ts` refuses to run
+if `TEST_DATABASE_URL` is unset or equals `DATABASE_URL`.
+
+All three are created automatically on a fresh volume by `docker/init`.
+
+## CORS
+
+The admin app runs in a browser, so the API must allow its origin or the
+browser blocks every request before it is sent — and the app can only report
+«تعذر الاتصال بالخادم», which points nowhere near the real cause.
+
+Outside production any `localhost` port is allowed, because `flutter run -d
+chrome` picks a new one each launch. In production set `CORS_ORIGINS` to the
+admin's real origin; an empty value there means no cross-origin access at all.
+The mobile client app is unaffected — only browsers enforce this.
 
 To confirm you are talking to the container and not the Windows install:
 

@@ -45,6 +45,15 @@ export const envSchema = z.object({
   // test lowers it deliberately.
   AUTH_THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   AUTH_THROTTLE_LIMIT: z.coerce.number().int().positive().default(10),
+
+  // Comma-separated browser origins allowed to call the API, e.g.
+  // "https://admin.example.com". The admin app is web-only, so without this
+  // the browser blocks every request before it leaves.
+  //
+  // Outside production, an empty value additionally permits any localhost
+  // port, because `flutter run -d chrome` picks a new one each launch.
+  // In production an empty value means no cross-origin access at all.
+  CORS_ORIGINS: z.string().default(''),
 })
   .refine((env) => env.JWT_ACCESS_SECRET !== env.JWT_REFRESH_SECRET, {
     message: 'JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must differ — reusing one secret means a leaked access secret can mint refresh tokens',

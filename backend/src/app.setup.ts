@@ -1,7 +1,49 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AllExceptionsFilter } from './common/errors/all-exceptions.filter';
+import type { Env } from './config/env.schema';
+
+/** Any port on localhost — `flutter run -d chrome` picks a new one each launch. */
+const LOCALHOST = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
+/**
+ * The admin app runs in a browser, so without CORS the browser blocks every
+ * request before it reaches us — and the app reports a transport failure
+ * ("تعذر الاتصال بالخادم") rather than anything that points at the real cause.
+ *
+ * The mobile client app is unaffected; only browsers enforce this.
+ */
+export function applyCors(app: INestApplication): void {
+  const config = app.get(ConfigService<Env, true>);
+  const allowlist = config
+    .get('CORS_ORIGINS', { infer: true })
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  const allowLocalhost = config.get('NODE_ENV', { infer: true }) !== 'production';
+
+  app.enableCors({
+    origin: (origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => {
+      // No Origin header means a non-browser caller — curl, the mobile apps,
+      // server-to-server. Same-origin policy does not apply to them.
+      if (!origin) return cb(null, true);
+      if (allowlist.includes(origin)) return cb(null, true);
+      if (allowLocalhost && LOCALHOST.test(origin)) return cb(null, true);
+      // Reply without the allow header rather than throwing: the browser
+      // refuses, and a rejected preflight should not surface as a 500.
+      return cb(null, false);
+    },
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    // Auth is a Bearer header, not a cookie, so credentialed requests are not
+    // needed — and leaving this off keeps the policy tighter.
+    credentials: false,
+    maxAge: 86_400,
+  });
+}
 
 /**
  * Extracted so tests configure the app identically to production. Configuring
@@ -9,6 +51,9 @@ import { AllExceptionsFilter } from './common/errors/all-exceptions.filter';
  * differently-configured app than the one you ship.
  */
 export function applyAppConfig(app: INestApplication): void {
+  // Inside applyAppConfig rather than only in bootstrap(), so the e2e suites
+  // configure the app identically to production and can actually test it.
+  applyCors(app);
   app.setGlobalPrefix('api/v1');
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(

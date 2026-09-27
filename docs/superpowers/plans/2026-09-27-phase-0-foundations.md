@@ -6,7 +6,9 @@
 
 **Architecture:** One root Git repo. `backend/` is NestJS + Prisma against PostgreSQL and owns all business logic. `admin/` and `client/` are Flutter apps that hold no domain rules; they consume `packages/api_client` (typed HTTP + error mapping) and `packages/ui_kit` (design tokens, theme, shared widgets) by path dependency. The two shared packages are what stop the apps from drifting into two divergent codebases.
 
-**Tech Stack:** NestJS 12, TypeScript 6, Prisma 6, PostgreSQL 16, Zod (env validation), Swagger, Flutter 3.32 / Dart 3.8, Dio, `flutter_localizations` + ARB.
+**Tech Stack:** NestJS 12, TypeScript 6, Prisma 6, PostgreSQL 16, Zod (env validation), Swagger, **Vitest + swc** (tests), Flutter 3.32 / Dart 3.8, Dio, `flutter_localizations` + ARB.
+
+> **Test runner: Vitest, not jest.** NestJS 12 is ESM-only (`"type": "module"`, no `require` export condition). Jest's runtime cannot `require()` an ESM package, and its ESM mode additionally needs `--experimental-vm-modules` plus migrating the whole backend to ESM. Vitest runs it natively, including `emitDecoratorMetadata` for constructor injection — verified. Tests use `vi.fn()` / `vi.spyOn()`, never `jest.*`. Two configs: `vitest.config.mts` (unit, no infrastructure) and `vitest.config.e2e.mts` (integration + e2e, needs Postgres).
 
 **Spec:** `docs/superpowers/specs/2026-09-27-medical-inventory-design.md`
 
@@ -216,6 +218,7 @@ Expected: both appear in `package.json` dependencies.
 Create `backend/test/unit/env.schema.spec.ts`:
 
 ```ts
+import { describe, it, expect } from 'vitest';
 import { envSchema } from '../../src/config/env.schema';
 
 const valid = {
@@ -256,7 +259,7 @@ describe('envSchema', () => {
 
 - [ ] **Step 3: Set `rootDir` in `tsconfig.json`**
 
-TypeScript 6 refuses to infer a common source directory when a tool compiles a single file, which is exactly what ts-jest does. Without this, **every** test in the project fails with `TS5011` before a single assertion runs. Add to `compilerOptions`:
+Sources span `src/`, `test/` and `prisma/`, so the project root is the honest root. TypeScript 6 fails with `TS5011` whenever a tool invokes `tsc` on a single file without an explicit `rootDir`. Add to `compilerOptions`:
 
 ```jsonc
 "rootDir": ".",
@@ -266,7 +269,7 @@ Safe for builds: `tsconfig.build.json` already overrides it with `"./src"` and e
 
 - [ ] **Step 4: Run the test and verify it fails**
 
-Run: `cd backend && npx jest test/unit/env.schema.spec.ts`
+Run: `cd backend && npm test -- test/unit/env.schema.spec.ts`
 Expected: FAIL — `Cannot find module '../../src/config/env.schema'`. If you instead see `TS5011`, Step 3 was skipped.
 
 - [ ] **Step 5: Create `backend/src/config/env.schema.ts`**
@@ -287,7 +290,7 @@ export type Env = z.infer<typeof envSchema>;
 
 - [ ] **Step 6: Run the test and verify it passes**
 
-Run: `cd backend && npx jest test/unit/env.schema.spec.ts`
+Run: `cd backend && npm test -- test/unit/env.schema.spec.ts`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 7: Create `backend/src/config/config.module.ts`**
@@ -422,6 +425,7 @@ Expected: the table exists with `key`, `value`, `updatedAt`.
 Create `backend/test/e2e/health.e2e-spec.ts`:
 
 ```ts
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -448,7 +452,7 @@ describe('Health (e2e)', () => {
 
 - [ ] **Step 5: Run it and verify it fails**
 
-Run: `cd backend && npx jest --config test/jest-e2e.json test/e2e/health.e2e-spec.ts`
+Run: `cd backend && npm run test:e2e -- test/e2e/health.e2e-spec.ts`
 Expected: FAIL — 404, because no health route exists yet.
 
 - [ ] **Step 6: Create `backend/src/prisma/prisma.service.ts`**
@@ -528,7 +532,7 @@ export class AppModule {}
 
 - [ ] **Step 11: Run the test and verify it passes**
 
-Run: `cd backend && npx jest --config test/jest-e2e.json test/e2e/health.e2e-spec.ts`
+Run: `cd backend && npm run test:e2e -- test/e2e/health.e2e-spec.ts`
 Expected: PASS.
 
 - [ ] **Step 12: Add convenience scripts to `backend/package.json`**
@@ -572,13 +576,14 @@ Every error the API emits — thrown by us, thrown by Nest, or thrown by acciden
 Create `backend/test/unit/all-exceptions.filter.spec.ts`:
 
 ```ts
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ArgumentsHost, HttpStatus, HttpException, BadRequestException } from '@nestjs/common';
 import { AllExceptionsFilter } from '../../src/common/errors/all-exceptions.filter';
 import { AppException } from '../../src/common/errors/app.exception';
 
 function makeHost() {
-  const json = jest.fn();
-  const status = jest.fn().mockReturnValue({ json });
+  const json = vi.fn();
+  const status = vi.fn().mockReturnValue({ json });
   const host = {
     switchToHttp: () => ({
       getResponse: () => ({ status }),
@@ -590,7 +595,10 @@ function makeHost() {
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
-  beforeEach(() => { filter = new AllExceptionsFilter(); });
+  beforeEach(() => {
+    filter = new AllExceptionsFilter();
+    vi.spyOn(filter['logger'], 'error').mockImplementation(() => undefined);
+  });
 
   it('passes through an AppException with its code and Arabic message', () => {
     const { host, status, json } = makeHost();
@@ -651,7 +659,7 @@ describe('AllExceptionsFilter', () => {
 
 - [ ] **Step 2: Run it and verify it fails**
 
-Run: `cd backend && npx jest test/unit/all-exceptions.filter.spec.ts`
+Run: `cd backend && npm test -- test/unit/all-exceptions.filter.spec.ts`
 Expected: FAIL — cannot find `all-exceptions.filter`.
 
 - [ ] **Step 3: Create `backend/src/common/errors/error-codes.ts`**
@@ -779,7 +787,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 - [ ] **Step 6: Run the test and verify it passes**
 
-Run: `cd backend && npx jest test/unit/all-exceptions.filter.spec.ts`
+Run: `cd backend && npm test -- test/unit/all-exceptions.filter.spec.ts`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 7: Commit**
@@ -811,6 +819,7 @@ Expected: installed.
 Create `backend/test/e2e/conventions.e2e-spec.ts`:
 
 ```ts
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -851,7 +860,7 @@ describe('API conventions (e2e)', () => {
 
 - [ ] **Step 3: Run it and verify it fails**
 
-Run: `cd backend && npx jest --config test/jest-e2e.json test/e2e/conventions.e2e-spec.ts`
+Run: `cd backend && npm run test:e2e -- test/e2e/conventions.e2e-spec.ts`
 Expected: FAIL — cannot find `src/app.setup`.
 
 - [ ] **Step 4: Create `backend/src/app.setup.ts`**
@@ -920,7 +929,7 @@ import { applyAppConfig } from '../../src/app.setup';
 
 - [ ] **Step 7: Run both e2e suites and verify they pass**
 
-Run: `cd backend && npx jest --config test/jest-e2e.json`
+Run: `cd backend && npm run test:e2e`
 Expected: PASS — both `health` and `conventions`.
 
 - [ ] **Step 8: Verify Swagger renders**
@@ -992,6 +1001,7 @@ export const SETTING_KEYS = Object.keys(SETTING_DEFAULTS) as SettingKey[];
 Create `backend/test/integration/settings.service.spec.ts`. This hits the real database — it is an integration test, and `Setting` is too thin a wrapper for a mock to prove anything.
 
 ```ts
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { SettingsService } from '../../src/settings/settings.service';
@@ -1061,7 +1071,7 @@ describe('SettingsService (integration)', () => {
 
 - [ ] **Step 3: Run it and verify it fails**
 
-Run: `cd backend && npx jest test/integration/settings.service.spec.ts`
+Run: `cd backend && npm run test:e2e -- test/integration/settings.service.spec.ts`
 Expected: FAIL — cannot find `settings.service`.
 
 - [ ] **Step 4: Create `backend/src/settings/settings.service.ts`**
@@ -1166,7 +1176,7 @@ export class AppModule {}
 
 - [ ] **Step 8: Run the test and verify it passes**
 
-Run: `cd backend && npx jest test/integration/settings.service.spec.ts`
+Run: `cd backend && npm run test:e2e -- test/integration/settings.service.spec.ts`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 9: Seed the dev database**
@@ -2348,7 +2358,7 @@ git commit -m "feat(apps): wire shared packages, RTL arabic locale and ARB strin
 - [ ] `/api/docs` renders Swagger
 - [ ] An unknown route returns the error envelope with an Arabic message
 - [ ] `npm run db:seed` seeds 15 settings; re-running does not duplicate or clobber overrides
-- [ ] `cd backend && npx jest` and `npx jest --config test/jest-e2e.json` both pass
+- [ ] `cd backend && npm test` and `npm run test:e2e` both pass
 - [ ] `cd packages/ui_kit && flutter test` passes; `check_colors` passes clean and **fails on a planted violation**
 - [ ] `cd packages/api_client && dart test` passes
 - [ ] Both Flutter apps boot RTL in Arabic with `ui_kit` theming; `flutter test` passes in both

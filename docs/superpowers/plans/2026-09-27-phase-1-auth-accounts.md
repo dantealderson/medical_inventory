@@ -174,8 +174,10 @@ npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prism
 
 - [ ] **Step 4: Create and apply the migration**
 
-Run: `cd backend && npx prisma migrate dev --name auth_accounts`
+Run: `cd backend && npx prisma migrate dev --name auth_accounts && npx prisma generate`
 Expected: migration applied, client regenerated.
+
+**Run `prisma generate` explicitly even though `migrate dev` says it regenerates.** In practice the first test run after this migration failed with `Cannot read properties of undefined (reading 'deleteMany')` — `prisma.auditLog` was missing from the client while `prisma.setting` still worked, because the test picked up a stale generated client. An explicit `generate` fixed it with no other change. The failure looks like a missing model and is really a stale build artifact, so it is worth recognising quickly.
 
 - [ ] **Step 5: Confirm the tables exist**
 

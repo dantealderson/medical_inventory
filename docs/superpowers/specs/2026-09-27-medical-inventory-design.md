@@ -69,6 +69,8 @@ Recorded so they are not silently re-litigated during implementation.
 | Client batch holdings | Reference `warehouseBatchId`; batch number and expiry are derived, never copied |
 | Cancellation | State-dependent; disposition required after dispatch; `DELIVERED` is terminal |
 | Audit log | Admin decisions recorded; quantities stay in the ledger; credentials never recorded |
+| Flutter state & routing | Riverpod + go_router. Compile-safe DI, async state built in, and the auth gate expressed once in go_router's `redirect` rather than scattered across navigation calls |
+| Test runner (backend) | Vitest + swc — NestJS 12 is ESM-only and jest cannot load it |
 
 **Accepted costs.** iOS distribution requires a Mac and a $99/yr Apple Developer account.
 

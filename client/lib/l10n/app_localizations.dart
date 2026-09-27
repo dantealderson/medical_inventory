@@ -105,6 +105,138 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'جارٍ التحميل...'**
   String get loading;
+
+  /// Login button and screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الدخول'**
+  String get login;
+
+  /// Username field label
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المستخدم'**
+  String get username;
+
+  /// Password field label
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور'**
+  String get password;
+
+  /// Register button and screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء حساب'**
+  String get register;
+
+  /// Link from register to login
+  ///
+  /// In ar, this message translates to:
+  /// **'لديك حساب؟ تسجيل الدخول'**
+  String get haveAccountLogin;
+
+  /// Link from login to register
+  ///
+  /// In ar, this message translates to:
+  /// **'ليس لديك حساب؟ إنشاء حساب جديد'**
+  String get noAccountRegister;
+
+  /// Clinic name field label
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المختبر'**
+  String get clinicName;
+
+  /// Contact person field label
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المسؤول'**
+  String get contactName;
+
+  /// Phone field label, contact use only
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهاتف'**
+  String get phone;
+
+  /// Address field label
+  ///
+  /// In ar, this message translates to:
+  /// **'العنوان'**
+  String get address;
+
+  /// Suffix marking an optional field
+  ///
+  /// In ar, this message translates to:
+  /// **'اختياري'**
+  String get optional;
+
+  /// Awaiting admin approval screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك قيد المراجعة'**
+  String get pendingTitle;
+
+  /// Awaiting approval explanation
+  ///
+  /// In ar, this message translates to:
+  /// **'سيتم تفعيل حسابك بعد موافقة الإدارة. يرجى التواصل مع الإدارة لأي استفسار.'**
+  String get pendingBody;
+
+  /// Return to login from the pending screen
+  ///
+  /// In ar, this message translates to:
+  /// **'العودة لتسجيل الدخول'**
+  String get backToLogin;
+
+  /// Logout action
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get logout;
+
+  /// Validation: username empty
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المستخدم مطلوب'**
+  String get usernameRequired;
+
+  /// Validation: username format
+  ///
+  /// In ar, this message translates to:
+  /// **'أحرف إنجليزية صغيرة وأرقام وشرطة سفلية فقط'**
+  String get usernameHint;
+
+  /// Validation: password empty
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور مطلوبة'**
+  String get passwordRequired;
+
+  /// Validation: password under 8 chars
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور يجب أن تكون 8 أحرف على الأقل'**
+  String get passwordTooShort;
+
+  /// Static text, NOT a button. There is no self-service reset (requirement 17); a tappable control implying otherwise would generate support calls.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسيت كلمة المرور؟ تواصل مع الإدارة لإعادة تعيينها'**
+  String get forgotPassword;
+
+  /// Retry action on an error state
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get retry;
+
+  /// Shown after a successful registration
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إرسال طلبك بنجاح'**
+  String get registerSuccess;
 }
 
 class _AppLocalizationsDelegate

@@ -1,19 +1,57 @@
+import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import 'core/auth_controller.dart';
+import 'core/router.dart';
+import 'core/secure_token_store.dart';
 import 'l10n/app_localizations.dart';
 
-void main() => runApp(const ClientApp());
+/// Backend base URL. Overridden at build time:
+///   flutter build apk --dart-define=API_BASE_URL=https://api.example.com/api/v1
+const apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://10.0.2.2:3000/api/v1', // Android emulator -> host
+);
 
-class ClientApp extends StatelessWidget {
+void main() {
+  runApp(
+    ProviderScope(
+      overrides: [
+        apiClientProvider.overrideWithValue(ApiClient(baseUrl: apiBaseUrl)),
+        tokenStoreProvider.overrideWithValue(SecureTokenStore()),
+      ],
+      child: const ClientApp(),
+    ),
+  );
+}
+
+class ClientApp extends ConsumerStatefulWidget {
   const ClientApp({super.key});
 
   @override
+  ConsumerState<ClientApp> createState() => _ClientAppState();
+}
+
+class _ClientAppState extends ConsumerState<ClientApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Resolve the stored token before the router settles, so a signed-in user
+    // never sees the login screen flash past.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authControllerProvider.notifier).restore();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.build(),
+      routerConfig: ref.watch(routerProvider),
 
       // Arabic only — no language switcher (spec §10.3).
       locale: const Locale('ar'),
@@ -24,31 +62,6 @@ class ClientApp extends StatelessWidget {
       // means a stray Locale never silently flips the whole app to LTR.
       builder: (context, child) =>
           Directionality(textDirection: TextDirection.rtl, child: child ?? const SizedBox.shrink()),
-
-      home: const _PlaceholderHome(),
-    );
-  }
-}
-
-/// Replaced by the real shell in Phase 3. Exists so the app boots and the
-/// foundation is demonstrably working.
-class _PlaceholderHome extends StatelessWidget {
-  const _PlaceholderHome();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
-      body: Center(
-        child: Padding(
-          // Directional insets mirror under RTL; left/right would not.
-          padding: const EdgeInsetsDirectional.all(24),
-          child: Text(l10n.loading, style: TextStyle(color: colors.onSurface)),
-        ),
-      ),
     );
   }
 }

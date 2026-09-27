@@ -1,7 +1,7 @@
 # Resume Point
 
 **Last updated:** 2026-09-27
-**Branch:** `phase-0-foundations` (29 commits, clean tree, `main` untouched)
+**Branch:** `phase-0-foundations` (41 commits, clean tree, `main` untouched)
 **Blocked on:** nothing
 
 ---
@@ -26,18 +26,18 @@ Phase 3 at the current level — say so first.**
 
 ## Where we are
 
-**Phases 0 and 1 are complete and verified.** Phase 2 (catalog and warehouse) is
-next; its plan is written immediately before it is built.
+**Phases 0, 1 and 2 are complete and verified.** Phase 3 (ordering and FEFO) is
+next — **raise the effort level first.**
 
 | Suite | Tests |
 |---|---|
-| backend unit | 33 |
-| backend e2e + integration | 66 |
-| `packages/api_client` | 30 |
+| backend unit | 47 |
+| backend e2e + integration | 162 |
+| `packages/api_client` | 55 |
 | `packages/ui_kit` | 22 |
-| `client` | 19 |
-| `admin` | 14 |
-| **total** | **184** |
+| `admin` | 30 |
+| `client` | 32 |
+| **total** | **348** |
 
 Typecheck clean, no-email gate clean, `.env` untracked.
 
@@ -47,15 +47,35 @@ Typecheck clean, no-email gate clean, `.env` untracked.
 |---|---|
 | 0 — Foundations | ✅ complete |
 | 1 — Auth & accounts | ✅ complete |
-| **2 — Catalog & warehouse** | **⬜ next** |
-| 3 — Ordering & FEFO | ⬜ **raise effort first** |
+| 2 — Catalog & warehouse | ✅ complete |
+| **3 — Ordering & FEFO** | **⬜ next — raise effort first** |
 | 4 — Inventory & estimation | ⬜ **raise effort first** |
 | 5 — Automation & notifications | ⬜ |
 | 6 — Admin dashboard | ⬜ |
 | 7 — Hardening | ⬜ |
 
 Plans written so far: `2026-09-27-phase-0-foundations.md`,
-`2026-09-27-phase-1-auth-accounts.md`.
+`2026-09-27-phase-1-auth-accounts.md`, `2026-09-27-phase-2-catalog-warehouse.md`.
+
+### Phase 2 decisions worth not relitigating
+
+- **`searchText` is maintained by a TRIGGER, not a generated column.** Prisma
+  cannot model a generated column — it reads the expression as a `DEFAULT` and
+  emits `ALTER COLUMN … DROP DEFAULT` on every diff, which makes
+  `prisma migrate dev` stop at an interactive drift prompt and hang. That
+  happened. A trigger is invisible to Prisma's column introspection.
+- **The normalisation function is versioned** (`search_normalize_v1`) because
+  PostgreSQL 16 has no `ALTER COLUMN … SET EXPRESSION`.
+- **`expiryDate` is `@db.Date`.** As a timestamp, UTC+3 shifts every expiry a
+  day earlier.
+- **Batch identity is `(item, batchNumber, expiryDate)`** — the same lot
+  legitimately arrives twice with different expiries.
+- **`unitsPerBox` freezes once a batch exists**, because `minQtyUnits` is
+  stored in units and would silently reinterpret.
+- **Intake writes the batch and its `PURCHASE_IN` movement in one
+  transaction.** `StockMovement` therefore lives in Phase 2, not Phase 4.
+- **Five CHECK constraints have their own tests** — Prisma cannot see them, so
+  a later migrate could drop them while reporting success.
 
 ---
 

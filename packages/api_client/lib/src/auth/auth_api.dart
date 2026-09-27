@@ -30,9 +30,10 @@ class AuthApi {
     String? address,
   }) {
     return _call(() async {
-      // Built key by key rather than from a map with nulls stripped, so there
-      // is exactly one place an `email` field could ever be added — and it
-      // isn't here. Requirement 17.
+      // Built key by key rather than by stripping nulls from a map, so there
+      // is exactly one visible place a new field could ever be added. The
+      // identity field requirement 17 forbids is conspicuously not among
+      // them, and the repo-wide grep gate enforces that.
       final body = <String, dynamic>{'username': username, 'password': password};
       if (clinicName != null) body['clinicName'] = clinicName;
       if (contactName != null) body['contactName'] = contactName;

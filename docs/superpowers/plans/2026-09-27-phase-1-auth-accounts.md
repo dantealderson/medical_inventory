@@ -1858,6 +1858,8 @@ Final sweep, which should print nothing:
 grep -rin "email" backend/src admin/lib client/lib packages/*/lib --include=*.ts --include=*.dart --include=*.arb
 ```
 
+**The gate is a literal grep with no exceptions, deliberately.** That means even a *comment* saying "there is no email field here" trips it — which happened once and was fixed by rewording the comment, not by teaching the grep about comments. A gate with carve-outs is a gate that erodes: the first exception is always reasonable, and the tenth one is how the field gets added. Write around it.
+
 ---
 
 ## Self-Review

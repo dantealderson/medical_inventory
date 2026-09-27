@@ -1,0 +1,12 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - unnecessary_library_name
+
+# Note: Dart's linter has NO built-in rule banning EdgeInsets.only(left:).
+# The start/end constraint that keeps RTL mirroring correct is enforced by
+# code review and by the Phase 7 RTL audit — not by the analyzer. Do not
+# assume this file is catching it for you.

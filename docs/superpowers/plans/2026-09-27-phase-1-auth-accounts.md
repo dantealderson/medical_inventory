@@ -1394,7 +1394,16 @@ export class JwtAuthGuard implements CanActivate {
         secret: this.config.get('JWT_ACCESS_SECRET', { infer: true }),
       });
       return true;
-    } catch {
+    } catch (e) {
+      // An EXPIRED token MUST be reported distinctly. api_client's
+      // AuthInterceptor refreshes only when it sees TOKEN_EXPIRED, so
+      // collapsing expiry into a generic UNAUTHORIZED silently disables the
+      // entire refresh flow and every session dies after 15 minutes. It
+      // leaks nothing: the caller already holds the token.
+      if (e instanceof Error && e.name === 'TokenExpiredError') {
+        throw new AppException(HttpStatus.UNAUTHORIZED, 'TOKEN_EXPIRED', ERROR_CODES.TOKEN_EXPIRED);
+      }
+      // Malformed, wrong signature, wrong secret — indistinguishable.
       throw new AppException(HttpStatus.UNAUTHORIZED, 'UNAUTHORIZED', ERROR_CODES.UNAUTHORIZED);
     }
   }

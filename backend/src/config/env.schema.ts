@@ -54,6 +54,10 @@ export const envSchema = z.object({
   // port, because `flutter run -d chrome` picks a new one each launch.
   // In production an empty value means no cross-origin access at all.
   CORS_ORIGINS: z.string().default(''),
+
+  // Image uploads (§10.6). Served statically from /uploads.
+  UPLOAD_DIR: z.string().default('./uploads'),
+  MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(5_242_880), // 5 MiB
 })
   .refine((env) => env.JWT_ACCESS_SECRET !== env.JWT_REFRESH_SECRET, {
     message: 'JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must differ — reusing one secret means a leaked access secret can mint refresh tokens',

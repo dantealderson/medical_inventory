@@ -252,14 +252,22 @@ Expected: FAIL — cannot find `password.service`.
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { hash as argonHash, verify as argonVerify, Algorithm } from '@node-rs/argon2';
+import { hash as argonHash, verify as argonVerify, type Algorithm } from '@node-rs/argon2';
+
+/**
+ * `Algorithm.Argon2id` inlined as its numeric value. @node-rs/argon2 declares
+ * Algorithm as an *ambient* const enum and `isolatedModules` forbids reading
+ * its members (TS2748). swc does not typecheck, so member access compiles and
+ * every test passes while `tsc --noEmit` fails — run the typecheck.
+ */
+const ARGON2ID = 2 as Algorithm;
 
 @Injectable()
 export class PasswordService {
   // OWASP-recommended argon2id baseline. Raising these later is safe:
   // existing hashes carry their own parameters and still verify.
   private static readonly OPTIONS = {
-    algorithm: Algorithm.Argon2id,
+    algorithm: ARGON2ID,
     memoryCost: 19456, // 19 MiB
     timeCost: 2,
     parallelism: 1,
@@ -284,7 +292,7 @@ export class PasswordService {
 - [ ] **Step 5: Run the test and verify it passes**
 
 Run: `cd backend && npm test -- test/unit/password.service.spec.ts`
-Expected: PASS, 6 tests.
+Expected: PASS, 7 tests.
 
 - [ ] **Step 6: Commit**
 
@@ -374,6 +382,18 @@ describe('redact', () => {
     expect(out.passwordHash).toBe(REDACTED);
     expect(out.self).toBe('[CIRCULAR]');
   });
+
+  it('handles a Date without destructuring it into an object', () => {
+    // Prisma hands back Date instances; turning one into {} would silently
+    // destroy audit timestamps.
+    const d = new Date('2026-09-27T10:00:00.000Z');
+    const out = redact({ createdAt: d }) as any;
+    expect(out.createdAt).toBeInstanceOf(Date);
+  });
+
+  it('redacts a sensitive key even when its value is an object', () => {
+    expect((redact({ token: { nested: 'still secret' } }) as any).token).toBe(REDACTED);
+  });
 });
 ```
 
@@ -408,16 +428,25 @@ function isSensitiveKey(key: string): boolean {
  * An audit log that accumulates credential material is not a security
  * control; it is a breach waiting to be indexed.
  */
-export function redact(value: unknown, seen = new WeakSet<object>()): unknown {
+export function redact(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
   if (value === null || typeof value !== 'object') return value;
 
-  if (seen.has(value as object)) return CIRCULAR;
-  seen.add(value as object);
+  // Dates, Buffers and the like are opaque values, not containers. Recursing
+  // into a Date yields {} — silently destroying every audit timestamp while
+  // every test that only checked strings still passes.
+  if (value instanceof Date || value instanceof RegExp || Buffer.isBuffer(value)) {
+    return value;
+  }
+
+  if (seen.has(value)) return CIRCULAR;
+  seen.add(value);
 
   if (Array.isArray(value)) return value.map((v) => redact(v, seen));
 
   const out: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+    // A sensitive key is redacted wholesale, whatever its value. Recursing
+    // into `token: { ... }` would preserve the secret one level down.
     out[key] = isSensitiveKey(key) ? REDACTED : redact(val, seen);
   }
   return out;
@@ -427,7 +456,7 @@ export function redact(value: unknown, seen = new WeakSet<object>()): unknown {
 - [ ] **Step 4: Run the test and verify it passes**
 
 Run: `cd backend && npm test -- test/unit/audit-redaction.spec.ts`
-Expected: PASS, 9 tests.
+Expected: PASS, 11 tests.
 
 - [ ] **Step 5: Create `backend/src/audit/audit.service.ts`**
 
@@ -1169,7 +1198,7 @@ In `app.module.ts` import `ThrottlerModule.forRoot([{ ttl: 60_000, limit: 10 }])
 - [ ] **Step 9: Run the test and verify it passes**
 
 Run: `cd backend && npm run test:e2e -- test/e2e/auth-login.e2e-spec.ts`
-Expected: PASS, 9 tests.
+Expected: PASS, 11 tests.
 
 - [ ] **Step 10: Commit**
 

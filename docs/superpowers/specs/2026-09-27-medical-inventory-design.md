@@ -634,7 +634,13 @@ Also shared: `StockBadge` (red/yellow/green + days-of-cover label), `QtyStepper`
 
 ### 10.4 Bilingual search (point 19, 14)
 
-`items.searchText` is a generated column holding a normalised concatenation of `nameAr`, `nameEn` and category names. Normalisation:
+`items.searchText` is a generated column holding a normalised concatenation of `nameAr` and `nameEn`.
+
+**Not category names.** An earlier draft said it also folded in the parent category's name, which a PostgreSQL `GENERATED ALWAYS AS … STORED` expression cannot do — a generated column may not reference another table, and the migration fails outright with `cannot use subquery in column generation expression`. Denormalising a category path onto each item would compile, but then every category rename leaves its descendant items matching the old name forever. Categories are a table of at most a few dozen rows across three levels, so they are searched with a second cheap query and the results merged.
+
+The normalisation function is **versioned** (`search_normalize_v1`). PostgreSQL 16 has no `ALTER COLUMN … SET EXPRESSION`, so changing the folding rules later means dropping and re-adding the column — a versioned name makes that migration explicit instead of silently redefining what existing rows were normalised with.
+
+Normalisation:
 
 - strip diacritics (harakat) and tatweel (ـ)
 - fold `أ إ آ ٱ → ا`, `ى → ي`, `ة → ه`, `ؤ → و`, `ئ → ي`
@@ -741,7 +747,7 @@ Eight phases. Each ends in a demonstrable, working state.
 |---|---|---|---|
 | 0 | **Foundations** | Monorepo layout, Postgres + Prisma + Docker, config/secrets, error envelope, OpenAPI, `api_client` and `ui_kit` packages, theme tokens + color lint, RTL/l10n scaffolding in both apps, seed script | 15, 19 |
 | 1 | **Auth & accounts** | Register → pending → admin approve/reject, login, JWT + refresh rotation, role & ownership guards, admin password reset, **audit log table + service with redaction** (§7.9) | 16, 17 |
-| 2 | **Catalog & warehouse** | 3-level categories, items with box size/price/images/minimum, batch intake with expiry, normalised bilingual search | 1, 6, 7, 14 |
+| 2 | **Catalog & warehouse** | 3-level categories, items with box size/price/images/minimum, batch intake with expiry, normalised bilingual search, **and the birth of the stock ledger** — see below | 1, 6, 7, 14 |
 | 3 | **Ordering** | Cart, `PlusButton`, order placement, admin confirm with edit/partial, **FEFO allocation**, state-dependent cancellation with disposition, delivery → client inventory credit, hot deals bar (scope-capped) | 2, 8, 9, 18 |
 | 4 | **Inventory & estimation** | Ledger surfaced, My Inventory screen, red/yellow/green, days of cover, stock counts, **estimation engine**, admin auto-decrement & rate overrides, **+** on red | 3, 4, 11, 12 |
 | 5 | **Automation & notifications** | All six nightly jobs, alert engine with dedupe, FCM, notification centre, admin targeted broadcast | 5, 13 |
@@ -749,5 +755,11 @@ Eight phases. Each ends in a demonstrable, working state.
 | 7 | **Hardening** | RTL audit, theme audit, responsive admin audit, performance, E2E loop, seed data, deployment, backups | — |
 
 Phases 3 and 4 carry the real risk — FEFO correctness and estimator correctness. They get the test weight described in §11. The rest is CRUD and should move fast.
+
+**Phase 2 owns the ledger's first row, even though Phase 4 surfaces it.** §7.2 requires batch intake to write a `PURCHASE_IN` movement, so `StockMovement` and the §5 ownership `CHECK` are created in Phase 2, and intake writes the batch and its movement in **one transaction or neither**.
+
+This is not scope creep, it is the alternative being unsafe. §5 says quantity columns are *rebuildable by replaying the ledger* — a property that holds only if the ledger is complete. If Phase 2 records stock without movements, the first `rebuild` overwrites real, human-entered stock with an incomplete ledger and reports success. Phase 2 also writes the transaction convention that §7.3's FEFO allocation and §7.5's stock-count commit both copy, so it is worth getting right once here.
+
+**Effort note:** Phase 2 runs at normal high effort. Phases 3 and 4 should be run at maximum effort — not because their code is harder but because their failures are invisible. See `docs/RESUME.md`.
 
 **Dependencies:** 0 → 1 → 2 → 3 → 4 → 5; 6 depends on 4 and 5; 7 last.

@@ -4,4 +4,11 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Android 9+ blocks cleartext http:// by default, which is exactly what
+         a local development backend serves. Without this the app cannot reach
+         http://10.0.2.2:3000 and reports only a generic connection failure.
+
+         Debug-only on purpose: release builds must stay HTTPS. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

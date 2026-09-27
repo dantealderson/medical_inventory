@@ -3,17 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import 'core/api_config.dart';
 import 'core/auth_controller.dart';
 import 'core/router.dart';
 import 'core/secure_token_store.dart';
 import 'l10n/app_localizations.dart';
-
-/// Backend base URL. Overridden at build time:
-///   flutter build apk --dart-define=API_BASE_URL=https://api.example.com/api/v1
-const apiBaseUrl = String.fromEnvironment(
-  'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:3000/api/v1', // Android emulator -> host
-);
 
 void main() {
   runApp(

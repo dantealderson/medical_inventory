@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required in the MAIN manifest, not just debug: Flutter's template puts
+         INTERNET only in src/debug, so a release build would ship with no
+         network access and fail against the production API. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="client"
         android:name="${applicationName}"

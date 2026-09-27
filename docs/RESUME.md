@@ -1,49 +1,57 @@
 # Resume Point
 
 **Last updated:** 2026-09-27
-**Branch:** `phase-0-foundations` (8 commits, clean tree, `main` untouched)
-**Blocked on:** Docker Desktop installation
+**Branch:** `phase-0-foundations` (22 commits, clean tree, `main` untouched)
+**Blocked on:** nothing
 
 ---
 
 ## Where we are
 
-Phase 0 (Foundations) is **code-complete**. Every file is written, typechecked, built and committed. What remains is four commands that need a running PostgreSQL.
+**Phase 0 is complete and verified.** **Phase 1's backend is complete and verified.** What remains in Phase 1 is its two Flutter tasks.
 
-| | Status |
+| | Tests |
 |---|---|
-| Backend typecheck / build / Prisma schema | clean / valid |
-| Backend unit tests | 10 passing |
-| `packages/ui_kit` | 22 passing |
-| `packages/api_client` | 9 passing |
-| `admin` / `client` | 4 + 4 passing |
-| e2e + integration tests | **written, never run** (3 e2e + 7 integration) |
+| backend unit | 33 |
+| backend e2e + integration | 60 |
+| `packages/api_client` | 22 |
+| `packages/ui_kit` | 22 |
+| `admin` / `client` | 4 + 4 |
+| **total** | **145** |
 
-## To finish Phase 0
+Typecheck clean, no-email gate clean, `.env` untracked.
 
-Once `docker compose version` responds:
+### Phase 1 status
+
+| Task | Status |
+|---|---|
+| 1 — User / RefreshToken / AuditLog + migration | ✅ |
+| 2 — argon2id password hashing | ✅ |
+| 3 — audit log with credential redaction | ✅ |
+| 4 — registration into PENDING | ✅ |
+| 5 — login, JWT, rotating refresh + throttling | ✅ |
+| 6 — deny-by-default auth / role / ownership guards | ✅ |
+| 7 — admin approve, reject, suspend, reset password | ✅ |
+| 8 — api_client auth, token store, refresh interceptor | ✅ |
+| **9 — client app: login, register, pending screens** | **⬜ next** |
+| **10 — admin app: login + approvals queue** | **⬜** |
+
+### Starting the environment
 
 ```bash
 cd D:\PROJECTS\medical_inventory
-docker compose up -d
-docker compose ps                      # wait for "healthy"
-
-cd backend
-npx prisma migrate dev --name init_settings
-npm run db:seed                        # expect: "Seeded 15 settings."
-npm test                               # 10 unit
-npm run test:e2e                       # 3 e2e + 7 integration
+docker compose up -d          # postgres on 5433
+cd backend && npm run start:dev
 ```
 
-Expected results:
+Docker Desktop is installed **per-user**, so its binary is not on a shell PATH
+captured before installation. If `docker` is not found:
 
-- The migration creates a `settings` table (`key` PK, `value` JSONB, `updatedAt`). Already verified offline via `prisma migrate diff`.
-- `GET /api/v1/health` → `{"status":"ok","database":"up"}`. It currently returns a 500 envelope because no database is reachable.
-- All 10 DB-backed tests pass.
+```bash
+export PATH="$PATH:/c/Users/ACER PC/AppData/Local/Programs/DockerDesktop/resources/bin"
+```
 
-Then run the **Phase 0 Completion Checklist** at the bottom of
-`docs/superpowers/plans/2026-09-27-phase-0-foundations.md`, and hand back to the
-user for the manual gate (see "Awaiting user confirmation" below).
+Dev admin credentials (from `.env`, local only): `admin` / `devadminpassword1`.
 
 ## The one thing that must not be changed
 

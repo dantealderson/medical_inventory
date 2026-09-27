@@ -75,6 +75,10 @@ Both live in `packages/ui_kit/lib/src/theme/palette.dart` and the two
 
 ## After Phase 0
 
-Phases 1–7 are defined in `docs/superpowers/specs/2026-09-27-medical-inventory-design.md` §15. Each gets its own plan file written immediately before it is built, so `Consumes:` blocks reference signatures that actually exist.
+Phases 1–7 are defined in `docs/superpowers/specs/2026-09-27-medical-inventory-design.md` §15.
 
-Next up: **Phase 1 — Auth & accounts** (points 16, 17, plus the audit log table).
+**Phase 1's plan is already written** — `docs/superpowers/plans/2026-09-27-phase-1-auth-accounts.md`, 10 tasks, 69 steps. It was written after Phase 0's code was committed, so its `Consumes:` table cites real signatures (`PrismaService`, `SettingsService`, `AppException`, `ERROR_CODES`, `applyAppConfig`, `ApiClient`, `ApiException`, `AppTheme`, `Breakpoints`) rather than guesses.
+
+It can start the moment Phase 0's four DB commands pass. Its own Task 1 begins with a Prisma migration, so it needs the same container.
+
+Phases 2–7 still get their plans written immediately before they are built.

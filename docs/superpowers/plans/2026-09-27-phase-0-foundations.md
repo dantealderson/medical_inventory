@@ -63,6 +63,7 @@ These apply to **every** task in this and all later phases. Copied verbatim from
 | `packages/ui_kit/lib/src/theme/palette.dart` | **The only file with colour literals** |
 | `packages/ui_kit/lib/src/theme/app_colors.dart` | Semantic `ThemeExtension` |
 | `packages/ui_kit/lib/src/theme/app_theme.dart` | Builds `ThemeData` from tokens |
+| `packages/ui_kit/lib/src/layout/breakpoints.dart` | Responsive breakpoints & `ScreenSize` |
 | `packages/ui_kit/lib/src/lint/color_literal_scanner.dart` | Pure-Dart scanner (testable) |
 | `packages/ui_kit/bin/check_colors.dart` | CLI wrapper that fails the build |
 | `packages/api_client/lib/src/api_client.dart` | Dio instance, base URL, interceptors |
@@ -1175,7 +1176,7 @@ git commit -m "feat(backend): add typed settings store with seeded defaults"
 White + sky blue. The requirement is that the palette changes later, so **one** file holds colour literals and everything else names a role.
 
 **Files:**
-- Create: `packages/ui_kit/pubspec.yaml`, `packages/ui_kit/lib/ui_kit.dart`, `packages/ui_kit/lib/src/theme/palette.dart`, `packages/ui_kit/lib/src/theme/app_colors.dart`, `packages/ui_kit/lib/src/theme/app_theme.dart`, `packages/ui_kit/test/app_theme_test.dart`, `packages/ui_kit/analysis_options.yaml`
+- Create: `packages/ui_kit/pubspec.yaml`, `packages/ui_kit/lib/ui_kit.dart`, `packages/ui_kit/lib/src/theme/palette.dart`, `packages/ui_kit/lib/src/theme/app_colors.dart`, `packages/ui_kit/lib/src/theme/app_theme.dart`, `packages/ui_kit/lib/src/layout/breakpoints.dart`, `packages/ui_kit/test/app_theme_test.dart`, `packages/ui_kit/test/breakpoints_test.dart`, `packages/ui_kit/analysis_options.yaml`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -1184,6 +1185,7 @@ White + sky blue. The requirement is that the palette changes later, so **one** 
   - `AppColors.light` — the built-in scheme.
   - `AppTheme.build({AppColors? colors})` → `ThemeData` carrying the extension.
   - `context.appColors` extension getter on `BuildContext`.
+  - `enum ScreenSize { phone, tablet, desktop }` and `Breakpoints.of(double width)` → `ScreenSize`; `context.screenSize` getter. Needed in Phase 0 because the admin ships web-only and **must** collapse to phone widths (spec §3) — retrofitting responsive layout after six phases of desktop-shaped screens is a rewrite.
 
 - [ ] **Step 1: Create `packages/ui_kit/pubspec.yaml`**
 
@@ -1484,16 +1486,107 @@ export 'src/theme/app_theme.dart';
 export 'src/theme/palette.dart';
 ```
 
-- [ ] **Step 9: Run the tests and verify they pass**
+- [ ] **Step 9: Write the failing breakpoints test**
+
+Create `packages/ui_kit/test/breakpoints_test.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ui_kit/ui_kit.dart';
+
+void main() {
+  group('Breakpoints', () {
+    test('classifies phone widths', () {
+      expect(Breakpoints.of(320), ScreenSize.phone);
+      expect(Breakpoints.of(390), ScreenSize.phone);
+      expect(Breakpoints.of(599), ScreenSize.phone);
+    });
+
+    test('classifies tablet widths', () {
+      expect(Breakpoints.of(600), ScreenSize.tablet);
+      expect(Breakpoints.of(1023), ScreenSize.tablet);
+    });
+
+    test('classifies desktop widths', () {
+      expect(Breakpoints.of(1024), ScreenSize.desktop);
+      expect(Breakpoints.of(1920), ScreenSize.desktop);
+    });
+
+    test('treats the boundaries as inclusive lower bounds', () {
+      expect(Breakpoints.of(Breakpoints.tabletMin), ScreenSize.tablet);
+      expect(Breakpoints.of(Breakpoints.desktopMin), ScreenSize.desktop);
+      expect(Breakpoints.of(Breakpoints.tabletMin - 1), ScreenSize.phone);
+      expect(Breakpoints.of(Breakpoints.desktopMin - 1), ScreenSize.tablet);
+    });
+
+    testWidgets('context.screenSize reads the media query width', (tester) async {
+      late ScreenSize size;
+      await tester.pumpWidget(MediaQuery(
+        data: const MediaQueryData(size: Size(400, 800)),
+        child: Builder(builder: (context) {
+          size = context.screenSize;
+          return const SizedBox.shrink();
+        }),
+      ));
+      expect(size, ScreenSize.phone);
+    });
+  });
+}
+```
+
+- [ ] **Step 10: Run it and verify it fails**
+
+Run: `cd packages/ui_kit && flutter test test/breakpoints_test.dart`
+Expected: FAIL — `Breakpoints` is undefined.
+
+- [ ] **Step 11: Create `packages/ui_kit/lib/src/layout/breakpoints.dart`**
+
+```dart
+import 'package:flutter/widgets.dart';
+
+enum ScreenSize { phone, tablet, desktop }
+
+/// Layout breakpoints. The admin app ships as a web build only and must be
+/// usable on a phone browser (spec §3), so every admin screen is built
+/// against these from the start rather than being made responsive later.
+abstract final class Breakpoints {
+  /// Inclusive lower bound of the tablet range.
+  static const double tabletMin = 600;
+
+  /// Inclusive lower bound of the desktop range.
+  static const double desktopMin = 1024;
+
+  static ScreenSize of(double width) {
+    if (width >= desktopMin) return ScreenSize.desktop;
+    if (width >= tabletMin) return ScreenSize.tablet;
+    return ScreenSize.phone;
+  }
+}
+
+extension BreakpointsContext on BuildContext {
+  ScreenSize get screenSize => Breakpoints.of(MediaQuery.sizeOf(this).width);
+}
+```
+
+- [ ] **Step 12: Export it from the barrel**
+
+Append to `packages/ui_kit/lib/ui_kit.dart`:
+
+```dart
+export 'src/layout/breakpoints.dart';
+```
+
+- [ ] **Step 13: Run the whole package suite and verify it passes**
 
 Run: `cd packages/ui_kit && flutter test`
-Expected: PASS, 6 tests.
+Expected: PASS, 11 tests (6 theme + 5 breakpoints).
 
-- [ ] **Step 10: Commit**
+- [ ] **Step 14: Commit**
 
 ```bash
 git add packages/ui_kit
-git commit -m "feat(ui_kit): add semantic colour tokens and themed palette"
+git commit -m "feat(ui_kit): add semantic colour tokens, theme and breakpoints"
 ```
 
 ---

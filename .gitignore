@@ -1,0 +1,46 @@
+# Root ignores for the medical_inventory monorepo.
+# Per-project ignores live in backend/, admin/, client/ and still apply.
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editors / IDEs ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# --- Secrets & environment ---
+.env
+.env.*
+!.env.example
+
+# --- Node (safety net; backend/.gitignore also covers these) ---
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.log
+
+# --- Dart / Flutter (safety net; app .gitignore files also cover these) ---
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/build/
+**/android/local.properties
+**/android/key.properties
+**/*.jks
+**/*.keystore
+
+# --- Runtime media uploads (served from disk in production) ---
+uploads/
+
+# --- Local scratch ---
+tmp/
+.temp/

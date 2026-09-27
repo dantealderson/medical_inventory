@@ -1,0 +1,38 @@
+# Normalise line endings across Windows dev machines and the Linux VPS.
+# Without this, shell scripts committed from Windows arrive with CRLF and fail
+# with "bad interpreter" inside Docker.
+
+* text=auto eol=lf
+
+# Scripts that MUST be LF regardless of platform
+*.sh        text eol=lf
+gradlew     text eol=lf
+*.bash      text eol=lf
+Dockerfile  text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Windows-only scripts keep CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binaries — never touch
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.webp      binary
+*.gif       binary
+*.ico       binary
+*.ttf       binary
+*.otf       binary
+*.woff      binary
+*.woff2     binary
+*.jar       binary
+*.keystore  binary
+*.jks       binary
+*.pdf       binary
+
+# Generated / lock files: collapse in diffs and mark as generated on hosts
+pubspec.lock        linguist-generated=true
+package-lock.json   linguist-generated=true -diff

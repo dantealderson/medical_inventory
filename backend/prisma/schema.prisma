@@ -9,6 +9,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
 /// Runtime-tunable values (spec §9). Thresholds and windows live here rather
 /// than in code so retuning is a settings change, not a rebuild and redeploy.
 model Setting {
@@ -17,4 +29,77 @@ model Setting {
   updatedAt DateTime @updatedAt
 
   @@map("settings")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  /// Login identity. There is no email column anywhere in this system
+  /// (requirement 17) and there must never be one.
+  username     String     @unique
+  passwordHash String
+  role         Role       @default(CLIENT)
+  status       UserStatus @default(PENDING)
+
+  clinicName  String?
+  contactName String?
+  /// Contact only — never an auth factor, never a recovery channel.
+  phone       String?
+  address     String?
+
+  approvedById String?
+  approvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshTokens RefreshToken[]
+
+  @@index([status])
+  @@map("users")
+}
+
+model RefreshToken {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// sha256 of the token. The token itself is never stored, so a database
+  /// dump does not hand over live sessions.
+  tokenHash String @unique
+
+  /// Rotation lineage. Replaying a consumed token revokes the whole family,
+  /// because a replay means the token leaked.
+  familyId String
+
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, revokedAt])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+/// Accountability for admin decisions (spec §7.9). Append-only: there is
+/// deliberately no update path and no delete endpoint.
+///
+/// The stock ledger owns quantity changes; this table owns decisions. Keeping
+/// that boundary means one event is never recorded twice in two places that
+/// can drift apart.
+model AuditLog {
+  id          String @id @default(uuid())
+  actorUserId String
+  action      String
+  entityType  String
+  entityId    String
+
+  /// Redacted before write — never credentials. See audit-redaction.ts.
+  before Json?
+  after  Json?
+
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@map("audit_logs")
 }

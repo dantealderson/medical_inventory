@@ -158,6 +158,20 @@ Expected: `The schema at prisma\schema.prisma is valid`.
 Run: `cd backend && npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script`
 Expected: `CREATE TABLE "users"`, `"refresh_tokens"`, `"audit_logs"` plus the two enum types. Read it. A migration you have not read is a migration you are trusting blindly.
 
+**This command needs a shadow database and will not create one.** Prisma replays the migrations directory into a throwaway database to compute the diff; unlike `migrate dev`, `migrate diff` errors with `P1003 Database does not exist` rather than creating it. Already wired: `SHADOW_DATABASE_URL` in `.env`, `datasource.shadowDatabaseUrl` in `prisma.config.ts`, and `docker/init/01-shadow-db.sql` which creates it on first container init.
+
+If you ever recreate the volume (`docker compose down -v`), the init script runs again and the shadow database comes back. If you hit `P1003` against an existing volume, create it by hand:
+
+```bash
+docker compose exec -T postgres psql -U medinv -d postgres -c "CREATE DATABASE medinv_shadow;"
+```
+
+A fallback that needs no shadow database at all, diffing the live schema instead of the migrations directory:
+
+```bash
+npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script
+```
+
 - [ ] **Step 4: Create and apply the migration**
 
 Run: `cd backend && npx prisma migrate dev --name auth_accounts`

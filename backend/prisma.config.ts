@@ -13,6 +13,12 @@ export default defineConfig({
   schema: 'prisma/schema.prisma',
   datasource: {
     url: env('DATABASE_URL'),
+    // Prisma needs a throwaway database to replay migrations into when
+    // diffing a migrations directory (`migrate diff --from-migrations`).
+    // Without it that command errors out, which is exactly the command the
+    // plan tells you to run to READ a migration before applying it.
+    // Same container, separate database — Prisma creates and drops it.
+    shadowDatabaseUrl: env('SHADOW_DATABASE_URL'),
   },
   migrations: {
     path: 'prisma/migrations',

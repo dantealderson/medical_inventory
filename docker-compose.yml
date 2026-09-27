@@ -22,6 +22,9 @@ services:
       - "5433:5432"
     volumes:
       - medinv_pgdata:/var/lib/postgresql/data
+      # Runs only on first init of an empty data volume. Creates the shadow
+      # database Prisma needs for `migrate diff --from-migrations`.
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U medinv -d medinv"]
       interval: 5s

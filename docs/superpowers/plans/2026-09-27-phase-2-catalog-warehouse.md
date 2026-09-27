@@ -516,7 +516,35 @@ ALTER TABLE "stock_movements"
 Run: `cd backend && npx prisma migrate dev`
 Expected: the new migration is detected and applied. If Prisma reports drift because `searchText` is not in the schema, that is expected and handled in Step 6.
 
-- [ ] **Step 6: Keep `searchText` out of the Prisma model deliberately**
+- [ ] **Step 6: Use a TRIGGER, not a generated column**
+
+A generated column works, but Prisma cannot model one: it reads the generation
+expression as a `DEFAULT` and emits `ALTER COLUMN "searchText" DROP DEFAULT` on
+every diff. `prisma migrate dev` then reports drift and stops at an interactive
+prompt — which hangs the command, permanently, for every future migration. That
+was hit in practice.
+
+Replace it with a plain `text` column plus a `BEFORE INSERT OR UPDATE OF
+"nameAr","nameEn"` trigger calling `search_normalize_v1`. A trigger is
+invisible to Prisma's column introspection, so schema and database agree, while
+the database still owns normalisation — which is the property that actually
+mattered: one function produces both the stored form and the query form, so
+they cannot drift.
+
+Declare the plain column in `schema.prisma` so Prisma stops trying to drop it:
+
+```prisma
+  /// Maintained by a PostgreSQL trigger — see the search_text_via_trigger
+  /// migration. Never write to it. Search reads it through $queryRaw.
+  searchText String?
+
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "items_search_trgm_idx")
+```
+
+Confirm with `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script`
+— it must print `-- This is an empty migration.`
+
+- [ ] **Step 6b: (superseded) Keep `searchText` out of the Prisma model**
 
 Do **not** add `searchText` to `schema.prisma`. Prisma has no generated-column concept, so declaring it would make Prisma try to write it and fail. Search reads it through `$queryRaw` instead (Task 7).
 

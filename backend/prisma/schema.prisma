@@ -52,6 +52,7 @@ model User {
   updatedAt    DateTime  @updatedAt
 
   refreshTokens RefreshToken[]
+  movements     StockMovement[]
 
   @@index([status])
   @@map("users")
@@ -102,4 +103,166 @@ model AuditLog {
   @@index([entityType, entityId, createdAt])
   @@index([actorUserId, createdAt])
   @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 2 — Catalog & warehouse
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum OwnerType {
+  ADMIN
+  CLIENT
+}
+
+enum MovementReason {
+  PURCHASE_IN
+  ORDER_OUT
+  DELIVERY_IN
+  AUTO_DECREMENT
+  STOCK_COUNT_ADJUST
+  EXPIRY_WRITEOFF
+  MANUAL_ADJUST
+}
+
+model Category {
+  id       String     @id @default(uuid())
+  nameAr   String
+  nameEn   String?
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+
+  /// 1, 2 or 3. A CHECK constraint enforces the range; CategoriesService
+  /// derives it as parent.level + 1 and never reads it from the request.
+  level     Int
+  sortOrder Int     @default(0)
+  imageUrl  String?
+  isActive  Boolean @default(true)
+
+  items     Item[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId, sortOrder])
+  @@map("categories")
+}
+
+model Item {
+  /// At least one of nameAr/nameEn is required — enforced by a CHECK
+  /// constraint and by the DTO. An item with no name at all is unusable.
+  id          String  @id @default(uuid())
+  nameAr      String?
+  nameEn      String?
+  description String?
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  /// e.g. 100 syringes per box. Snapshotted onto order lines in Phase 3 so
+  /// changing it cannot rewrite order history.
+  ///
+  /// FROZEN once any batch exists (enforced in ItemsService). minQtyUnits is
+  /// stored in units but entered in boxes, so editing 100 -> 50 would silently
+  /// double every minimum in box terms — and that threshold drives Phase 4's
+  /// RED rule, Phase 5's OUT_OF_STOCK alert and the quick-add button at once.
+  unitsPerBox Int
+
+  /// What one base unit is called: "سرنجة". Display only.
+  unitLabelAr String
+  unitLabelEn String?
+
+  pricePerBox Decimal @db.Decimal(12, 2)
+  imageUrl    String?
+
+  /// Absolute floor in BASE UNITS. Entered in boxes, converted at the edge.
+  minQtyUnits Int?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batches   WarehouseBatch[]
+  movements StockMovement[]
+
+  /// GENERATED ALWAYS column, maintained by PostgreSQL — see the
+  /// search_and_constraints migration. Declared here only so Prisma knows it
+  /// exists and stops trying to drop it on every `migrate dev`. Never write
+  /// to it: Postgres rejects writes to a generated column. Search reads it
+  /// through $queryRaw.
+  searchText String?
+
+  @@index([categoryId, isActive])
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "items_search_trgm_idx")
+  @@map("items")
+}
+
+model WarehouseBatch {
+  id     String @id @default(uuid())
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  batchNumber String
+
+  /// @db.Date, NOT a timestamp. Expiry is a calendar date printed on a box.
+  /// As a timestamp it is captured at local midnight and stored UTC, so
+  /// Asia/Baghdad (UTC+3) turns 2027-03-01 into 2027-02-28T21:00:00Z —
+  /// shifting Phase 3's shelf-life filter and Phase 5's expiry warnings by a
+  /// full day, permanently, on every row.
+  expiryDate DateTime @db.Date
+
+  qtyUnitsReceived Int
+  /// Cache. Rebuildable by replaying the ledger — which is only true because
+  /// intake writes a PURCHASE_IN movement in the same transaction.
+  qtyUnitsRemaining Int
+
+  receivedAt DateTime @default(now())
+  note       String?
+
+  movements StockMovement[]
+
+  /// Expiry is part of the identity. The same manufacturer lot number
+  /// legitimately arrives twice with different expiry dates — routine in
+  /// medical supply. Keyed on (item, batchNumber) alone the second delivery is
+  /// either rejected as a duplicate or merged, and a merge collapses two
+  /// expiries into one row, corrupting FEFO irreversibly.
+  @@unique([itemId, batchNumber, expiryDate])
+  @@index([itemId, expiryDate])
+  @@map("warehouse_batches")
+}
+
+/// The append-only stock ledger (§5).
+///
+/// Created in Phase 2, not Phase 4, because §7.2 requires batch intake to
+/// write a PURCHASE_IN movement and §5 promises quantity columns are
+/// rebuildable by replaying the ledger — true only if the ledger is complete.
+/// A batch written without its movement means the first `rebuild` overwrites
+/// real stock with an incomplete replay and reports success.
+model StockMovement {
+  id        String    @id @default(uuid())
+  ownerType OwnerType
+
+  /// NULL ⇔ the admin warehouse. A real FK, never a sentinel string:
+  /// "warehouse" and "WAREHOUSE" would become two warehouses, and NULL cannot
+  /// be mistyped. A CHECK constraint ties it to ownerType.
+  clientId String?
+  client   User?   @relation(fields: [clientId], references: [id])
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  batchId String?
+  batch   WarehouseBatch? @relation(fields: [batchId], references: [id])
+
+  /// Signed. Positive on intake and delivery, negative on consumption.
+  qtyUnitsDelta Int
+  reason        MovementReason
+
+  refType     String?
+  refId       String?
+  actorUserId String?
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([ownerType, clientId, itemId, createdAt])
+  @@map("stock_movements")
 }

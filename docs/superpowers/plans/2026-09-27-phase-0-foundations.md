@@ -158,7 +158,7 @@ Monorepo: NestJS + Prisma backend, Flutter admin and client apps, shared Dart pa
 ## Layout
 
     backend/            NestJS + Prisma + PostgreSQL — source of truth
-    admin/              Flutter — Web / Windows / Android
+    admin/              Flutter — Web (responsive) / Windows
     client/             Flutter — Android / iOS
     packages/api_client Shared Dart: DTOs, HTTP, error mapping
     packages/ui_kit     Shared Dart: design tokens, theme, widgets

@@ -55,7 +55,7 @@ Recorded so they are not silently re-litigated during implementation.
 | Database | PostgreSQL + Prisma |
 | Hosting | Cloud VPS, Docker. Apps are online-only with a clean offline error state. No offline sync. |
 | Notifications | Stored server-side + in-app notification centre + Firebase Cloud Messaging push |
-| Platforms | Client: Android + iOS. Admin: Web/Windows desktop **and** Android. |
+| Platforms | Client: Android + iOS. Admin: Web (responsive to phone widths) + Windows desktop. **No Android build** — see below. |
 | Units | Base units stored; boxes are a display and ordering multiplier |
 | Client stock decrement | Nightly auto-decrement + client stock count (جرد) + admin override |
 | Batch/expiry | Full traceability, FEFO allocation down to the client's holdings |
@@ -70,7 +70,11 @@ Recorded so they are not silently re-litigated during implementation.
 | Cancellation | State-dependent; disposition required after dispatch; `DELIVERED` is terminal |
 | Audit log | Admin decisions recorded; quantities stay in the ledger; credentials never recorded |
 
-**Accepted costs.** iOS distribution requires a Mac and a $99/yr Apple Developer account. The admin app targeting both desktop and phone means its UI must be genuinely responsive, not a stretched phone layout — budgeted in Phases 6 and 7.
+**Accepted costs.** iOS distribution requires a Mac and a $99/yr Apple Developer account.
+
+**Why the admin has no Android build.** The need behind wanting one is real — approving accounts and reacting to out-of-stock alerts away from the desk. But a third build target buys that at the price of APK signing, distribution and a separate platform test matrix through every phase. A web build that is genuinely responsive from 1440px down to 390px delivers the same capability from any phone browser, and Flutter can still emit a real APK from the identical codebase if the browser later proves insufficient.
+
+The obligation this creates: **the admin UI must be responsive by construction, not retrofitted.** Inventory grids, batch entry and the order queue have to collapse to usable phone layouts. Breakpoints are designed into `ui_kit` in Phase 0 and audited in Phase 7. The `admin/android/` scaffold folder is left in place but unused — nothing builds it.
 
 ---
 
@@ -79,7 +83,7 @@ Recorded so they are not silently re-litigated during implementation.
 ```
 medical_inventory/
 ├── backend/            NestJS 12 + Prisma + PostgreSQL — the source of truth
-├── admin/              Flutter — Web / Windows / Android
+├── admin/              Flutter — Web (responsive) / Windows
 ├── client/             Flutter — Android / iOS
 ├── packages/
 │   ├── api_client/     shared Dart: DTOs, dio client, auth interceptor, error mapping
@@ -722,7 +726,7 @@ Recorded so they are not added by drift: in-app payment of any kind · cashflow,
 | Cache columns drift from the ledger | Nightly `ledger-assert` job + rebuild command |
 | RTL breakage creeping in | Lint ban on `left`/`right`, RTL golden tests per screen |
 | Hardcoded colors creeping in | Lint ban on color literals outside `palette.dart` |
-| Admin app is desktop **and** phone | Responsive breakpoints designed in Phase 0's `ui_kit`, audited in Phase 7 |
+| Admin web is unusable on a phone, stranding the mobile use case | Responsive breakpoints designed into `ui_kit` in Phase 0, phone-width goldens for every admin screen, audited in Phase 7. This is the risk accepted by not shipping an Android build. |
 | iOS shipping blocked | Needs Mac + Apple Developer account; Android ships independently |
 
 ---

@@ -1,23 +1,24 @@
 # Resume Point
 
 **Last updated:** 2026-09-27
-**Branch:** `phase-0-foundations` (22 commits, clean tree, `main` untouched)
+**Branch:** `phase-0-foundations` (26 commits, clean tree, `main` untouched)
 **Blocked on:** nothing
 
 ---
 
 ## Where we are
 
-**Phase 0 is complete and verified.** **Phase 1's backend is complete and verified.** What remains in Phase 1 is its two Flutter tasks.
+**Phase 0 and Phase 1 are both complete and verified.** Next up is Phase 2 (catalog and warehouse), whose plan is not written yet.
 
 | | Tests |
 |---|---|
 | backend unit | 33 |
 | backend e2e + integration | 60 |
-| `packages/api_client` | 22 |
+| `packages/api_client` | 30 |
 | `packages/ui_kit` | 22 |
-| `admin` / `client` | 4 + 4 |
-| **total** | **145** |
+| `client` | 15 |
+| `admin` | 14 |
+| **total** | **174** |
 
 Typecheck clean, no-email gate clean, `.env` untracked.
 
@@ -33,8 +34,8 @@ Typecheck clean, no-email gate clean, `.env` untracked.
 | 6 — deny-by-default auth / role / ownership guards | ✅ |
 | 7 — admin approve, reject, suspend, reset password | ✅ |
 | 8 — api_client auth, token store, refresh interceptor | ✅ |
-| **9 — client app: login, register, pending screens** | **⬜ next** |
-| **10 — admin app: login + approvals queue** | **⬜** |
+| 9 — client app: login, register, pending screens | ✅ |
+| 10 — admin app: login + approvals queue | ✅ |
 
 ### Starting the environment
 

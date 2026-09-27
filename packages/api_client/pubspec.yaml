@@ -1,0 +1,14 @@
+name: api_client
+description: Shared HTTP client and DTOs for the medical inventory apps.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  dio: ^5.7.0
+
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^5.0.0

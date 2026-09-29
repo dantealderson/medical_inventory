@@ -28,9 +28,15 @@ export class AuditService {
   /**
    * Append-only. There is deliberately no update or delete counterpart —
    * an audit trail that can be edited is not an audit trail.
+   *
+   * `db` lets a caller write the entry inside its own transaction, and
+   * confirm and cancel do so (D9). Written on a separate connection, the
+   * entry would outlive a rollback, and since this log cannot be edited,
+   * the false entry would stay forever. It defaults to the root client, so
+   * every Phase 1–2 caller, which records after its commit, is unchanged.
    */
-  async record(entry: AuditEntry): Promise<void> {
-    await this.prisma.auditLog.create({
+  async record(entry: AuditEntry, db: Prisma.TransactionClient = this.prisma): Promise<void> {
+    await db.auditLog.create({
       data: {
         actorUserId: entry.actorUserId,
         action: entry.action,

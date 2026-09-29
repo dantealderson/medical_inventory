@@ -124,4 +124,47 @@ describe('AuditService (integration)', () => {
     }
     expect(await audit.list({ limit: 2 })).toHaveLength(2);
   });
+
+  it("rolls back with the caller's transaction", async () => {
+    // D9. Confirm and cancel record their decision with `tx`. If record()
+    // ignored the client it was given, this row would commit on its own
+    // connection and survive the rollback: an append-only log stating a
+    // decision that never happened, with no delete path to take it back.
+    await expect(
+      prisma.$transaction(async (tx) => {
+        await audit.record(
+          { actorUserId: 'admin-1', action: 'ORDER_CONFIRMED', entityType: 'order', entityId: 'o1' },
+          tx,
+        );
+        throw new Error('confirmation failed after auditing');
+      }),
+    ).rejects.toThrow('confirmation failed after auditing');
+
+    expect(await prisma.auditLog.count()).toBe(0);
+  });
+
+  it("commits with the caller's transaction, and is invisible outside it until then", async () => {
+    await prisma.$transaction(async (tx) => {
+      await audit.record(
+        {
+          actorUserId: 'admin-1',
+          action: 'ORDER_CANCELLED',
+          entityType: 'order',
+          entityId: 'o1',
+          // The tx path must still redact: redaction lives in record(), not
+          // in the client it writes through.
+          after: { disposition: 'WRITTEN_OFF', tokenHash: 'LEAKME' },
+        },
+        tx,
+      );
+      // Written through tx: that tx sees the row, while another connection
+      // (READ COMMITTED) does not see it before the commit.
+      expect(await tx.auditLog.count()).toBe(1);
+      expect(await prisma.auditLog.count()).toBe(0);
+    });
+
+    const rows = await prisma.auditLog.findMany();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].after).toEqual({ disposition: 'WRITTEN_OFF', tokenHash: '[REDACTED]' });
+  });
 });

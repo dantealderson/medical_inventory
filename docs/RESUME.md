@@ -1,69 +1,49 @@
 # Resume Point
 
-## >>> PHASE 3 PLAN READY AND VERIFIED (2026-09-29): read this first
+## >>> PHASE 3 COMPLETE (2026-09-30). Phase 4 is next: give the reminder below first
 
-`docs/superpowers/plans/2026-09-27-phase-3-ordering-fefo.md` is the finished Phase 3 plan: 17 tasks, header, completion checklist. It replaces the old draft.
+Phase 3 (ordering and FEFO) is built, reviewed and fixed, on `phase-0-foundations` as 20 commits after `1b9eabe` (the plan commit). The plan is `docs/superpowers/plans/2026-09-27-phase-3-ordering-fefo.md`.
 
-**Every task was executed before the plan was finalised.** The run used a scratch copy of the repo and throwaway databases, which have since been dropped:
-- Every expected count, expected failure message and "watch it fail" proof step was observed.
-- Every "replace this" snippet matched its real file exactly once.
-- The backend's real JSON responses were parsed by the Dart models.
+How it was done:
+- **Inline, with no multi-agent workflow.** The user declined ultracode ("i cant afford ultracod").
+- **The plan was verified by running it** in a scratch copy before it was finalised.
+- **It was executed task by task under TDD.** Each test was watched failing, each "remove the lock and watch the test fail" proof was run, and the result is committed per task.
+- **One fresh reviewer (Opus) checked the whole range** and found 0 Critical and 2 Important issues, both fixed with RED→GREEN tests in `0483303`:
+  - Rapid **+** taps were dropped while a request was in flight. Now five taps give five boxes.
+  - Item availability and order status stayed cached for the whole session. They now refetch on every visit.
+- **Nine Minor findings are deferred.** They are listed in "Deferred from Phase 3" below.
 
-So if a step misbehaves while executing, treat it as a real signal. Do not tune the test until it passes.
-
-Expected totals after Phase 3: backend 184 unit + 377 e2e, api_client 98, ui_kit 37, client 71, admin 63 (**830**, up from 348).
-
-Defects found by executing, and fixed in the plan:
-- **Two CHECK constraints accepted exactly the rows they exist to reject.** A CHECK passes when its expression is NULL. An unguarded `"cancelDisposition" = 'NOT_ALLOCATED'` let a cancelled order with a NULL disposition through, and the same happened with a half-set approval. Both are now guarded with `IS NOT NULL` (plan decision 17, and `contract.md` §1), with tests for both rows.
-- **The admin cancel dialog disposed its text controller while the dialog was still closing.** It is now a StatefulWidget that owns the controller.
-- The confirm race's proof now fails with a 500, not a silent double allocation. `allocate` refuses a line that already holds unreleased stock (plan decision 18).
-
-Working files, all untracked, are in `docs/superpowers/plans/phase-3-work/` (contract, scopes, fact sheets, plan parts, `progress.md`). They are kept for reference and can be deleted.
-
-The spec edits that match the plan's decisions are done but **uncommitted**, as are this file and the new plan.
-
-**Budget note (2026-09-29):** the user declined ultracode ("i cant afford ultracod"). The plan was written and verified inline, with no multi-agent workflow.
-
-**Last updated:** 2026-09-29
-**Branch:** `phase-0-foundations` (41 commits, `main` untouched). Uncommitted: RESUME, spec, the Phase 3 plan and `phase-3-work/`.
+**Last updated:** 2026-09-30
+**Branch:** `phase-0-foundations` (`main` untouched)
 **Blocked on:** nothing
 
 ---
 
-## ⚠️ Raise the effort level before Phases 3 and 4
+## ⚠️ Raise the effort level before Phase 4
 
-The user asked to be reminded (2026-09-27). Phase 2 runs at normal high effort;
-**Phases 3 and 4 should be run at ultracode.**
+The user asked to be reminded (2026-09-27): **Phases 3 and 4 should be run at ultracode.**
 
-Not because the code is harder — because of how the bugs fail. Phase 2 fails
-loudly: bad Arabic normalisation returns no search results, a miscategorised item
-is visible on screen. Phases 3 and 4 fail silently: FEFO allocating the wrong
-batch ships stock expiring in 20 days instead of 8 months and nobody notices
-until it expires on a shelf; an off-by-one in the usage estimator quietly drifts
-every client's inventory for weeks, filling the ledger with wrong decrements
-before anyone questions the number.
+Not because the code is harder, but because of how the bugs fail. An off-by-one in the usage estimator quietly drifts every client's inventory for weeks, filling the ledger with wrong decrements before anyone questions the number.
 
-Maximum effort belongs where the failure is invisible. **Do not silently start
-Phase 3 at the current level — say so first.**
+**Do not silently start Phase 4 at the current level. Say so first.** The user is budget-constrained, though. For Phase 3 they chose inline work at the current effort, so offer that as a first-class option too. For Phase 3 the rigour went into a plan verified by execution, watched-failing proofs, and one final reviewer.
 
 ---
 
 ## Where we are
 
-**Phases 0, 1 and 2 are complete and verified.** Phase 3 (ordering and FEFO) is
-next — **raise the effort level first.**
+**Phases 0–3 are complete and verified.** Phase 4 (inventory and estimation) is next. **Give the reminder above first.**
 
 | Suite | Tests |
 |---|---|
-| backend unit | 47 |
-| backend e2e + integration | 162 |
-| `packages/api_client` | 55 |
-| `packages/ui_kit` | 22 |
-| `admin` | 30 |
-| `client` | 32 |
-| **total** | **348** |
+| backend unit | 184 |
+| backend e2e + integration | 377 |
+| `packages/api_client` | 98 |
+| `packages/ui_kit` | 37 |
+| `admin` | 63 |
+| `client` | 74 |
+| **total** | **833** |
 
-Typecheck clean, no-email gate clean, `.env` untracked.
+The typecheck, `flutter analyze`, `check_colors` and no-email gates are clean; `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433).
 
 ### Phase status
 
@@ -72,14 +52,38 @@ Typecheck clean, no-email gate clean, `.env` untracked.
 | 0 — Foundations | ✅ complete |
 | 1 — Auth & accounts | ✅ complete |
 | 2 — Catalog & warehouse | ✅ complete |
-| **3 — Ordering & FEFO** | **⬜ next — raise effort first** |
-| 4 — Inventory & estimation | ⬜ **raise effort first** |
+| 3 — Ordering & FEFO | ✅ complete |
+| **4 — Inventory & estimation** | **⬜ next — give the effort reminder first** |
 | 5 — Automation & notifications | ⬜ |
 | 6 — Admin dashboard | ⬜ |
 | 7 — Hardening | ⬜ |
 
-Plans written so far: `2026-09-27-phase-0-foundations.md`,
-`2026-09-27-phase-1-auth-accounts.md`, `2026-09-27-phase-2-catalog-warehouse.md`.
+Plans written so far: phases 0, 1, 2 and 3 (`docs/superpowers/plans/2026-09-27-phase-*.md`).
+Phase 3's planning working files are in `docs/superpowers/plans/phase-3-work/` (untracked, safe to delete).
+
+### Phase 3 decisions worth not relitigating
+
+- **Only `AllocationService` moves warehouse stock for orders.** It writes the decrement, the negative `ORDER_OUT`, the allocation row and `qtyUnitsFulfilled` together.
+- **One lock statement covers every candidate batch** of every item in the order: `ORDER BY "itemId","expiryDate","receivedAt",id`, `FOR NO KEY UPDATE`, with **no** `qtyUnitsRemaining > 0` filter. The global order prevents deadlocks, the lock strength lets deliveries' FK checks through, and the missing filter means a batch being refilled is waited for rather than skipped.
+- **Every order transition locks the order row first** (`lockOrder`) and validates against the status that lock returns. A double-click then gets one effect and one 409.
+- **`release()` stamps `releasedAt … IS NULL RETURNING` and never deletes.** `WRITTEN_OFF` writes no movement.
+- **The shelf-life cutoff is a Baghdad calendar date string**, computed before the transaction and compared with `::date`.
+- **Every CHECK on a nullable column has an `IS NOT NULL` guard.** A CHECK passes when its expression is NULL; two constraints first accepted exactly the rows they exist to reject.
+- **Tests reset the database with `resetDb()`**, one TRUNCATE over every table. Never go back to `deleteMany` chains: the RESTRICT FKs break them.
+- **Money is `Prisma.Decimal`**, emitted as `toFixed(2)`. `lineTotal` is the billed amount, and `totalAmount = Σ lineTotal`.
+- **The client's per-user providers watch the signed-in user id.** Per-visit data (availability, order detail and history) is auto-disposed.
+
+### Deferred from Phase 3 (reviewer Minors, not yet fixed)
+
+- Confirming with a shortfall shows only «تم تأكيد الطلب». Add a distinct "confirmed with a shortfall" message.
+- Cart stepper: a quick second tap can re-send the same absolute quantity. Await the cart refetch, or seed it from the returned `Cart`.
+- `setLine`/`removeLine` don't take the cart-row lock, so an edit from another device mid-placement can be lost (a millisecond window).
+- `creditDelivery` writes `now()` into timestamps. Pass `${new Date()}` as `release()` does. This only matters if the DB TimeZone isn't UTC.
+- Placement doesn't re-check `MAX_LINE_UNITS` after a re-box of an item that has no batches.
+- The five-tap cart e2e test and allocation test (d) are smoke tests, not barrier-deterministic.
+- Code comments cite the contract's D1–D20 numbering, not the plan's decision-table numbering.
+- The admin order list stops at 50, with no paging for delivered, cancelled or all orders.
+- Guard `minShelfLifeDays >= 0` in `cutoffFor`, or in Phase 6's settings validation.
 
 ### Phase 2 decisions worth not relitigating
 

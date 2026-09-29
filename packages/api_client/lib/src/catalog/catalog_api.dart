@@ -4,6 +4,7 @@ import '../api_client_base.dart';
 import '../api_exception.dart';
 import '../models/category.dart';
 import '../models/item.dart';
+import '../models/item_availability.dart';
 import '../models/warehouse_batch.dart';
 
 /// Shared request/unwrap plumbing for the catalog APIs.
@@ -89,6 +90,13 @@ class ItemsApi extends _CatalogApiBase {
 
   Future<Item> byId(String id) =>
       call(() => dio.get<dynamic>('/items/$id'), (data) => Item.fromJson(asMap(data)));
+
+  /// The expiry of the stock a clinic would receive if an order were
+  /// confirmed now: the same rule the warehouse uses to allocate.
+  Future<ItemAvailability> availability(String itemId) => call(
+    () => dio.get<dynamic>('/items/$itemId/availability'),
+    (data) => ItemAvailability.fromJson(asMap(data)),
+  );
 
   Future<Item> create({
     required String categoryId,

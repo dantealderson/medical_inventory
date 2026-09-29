@@ -1,0 +1,58 @@
+/// An OrderView exactly as the backend sends it (Task 5), with overrides.
+Map<String, dynamic> orderJson({
+  String status = 'PLACED',
+  String? confirmedAt,
+  String? dispatchedAt,
+  String? deliveredAt,
+  String? cancelledAt,
+  String? cancelDisposition,
+  List<Map<String, dynamic>>? lines,
+}) => {
+  'id': 'o1',
+  'status': status,
+  'client': {'id': 'u1', 'username': 'clinic_one', 'clinicName': 'عيادة النور'},
+  'placedAt': '2026-09-02T08:00:00.000Z',
+  'confirmedAt': confirmedAt,
+  'dispatchedAt': dispatchedAt,
+  'deliveredAt': deliveredAt,
+  'cancelledAt': cancelledAt,
+  'cancelReason': null,
+  'cancelDisposition': cancelDisposition,
+  'totalAmount': '1250.00',
+  'addressSnapshot': 'بغداد - المنصور',
+  'phoneSnapshot': '07701234567',
+  'note': null,
+  'lines': lines ?? [lineJson()],
+};
+
+/// An OrderLineView as the backend sends it, unconfirmed unless overridden.
+Map<String, dynamic> lineJson({
+  int? qtyBoxesApproved,
+  int? qtyUnitsApproved,
+  int qtyUnitsFulfilled = 0,
+  bool adjustedBySupplier = false,
+  int shortByUnits = 0,
+  List<Map<String, dynamic>> allocations = const [],
+}) => {
+  'id': 'l1',
+  'itemId': 'i1',
+  'position': 0,
+  'item': {
+    'id': 'i1',
+    'nameAr': 'سرنجة',
+    'nameEn': 'Syringe',
+    'unitLabelAr': 'سرنجة',
+    'imageUrl': null,
+  },
+  'unitsPerBoxSnapshot': 100,
+  'pricePerBoxSnapshot': '12.50',
+  'lineTotal': '1250.00',
+  'qtyBoxesRequested': 100,
+  'qtyUnitsRequested': 10000,
+  'qtyBoxesApproved': qtyBoxesApproved,
+  'qtyUnitsApproved': qtyUnitsApproved,
+  'qtyUnitsFulfilled': qtyUnitsFulfilled,
+  'adjustedBySupplier': adjustedBySupplier,
+  'shortByUnits': shortByUnits,
+  'allocations': allocations,
+};

@@ -16,6 +16,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AppConfigModule } from './config/config.module';
 import { HealthModule } from './health/health.module';
+import { HotDealsModule } from './hot-deals/hot-deals.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
 import { UsersModule } from './users/users.module';
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     CartModule,
     ClientInventoryModule,
     OrdersModule,
+    HotDealsModule,
   ],
   providers: [
     // Order matters: JwtAuthGuard populates request.user, which RolesGuard

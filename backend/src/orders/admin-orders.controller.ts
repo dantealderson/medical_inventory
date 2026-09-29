@@ -6,6 +6,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AccessTokenPayload } from '../auth/token.service';
 import { ConfirmOrderDto } from './dto/confirm-order.dto';
+import { OrderFulfilmentService } from './order-fulfilment.service';
 import { OrderConfirmationService, type AllocationPreviewView } from './order-confirmation.service';
 import { AdminListOrdersDto } from './dto/list-orders.dto';
 import type { OrderPage, OrderView } from './order-views';
@@ -21,6 +22,7 @@ export class AdminOrdersController {
   constructor(
     private readonly orders: OrdersService,
     private readonly confirmation: OrderConfirmationService,
+    private readonly fulfilment: OrderFulfilmentService,
   ) {}
 
   @Get()
@@ -51,5 +53,17 @@ export class AdminOrdersController {
     @Body() dto: ConfirmOrderDto,
   ): Promise<OrderView> {
     return this.confirmation.confirm(admin.sub, id, dto);
+  }
+
+  @Post(':id/dispatch')
+  @HttpCode(HttpStatus.OK)
+  dispatch(@CurrentUser() admin: AccessTokenPayload, @Param('id') id: string): Promise<OrderView> {
+    return this.fulfilment.dispatch(admin.sub, id);
+  }
+
+  @Post(':id/deliver')
+  @HttpCode(HttpStatus.OK)
+  deliver(@CurrentUser() admin: AccessTokenPayload, @Param('id') id: string): Promise<OrderView> {
+    return this.fulfilment.deliver(admin.sub, id);
   }
 }

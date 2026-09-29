@@ -197,5 +197,166 @@
   "cartTotal": "المجموع",
   "@cartTotal": {
     "description": "Phase 3 cart: label of the grand total"
+  },
+"myOrders": "طلباتي",
+  "@myOrders": {
+    "description": "Phase 3 orders: the orders screen title and the app-bar orders button tooltip"
+  },
+  "placeOrder": "إرسال الطلب",
+  "@placeOrder": {
+    "description": "Phase 3 orders: the cart's place-order button"
+  },
+  "orderNote": "ملاحظة للمورد (اختياري)",
+  "@orderNote": {
+    "description": "Phase 3 orders: label of the optional note sent with the order"
+  },
+  "noOrders": "لا توجد طلبات بعد",
+  "@noOrders": {
+    "description": "Phase 3 orders: empty order history"
+  },
+  "loadMore": "عرض المزيد",
+  "@loadMore": {
+    "description": "Phase 3 orders: loads the next page of order history"
+  },
+  "orderStatusPlaced": "بانتظار التأكيد",
+  "@orderStatusPlaced": {
+    "description": "Phase 3 orders: status PLACED"
+  },
+  "orderStatusConfirmed": "مؤكد",
+  "@orderStatusConfirmed": {
+    "description": "Phase 3 orders: status CONFIRMED"
+  },
+  "orderStatusOutForDelivery": "قيد التوصيل",
+  "@orderStatusOutForDelivery": {
+    "description": "Phase 3 orders: status OUT_FOR_DELIVERY"
+  },
+  "orderStatusDelivered": "تم التسليم",
+  "@orderStatusDelivered": {
+    "description": "Phase 3 orders: status DELIVERED"
+  },
+  "orderStatusCancelled": "ملغى",
+  "@orderStatusCancelled": {
+    "description": "Phase 3 orders: status CANCELLED"
+  },
+  "orderStatusUnknown": "حالة غير معروفة",
+  "@orderStatusUnknown": {
+    "description": "Phase 3 orders: a status this app version does not know"
+  },
+  "orderDetails": "تفاصيل الطلب",
+  "@orderDetails": {
+    "description": "Phase 3 orders: order detail screen title"
+  },
+  "orderTotal": "المبلغ المستحق عند الاستلام",
+  "@orderTotal": {
+    "description": "Phase 3 orders: label of the cash total collected on delivery"
+  },
+  "orderLineCount": "عدد الأصناف: {count}",
+  "@orderLineCount": {
+    "description": "Phase 3 orders: how many lines an order has, in the history list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timelinePlaced": "تم إرسال الطلب",
+  "@timelinePlaced": {
+    "description": "Phase 3 orders: timeline step: placed"
+  },
+  "timelineConfirmed": "أكّد المورد الطلب",
+  "@timelineConfirmed": {
+    "description": "Phase 3 orders: timeline step: confirmed"
+  },
+  "timelineOutForDelivery": "خرج الطلب للتوصيل",
+  "@timelineOutForDelivery": {
+    "description": "Phase 3 orders: timeline step: out for delivery"
+  },
+  "timelineDelivered": "تم تسليم الطلب",
+  "@timelineDelivered": {
+    "description": "Phase 3 orders: timeline step: delivered"
+  },
+  "timelineCancelled": "أُلغي الطلب",
+  "@timelineCancelled": {
+    "description": "Phase 3 orders: timeline step: cancelled"
+  },
+  "requestedQty": "المطلوب: {qty}",
+  "@requestedQty": {
+    "description": "Phase 3 orders: quantity the clinic asked for; qty is already formatted",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "approvedQty": "الموافق عليه: {qty}",
+  "@approvedQty": {
+    "description": "Phase 3 orders: quantity the supplier approved; qty is already formatted",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "fulfilledQty": "المجهَّز: {qty}",
+  "@fulfilledQty": {
+    "description": "Phase 3 orders: quantity actually allocated from stock; qty is already formatted",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "adjustedBySupplierNote": "عدّل المورد الكمية التي طلبتها",
+  "@adjustedBySupplierNote": {
+    "description": "Phase 3 orders: explains approved < requested"
+  },
+  "shortStockNote": "نقص في المخزون: لم يتوفر {qty}",
+  "@shortStockNote": {
+    "description": "Phase 3 orders: explains fulfilled < approved; qty is already formatted",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelOrder": "إلغاء الطلب",
+  "@cancelOrder": {
+    "description": "Phase 3 orders: cancel button, shown only while the order is waiting for confirmation"
+  },
+  "cancelOrderQuestion": "هل تريد إلغاء هذا الطلب؟",
+  "@cancelOrderQuestion": {
+    "description": "Phase 3 orders: cancel confirmation dialog"
+  },
+  "keepOrder": "لا، أبقِ الطلب",
+  "@keepOrder": {
+    "description": "Phase 3 orders: dialog button that keeps the order"
+  },
+  "confirmCancelOrder": "نعم، ألغِ الطلب",
+  "@confirmCancelOrder": {
+    "description": "Phase 3 orders: dialog button that cancels the order"
+  },
+  "orderCancelled": "تم إلغاء الطلب",
+  "@orderCancelled": {
+    "description": "Phase 3 orders: confirmation after a cancel"
+  },
+  "dispositionNotAllocated": "أُلغي الطلب قبل تأكيده.",
+  "@dispositionNotAllocated": {
+    "description": "Phase 3 orders: cancelled at PLACED"
+  },
+  "dispositionReleasedBeforeDispatch": "أُلغي الطلب بعد تأكيده وقبل خروجه للتوصيل.",
+  "@dispositionReleasedBeforeDispatch": {
+    "description": "Phase 3 orders: cancelled at CONFIRMED"
+  },
+  "dispositionReturnedToWarehouse": "أُلغي الطلب وأُعيدت البضاعة إلى المستودع.",
+  "@dispositionReturnedToWarehouse": {
+    "description": "Phase 3 orders: cancelled while out for delivery; goods returned"
+  },
+  "dispositionWrittenOff": "أُلغي الطلب بعد خروجه للتوصيل.",
+  "@dispositionWrittenOff": {
+    "description": "Phase 3 orders: cancelled while out for delivery; goods did not come back"
+  },
+  "dispositionUnknown": "أُلغي الطلب.",
+  "@dispositionUnknown": {
+    "description": "Phase 3 orders: a disposition this app version does not know"
   }
 }

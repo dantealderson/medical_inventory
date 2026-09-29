@@ -155,4 +155,118 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cartTotal => 'المجموع';
+
+  @override
+  String get myOrders => 'طلباتي';
+
+  @override
+  String get placeOrder => 'إرسال الطلب';
+
+  @override
+  String get orderNote => 'ملاحظة للمورد (اختياري)';
+
+  @override
+  String get noOrders => 'لا توجد طلبات بعد';
+
+  @override
+  String get loadMore => 'عرض المزيد';
+
+  @override
+  String get orderStatusPlaced => 'بانتظار التأكيد';
+
+  @override
+  String get orderStatusConfirmed => 'مؤكد';
+
+  @override
+  String get orderStatusOutForDelivery => 'قيد التوصيل';
+
+  @override
+  String get orderStatusDelivered => 'تم التسليم';
+
+  @override
+  String get orderStatusCancelled => 'ملغى';
+
+  @override
+  String get orderStatusUnknown => 'حالة غير معروفة';
+
+  @override
+  String get orderDetails => 'تفاصيل الطلب';
+
+  @override
+  String get orderTotal => 'المبلغ المستحق عند الاستلام';
+
+  @override
+  String orderLineCount(int count) {
+    return 'عدد الأصناف: $count';
+  }
+
+  @override
+  String get timelinePlaced => 'تم إرسال الطلب';
+
+  @override
+  String get timelineConfirmed => 'أكّد المورد الطلب';
+
+  @override
+  String get timelineOutForDelivery => 'خرج الطلب للتوصيل';
+
+  @override
+  String get timelineDelivered => 'تم تسليم الطلب';
+
+  @override
+  String get timelineCancelled => 'أُلغي الطلب';
+
+  @override
+  String requestedQty(String qty) {
+    return 'المطلوب: $qty';
+  }
+
+  @override
+  String approvedQty(String qty) {
+    return 'الموافق عليه: $qty';
+  }
+
+  @override
+  String fulfilledQty(String qty) {
+    return 'المجهَّز: $qty';
+  }
+
+  @override
+  String get adjustedBySupplierNote => 'عدّل المورد الكمية التي طلبتها';
+
+  @override
+  String shortStockNote(String qty) {
+    return 'نقص في المخزون: لم يتوفر $qty';
+  }
+
+  @override
+  String get cancelOrder => 'إلغاء الطلب';
+
+  @override
+  String get cancelOrderQuestion => 'هل تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get keepOrder => 'لا، أبقِ الطلب';
+
+  @override
+  String get confirmCancelOrder => 'نعم، ألغِ الطلب';
+
+  @override
+  String get orderCancelled => 'تم إلغاء الطلب';
+
+  @override
+  String get dispositionNotAllocated => 'أُلغي الطلب قبل تأكيده.';
+
+  @override
+  String get dispositionReleasedBeforeDispatch =>
+      'أُلغي الطلب بعد تأكيده وقبل خروجه للتوصيل.';
+
+  @override
+  String get dispositionReturnedToWarehouse =>
+      'أُلغي الطلب وأُعيدت البضاعة إلى المستودع.';
+
+  @override
+  String get dispositionWrittenOff => 'أُلغي الطلب بعد خروجه للتوصيل.';
+
+  @override
+  String get dispositionUnknown => 'أُلغي الطلب.';
 }

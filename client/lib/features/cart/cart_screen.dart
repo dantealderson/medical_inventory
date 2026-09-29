@@ -9,7 +9,8 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
 
-/// The clinic's cart: its lines at live prices, steppers, and the total.
+/// The clinic's cart: its lines at live prices, steppers, the total, and
+/// placing the order.
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
@@ -39,6 +40,8 @@ class CartScreen extends ConsumerWidget {
               for (final line in data.lines) _CartLineCard(key: ValueKey(line.itemId), line: line),
               const SizedBox(height: 8),
               _TotalRow(total: data.totalAmount),
+              const SizedBox(height: 16),
+              const _PlaceOrderSection(),
             ],
           ),
         ),
@@ -131,6 +134,81 @@ class _CartLineCardState extends ConsumerState<_CartLineCard> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The optional note and the place-order button. On success the clinic lands
+/// on the new order. On refusal, the server's reason is shown here, and the
+/// cart is refetched so the lines it names are flagged.
+class _PlaceOrderSection extends ConsumerStatefulWidget {
+  const _PlaceOrderSection();
+
+  @override
+  ConsumerState<_PlaceOrderSection> createState() => _PlaceOrderSectionState();
+}
+
+class _PlaceOrderSectionState extends ConsumerState<_PlaceOrderSection> {
+  final _note = TextEditingController();
+  bool _busy = false;
+  String? _errorAr;
+
+  @override
+  void dispose() {
+    _note.dispose();
+    super.dispose();
+  }
+
+  Future<void> _place() async {
+    setState(() {
+      _busy = true;
+      _errorAr = null;
+    });
+    try {
+      final note = _note.text.trim();
+      final order = await ref
+          .read(cartActionsProvider)
+          .placeOrder(note: note.isEmpty ? null : note);
+      if (!mounted) return;
+      context.go(Routes.order(order.id));
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _errorAr = e.messageAr);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.appColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _note,
+          maxLength: 500,
+          maxLines: 2,
+          decoration: InputDecoration(
+            labelText: l10n.orderNote,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        if (_errorAr != null) ...[
+          Text(_errorAr!, style: TextStyle(color: colors.danger)),
+          const SizedBox(height: 8),
+        ],
+        FilledButton(
+          onPressed: _busy ? null : _place,
+          child: _busy
+              ? const SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.placeOrder),
+        ),
+      ],
     );
   }
 }

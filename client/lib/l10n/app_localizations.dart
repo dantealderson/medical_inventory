@@ -375,6 +375,210 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'المجموع'**
   String get cartTotal;
+
+  /// Phase 3 orders: the orders screen title and the app-bar orders button tooltip
+  ///
+  /// In ar, this message translates to:
+  /// **'طلباتي'**
+  String get myOrders;
+
+  /// Phase 3 orders: the cart's place-order button
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال الطلب'**
+  String get placeOrder;
+
+  /// Phase 3 orders: label of the optional note sent with the order
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظة للمورد (اختياري)'**
+  String get orderNote;
+
+  /// Phase 3 orders: empty order history
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات بعد'**
+  String get noOrders;
+
+  /// Phase 3 orders: loads the next page of order history
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض المزيد'**
+  String get loadMore;
+
+  /// Phase 3 orders: status PLACED
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار التأكيد'**
+  String get orderStatusPlaced;
+
+  /// Phase 3 orders: status CONFIRMED
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤكد'**
+  String get orderStatusConfirmed;
+
+  /// Phase 3 orders: status OUT_FOR_DELIVERY
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التوصيل'**
+  String get orderStatusOutForDelivery;
+
+  /// Phase 3 orders: status DELIVERED
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التسليم'**
+  String get orderStatusDelivered;
+
+  /// Phase 3 orders: status CANCELLED
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغى'**
+  String get orderStatusCancelled;
+
+  /// Phase 3 orders: a status this app version does not know
+  ///
+  /// In ar, this message translates to:
+  /// **'حالة غير معروفة'**
+  String get orderStatusUnknown;
+
+  /// Phase 3 orders: order detail screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'تفاصيل الطلب'**
+  String get orderDetails;
+
+  /// Phase 3 orders: label of the cash total collected on delivery
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المستحق عند الاستلام'**
+  String get orderTotal;
+
+  /// Phase 3 orders: how many lines an order has, in the history list
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الأصناف: {count}'**
+  String orderLineCount(int count);
+
+  /// Phase 3 orders: timeline step: placed
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إرسال الطلب'**
+  String get timelinePlaced;
+
+  /// Phase 3 orders: timeline step: confirmed
+  ///
+  /// In ar, this message translates to:
+  /// **'أكّد المورد الطلب'**
+  String get timelineConfirmed;
+
+  /// Phase 3 orders: timeline step: out for delivery
+  ///
+  /// In ar, this message translates to:
+  /// **'خرج الطلب للتوصيل'**
+  String get timelineOutForDelivery;
+
+  /// Phase 3 orders: timeline step: delivered
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تسليم الطلب'**
+  String get timelineDelivered;
+
+  /// Phase 3 orders: timeline step: cancelled
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب'**
+  String get timelineCancelled;
+
+  /// Phase 3 orders: quantity the clinic asked for; qty is already formatted
+  ///
+  /// In ar, this message translates to:
+  /// **'المطلوب: {qty}'**
+  String requestedQty(String qty);
+
+  /// Phase 3 orders: quantity the supplier approved; qty is already formatted
+  ///
+  /// In ar, this message translates to:
+  /// **'الموافق عليه: {qty}'**
+  String approvedQty(String qty);
+
+  /// Phase 3 orders: quantity actually allocated from stock; qty is already formatted
+  ///
+  /// In ar, this message translates to:
+  /// **'المجهَّز: {qty}'**
+  String fulfilledQty(String qty);
+
+  /// Phase 3 orders: explains approved < requested
+  ///
+  /// In ar, this message translates to:
+  /// **'عدّل المورد الكمية التي طلبتها'**
+  String get adjustedBySupplierNote;
+
+  /// Phase 3 orders: explains fulfilled < approved; qty is already formatted
+  ///
+  /// In ar, this message translates to:
+  /// **'نقص في المخزون: لم يتوفر {qty}'**
+  String shortStockNote(String qty);
+
+  /// Phase 3 orders: cancel button, shown only while the order is waiting for confirmation
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء الطلب'**
+  String get cancelOrder;
+
+  /// Phase 3 orders: cancel confirmation dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد إلغاء هذا الطلب؟'**
+  String get cancelOrderQuestion;
+
+  /// Phase 3 orders: dialog button that keeps the order
+  ///
+  /// In ar, this message translates to:
+  /// **'لا، أبقِ الطلب'**
+  String get keepOrder;
+
+  /// Phase 3 orders: dialog button that cancels the order
+  ///
+  /// In ar, this message translates to:
+  /// **'نعم، ألغِ الطلب'**
+  String get confirmCancelOrder;
+
+  /// Phase 3 orders: confirmation after a cancel
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إلغاء الطلب'**
+  String get orderCancelled;
+
+  /// Phase 3 orders: cancelled at PLACED
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب قبل تأكيده.'**
+  String get dispositionNotAllocated;
+
+  /// Phase 3 orders: cancelled at CONFIRMED
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب بعد تأكيده وقبل خروجه للتوصيل.'**
+  String get dispositionReleasedBeforeDispatch;
+
+  /// Phase 3 orders: cancelled while out for delivery; goods returned
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب وأُعيدت البضاعة إلى المستودع.'**
+  String get dispositionReturnedToWarehouse;
+
+  /// Phase 3 orders: cancelled while out for delivery; goods did not come back
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب بعد خروجه للتوصيل.'**
+  String get dispositionWrittenOff;
+
+  /// Phase 3 orders: a disposition this app version does not know
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الطلب.'**
+  String get dispositionUnknown;
 }
 
 class _AppLocalizationsDelegate

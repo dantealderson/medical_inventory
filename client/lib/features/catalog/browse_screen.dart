@@ -27,6 +27,11 @@ class BrowseScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          IconButton(
+            tooltip: l10n.myOrders,
+            icon: const Icon(Icons.receipt_long_outlined),
+            onPressed: () => context.go(Routes.orders),
+          ),
           const CartBadgeButton(),
           IconButton(
             tooltip: l10n.logout,

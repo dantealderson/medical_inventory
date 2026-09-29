@@ -327,6 +327,54 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أصناف مطابقة'**
   String get matchingItems;
+
+  /// Phase 3 cart: the cart screen title and the app-bar cart button tooltip
+  ///
+  /// In ar, this message translates to:
+  /// **'السلة'**
+  String get cart;
+
+  /// Phase 3 cart: screen-reader label of the + button (it shows no text)
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف {name} إلى السلة'**
+  String addToCart(String name);
+
+  /// Phase 3 cart: confirmation after the + button added one box
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت إضافة {name} إلى السلة'**
+  String addedToCart(String name);
+
+  /// Phase 3 cart: empty state
+  ///
+  /// In ar, this message translates to:
+  /// **'السلة فارغة'**
+  String get cartEmpty;
+
+  /// Phase 3 cart: a line whose item was deactivated after it was added
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الصنف لم يعد متوفراً، يرجى إزالته من السلة'**
+  String get itemUnavailable;
+
+  /// Phase 3 cart: tooltip of the + stepper on a cart line
+  ///
+  /// In ar, this message translates to:
+  /// **'زيادة الكمية'**
+  String get increaseQty;
+
+  /// Phase 3 cart: tooltip of the - stepper on a cart line; at one box it removes the line
+  ///
+  /// In ar, this message translates to:
+  /// **'إنقاص الكمية'**
+  String get decreaseQty;
+
+  /// Phase 3 cart: label of the grand total
+  ///
+  /// In ar, this message translates to:
+  /// **'المجموع'**
+  String get cartTotal;
 }
 
 class _AppLocalizationsDelegate

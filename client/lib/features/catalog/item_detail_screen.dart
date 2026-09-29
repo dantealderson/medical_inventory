@@ -7,11 +7,11 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/catalog_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../cart/add_to_cart_button.dart';
 
 /// Full detail for one item.
 ///
-/// Phase 3 adds the large **+** quick-add button here, and the expiry of the
-/// stock the clinic would actually receive.
+/// It carries the large **+** that adds a box to the cart.
 class ItemDetailScreen extends ConsumerWidget {
   const ItemDetailScreen({required this.itemId, super.key});
 
@@ -63,6 +63,11 @@ class ItemDetailScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               _DetailRow(label: l10n.pricePerBox, value: data.pricePerBox),
+              const SizedBox(height: 24),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: AddToCartButton(item: data, size: 64),
+              ),
               if (data.description != null) ...[
                 const SizedBox(height: 24),
                 Text(

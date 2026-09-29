@@ -126,4 +126,33 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get matchingItems => 'أصناف مطابقة';
+
+  @override
+  String get cart => 'السلة';
+
+  @override
+  String addToCart(String name) {
+    return 'أضف $name إلى السلة';
+  }
+
+  @override
+  String addedToCart(String name) {
+    return 'تمت إضافة $name إلى السلة';
+  }
+
+  @override
+  String get cartEmpty => 'السلة فارغة';
+
+  @override
+  String get itemUnavailable =>
+      'هذا الصنف لم يعد متوفراً، يرجى إزالته من السلة';
+
+  @override
+  String get increaseQty => 'زيادة الكمية';
+
+  @override
+  String get decreaseQty => 'إنقاص الكمية';
+
+  @override
+  String get cartTotal => 'المجموع';
 }

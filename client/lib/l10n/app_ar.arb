@@ -155,5 +155,47 @@
   "matchingItems": "أصناف مطابقة",
   "@matchingItems": {
     "description": "Phase 2 catalog: matchingItems"
+  },
+"cart": "السلة",
+  "@cart": {
+    "description": "Phase 3 cart: the cart screen title and the app-bar cart button tooltip"
+  },
+  "addToCart": "أضف {name} إلى السلة",
+  "@addToCart": {
+    "description": "Phase 3 cart: screen-reader label of the + button (it shows no text)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addedToCart": "تمت إضافة {name} إلى السلة",
+  "@addedToCart": {
+    "description": "Phase 3 cart: confirmation after the + button added one box",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cartEmpty": "السلة فارغة",
+  "@cartEmpty": {
+    "description": "Phase 3 cart: empty state"
+  },
+  "itemUnavailable": "هذا الصنف لم يعد متوفراً، يرجى إزالته من السلة",
+  "@itemUnavailable": {
+    "description": "Phase 3 cart: a line whose item was deactivated after it was added"
+  },
+  "increaseQty": "زيادة الكمية",
+  "@increaseQty": {
+    "description": "Phase 3 cart: tooltip of the + stepper on a cart line"
+  },
+  "decreaseQty": "إنقاص الكمية",
+  "@decreaseQty": {
+    "description": "Phase 3 cart: tooltip of the - stepper on a cart line; at one box it removes the line"
+  },
+  "cartTotal": "المجموع",
+  "@cartTotal": {
+    "description": "Phase 3 cart: label of the grand total"
   }
 }

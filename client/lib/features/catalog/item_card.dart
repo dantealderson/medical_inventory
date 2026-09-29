@@ -6,11 +6,14 @@ import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../cart/add_to_cart_button.dart';
 
 /// One item in a list.
 ///
 /// Shows the two numbers a clinic decides on: what a box costs and how many
-/// units are in it. Phase 3 adds the large **+** quick-add button here.
+/// units are in it, and the large **+** that adds a box to the cart. The +
+/// is its own button inside the card's InkWell, so a tap on it adds and does
+/// not also open the item.
 class ItemCard extends StatelessWidget {
   const ItemCard({required this.item, super.key});
 
@@ -52,7 +55,8 @@ class ItemCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_left, color: colors.border),
+              const SizedBox(width: 12),
+              AddToCartButton(item: item),
             ],
           ),
         ),

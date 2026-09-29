@@ -35,16 +35,23 @@ Map<String, dynamic> envelope(int status, String code, String messageAr) =>
 /// Overriding the HTTP layer rather than stubbing AuthApi means the real
 /// error mapping and the real refresh interceptor run — the parts most likely
 /// to hold a bug.
+///
+/// [retry] is passed to the ProviderScope. Leave it null to keep Riverpod's
+/// default, as every Phase 0–2 test does. A test that drives a provider into
+/// an error may pass `(_, _) => null`, so the failure is not retried behind
+/// its back while fake time advances.
 Future<FakeApiBackend> pumpApp(
   WidgetTester tester,
   List<Object?> Function(SeenRequest req) handler, {
   TokenStore? store,
+  Duration? Function(int retryCount, Object error)? retry,
 }) async {
   final client = ApiClient(baseUrl: 'http://test.local/api/v1');
   final backend = FakeApiBackend((req, _) => handler(req))..attachTo(client);
 
   await tester.pumpWidget(
     ProviderScope(
+      retry: retry,
       overrides: [
         apiClientProvider.overrideWithValue(client),
         tokenStoreProvider.overrideWithValue(store ?? InMemoryTokenStore()),
@@ -54,6 +61,18 @@ Future<FakeApiBackend> pumpApp(
   );
   await tester.pumpAndSettle();
   return backend;
+}
+
+/// [pumpApp] with a stored session, so the app starts on the home screen.
+/// The handler must answer `/auth/me` with a user.
+Future<FakeApiBackend> pumpSignedIn(
+  WidgetTester tester,
+  List<Object?> Function(SeenRequest req) handler, {
+  Duration? Function(int retryCount, Object error)? retry,
+}) async {
+  final store = InMemoryTokenStore();
+  await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+  return pumpApp(tester, handler, store: store, retry: retry);
 }
 
 /// Finds a text field by the label its decoration carries.

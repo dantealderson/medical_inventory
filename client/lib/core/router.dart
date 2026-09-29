@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pending_approval_screen.dart';
 import '../features/auth/register_screen.dart';
+import '../features/cart/cart_screen.dart';
 import '../features/catalog/browse_screen.dart';
 import '../features/catalog/category_screen.dart';
 import '../features/catalog/item_detail_screen.dart';
@@ -20,6 +21,7 @@ abstract final class Routes {
   static const search = '/search';
   static String category(String id) => '/category/$id';
   static String item(String id) => '/item/$id';
+  static const cart = '/cart';
 }
 
 /// Routes reachable without a session.
@@ -73,6 +75,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/item/:id',
         builder: (_, state) => ItemDetailScreen(itemId: state.pathParameters['id']!),
       ),
+      GoRoute(path: Routes.cart, builder: (_, _) => const CartScreen()),
     ],
   );
 });

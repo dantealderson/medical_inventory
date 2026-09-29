@@ -8,6 +8,7 @@ import '../../core/auth_controller.dart';
 import '../../core/catalog_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../cart/cart_badge_button.dart';
 import 'item_card.dart';
 
 /// The client home: a search bar and the top-level categories.
@@ -26,6 +27,7 @@ class BrowseScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          const CartBadgeButton(),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),

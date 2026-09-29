@@ -11,7 +11,11 @@ How it was done:
 - **One fresh reviewer (Opus) checked the whole range** and found 0 Critical and 2 Important issues, both fixed with RED→GREEN tests in `0483303`:
   - Rapid **+** taps were dropped while a request was in flight. Now five taps give five boxes.
   - Item availability and order status stayed cached for the whole session. They now refetch on every visit.
-- **Nine Minor findings are deferred.** They are listed in "Deferred from Phase 3" below.
+- **Of the nine Minor findings, the three people will really meet were fixed afterwards:**
+  - cart steppers count every tap, even on a slow network;
+  - the admin order list pages past 50;
+  - a short confirm says so.
+  The rest are listed below as deliberately not fixed.
 
 **Last updated:** 2026-09-30
 **Branch:** `phase-0-foundations` (`main` untouched)
@@ -39,9 +43,9 @@ Not because the code is harder, but because of how the bugs fail. An off-by-one 
 | backend e2e + integration | 377 |
 | `packages/api_client` | 98 |
 | `packages/ui_kit` | 37 |
-| `admin` | 63 |
-| `client` | 74 |
-| **total** | **833** |
+| `admin` | 64 |
+| `client` | 75 |
+| **total** | **835** |
 
 The typecheck, `flutter analyze`, `check_colors` and no-email gates are clean; `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433).
 
@@ -73,16 +77,20 @@ Phase 3's planning working files are in `docs/superpowers/plans/phase-3-work/` (
 - **Money is `Prisma.Decimal`**, emitted as `toFixed(2)`. `lineTotal` is the billed amount, and `totalAmount = Σ lineTotal`.
 - **The client's per-user providers watch the signed-in user id.** Per-visit data (availability, order detail and history) is auto-disposed.
 
-### Deferred from Phase 3 (reviewer Minors, not yet fixed)
+### Who uses this — read before any UI or triage decision
 
-- Confirming with a shortfall shows only «تم تأكيد الطلب». Add a distinct "confirmed with a shortfall" message.
-- Cart stepper: a quick second tap can re-send the same absolute quantity. Await the cart refetch, or seed it from the returned `Cart`.
+The client app's users are **clinic staff aged 30 and over, many of them older** (user, 2026-09-30):
+- **Buttons and screens:** big buttons, simple screens and plain wording. Tap targets are 48 dp or more; primary actions 56–64 dp. Never clamp the phone's text size.
+- **Triage:** fix what a real person meets in daily use, such as double taps, slow networks, long lists and confusing messages. Do **not** spend effort on two-devices-within-milliseconds races or hand-edited DB values.
+- **Phase 7:** add a large-text (1.3×–1.5×) overflow check of the client screens at 390 px.
+
+### Phase 3 reviewer Minors deliberately not fixed (unrealistic for these users)
+
 - `setLine`/`removeLine` don't take the cart-row lock, so an edit from another device mid-placement can be lost (a millisecond window).
-- `creditDelivery` writes `now()` into timestamps. Pass `${new Date()}` as `release()` does. This only matters if the DB TimeZone isn't UTC.
+- `creditDelivery` writes `now()` into timestamps. Pass `${new Date()}` as `release()` does. This only matters if the DB TimeZone isn't UTC, so **Phase 7 deployment must keep Postgres on UTC**.
 - Placement doesn't re-check `MAX_LINE_UNITS` after a re-box of an item that has no batches.
 - The five-tap cart e2e test and allocation test (d) are smoke tests, not barrier-deterministic.
 - Code comments cite the contract's D1–D20 numbering, not the plan's decision-table numbering.
-- The admin order list stops at 50, with no paging for delivered, cancelled or all orders.
 - Guard `minShelfLifeDays >= 0` in `cutoffFor`, or in Phase 6's settings validation.
 
 ### Phase 2 decisions worth not relitigating

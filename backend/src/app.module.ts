@@ -8,6 +8,7 @@ import { CartModule } from './cart/cart.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ItemsModule } from './items/items.module';
 import { MediaModule } from './media/media.module';
+import { OrdersModule } from './orders/orders.module';
 import { SearchModule } from './search/search.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
@@ -34,6 +35,7 @@ import { UsersModule } from './users/users.module';
     HealthModule,
     AllocationModule,
     CartModule,
+    OrdersModule,
   ],
   providers: [
     // Order matters: JwtAuthGuard populates request.user, which RolesGuard

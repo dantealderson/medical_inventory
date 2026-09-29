@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
+import { AllocationModule } from './allocation/allocation.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     WarehouseModule,
     SearchModule,
     HealthModule,
+    AllocationModule,
   ],
   providers: [
     // Order matters: JwtAuthGuard populates request.user, which RolesGuard

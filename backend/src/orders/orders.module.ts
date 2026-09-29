@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AllocationModule } from '../allocation/allocation.module';
 import { AdminOrdersController } from './admin-orders.controller';
+import { OrderCancellationService } from './order-cancellation.service';
 import { ClientInventoryModule } from '../client-inventory/client-inventory.module';
 import { OrderFulfilmentService } from './order-fulfilment.service';
 import { OrderConfirmationService } from './order-confirmation.service';
@@ -13,6 +14,11 @@ import { OrdersService } from './orders.service';
   // through AllocationService.
   imports: [AllocationModule, ClientInventoryModule],
   controllers: [OrdersController, AdminOrdersController],
-  providers: [OrdersService, OrderConfirmationService, OrderFulfilmentService],
+  providers: [
+    OrdersService,
+    OrderConfirmationService,
+    OrderFulfilmentService,
+    OrderCancellationService,
+  ],
 })
 export class OrdersModule {}

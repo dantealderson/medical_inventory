@@ -6,6 +6,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AccessTokenPayload } from '../auth/token.service';
 import { ConfirmOrderDto } from './dto/confirm-order.dto';
+import { AdminCancelOrderDto } from './dto/cancel-order.dto';
+import { OrderCancellationService } from './order-cancellation.service';
 import { OrderFulfilmentService } from './order-fulfilment.service';
 import { OrderConfirmationService, type AllocationPreviewView } from './order-confirmation.service';
 import { AdminListOrdersDto } from './dto/list-orders.dto';
@@ -23,6 +25,7 @@ export class AdminOrdersController {
     private readonly orders: OrdersService,
     private readonly confirmation: OrderConfirmationService,
     private readonly fulfilment: OrderFulfilmentService,
+    private readonly cancellation: OrderCancellationService,
   ) {}
 
   @Get()
@@ -65,5 +68,15 @@ export class AdminOrdersController {
   @HttpCode(HttpStatus.OK)
   deliver(@CurrentUser() admin: AccessTokenPayload, @Param('id') id: string): Promise<OrderView> {
     return this.fulfilment.deliver(admin.sub, id);
+  }
+
+  @Post(':id/cancel')
+  @HttpCode(HttpStatus.OK)
+  cancel(
+    @CurrentUser() admin: AccessTokenPayload,
+    @Param('id') id: string,
+    @Body() dto: AdminCancelOrderDto,
+  ): Promise<OrderView> {
+    return this.cancellation.cancelByAdmin(admin.sub, id, dto);
   }
 }

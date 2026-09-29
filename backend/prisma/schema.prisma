@@ -51,8 +51,12 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  refreshTokens RefreshToken[]
-  movements     StockMovement[]
+  refreshTokens  RefreshToken[]
+  movements      StockMovement[]
+  cart           Cart?
+  orders         Order[]
+  inventoryItems ClientInventoryItem[]
+  batchHoldings  ClientBatchHolding[]
 
   @@index([status])
   @@map("users")
@@ -181,14 +185,17 @@ model Item {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  batches   WarehouseBatch[]
-  movements StockMovement[]
+  batches              WarehouseBatch[]
+  movements            StockMovement[]
+  cartLines            CartLine[]
+  orderLines           OrderLine[]
+  clientInventoryItems ClientInventoryItem[]
+  hotDealEntries       HotDealEntry[]
 
-  /// GENERATED ALWAYS column, maintained by PostgreSQL — see the
-  /// search_and_constraints migration. Declared here only so Prisma knows it
-  /// exists and stops trying to drop it on every `migrate dev`. Never write
-  /// to it: Postgres rejects writes to a generated column. Search reads it
-  /// through $queryRaw.
+  /// Maintained by a PostgreSQL trigger (items_search_text_trg, see the
+  /// search_text_via_trigger migration), not by application code and not a
+  /// generated column. Never write it: the trigger overwrites it on every
+  /// insert and name change. Search reads it through $queryRaw.
   searchText String?
 
   @@index([categoryId, isActive])
@@ -218,7 +225,9 @@ model WarehouseBatch {
   receivedAt DateTime @default(now())
   note       String?
 
-  movements StockMovement[]
+  movements      StockMovement[]
+  allocations    OrderLineAllocation[]
+  clientHoldings ClientBatchHolding[]
 
   /// Expiry is part of the identity. The same manufacturer lot number
   /// legitimately arrives twice with different expiry dates — routine in
@@ -265,4 +274,197 @@ model StockMovement {
 
   @@index([ownerType, clientId, itemId, createdAt])
   @@map("stock_movements")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 3 — Ordering & FEFO
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+/// Where the goods went when an order was cancelled (§7.4). Set by the server
+/// except at OUT_FOR_DELIVERY, where only a human knows. A CHECK ties each value
+/// to the lifecycle timestamps, so a WRITTEN_OFF on goods that never left the
+/// warehouse is rejected by the database itself.
+enum CancelDisposition {
+  NOT_ALLOCATED            // cancelled at PLACED — nothing was ever reserved
+  RELEASED_BEFORE_DISPATCH // cancelled at CONFIRMED — reservation released, goods never left
+  RETURNED_TO_WAREHOUSE    // cancelled at OUT_FOR_DELIVERY — driver brought it back; released
+  WRITTEN_OFF              // cancelled at OUT_FOR_DELIVERY — lost/damaged/left; NO movement
+}
+
+enum HotDealKind {
+  FREQUENT
+  NEW
+  MANUAL
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  clientId  String     @unique
+  client    User       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lines     CartLine[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartLine {
+  id       String   @id @default(uuid())
+  cartId   String
+  cart     Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  itemId   String
+  item     Item     @relation(fields: [itemId], references: [id])
+  /// Whole boxes (§7.1). 1..999, enforced by CHECK.
+  qtyBoxes Int
+  addedAt  DateTime @default(now())
+
+  @@unique([cartId, itemId])
+  @@map("cart_lines")
+}
+
+model Order {
+  id       String      @id @default(uuid())
+  clientId String
+  /// RESTRICT (default): order history must outlive any attempt to delete a client.
+  client   User        @relation(fields: [clientId], references: [id])
+  status   OrderStatus @default(PLACED)
+
+  placedAt     DateTime  @default(now())
+  confirmedAt  DateTime?
+  /// Load-bearing: the disposition CHECK uses it to know the goods left.
+  dispatchedAt DateTime?
+  deliveredAt  DateTime?
+  cancelledAt  DateTime?
+
+  cancelReason      String?
+  cancelDisposition CancelDisposition?
+
+  /// Σ OrderLine.lineTotal — always recomputed from the lines, never on its own.
+  totalAmount Decimal @db.Decimal(12, 2)
+
+  addressSnapshot String?
+  phoneSnapshot   String?
+  note            String?
+
+  lines OrderLine[]
+
+  @@index([clientId, placedAt])
+  @@index([status, placedAt])
+  @@map("orders")
+}
+
+model OrderLine {
+  id       String @id @default(uuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId   String
+  item     Item   @relation(fields: [itemId], references: [id])
+  /// 0-based display order, copied from the cart's addedAt order.
+  position Int
+
+  qtyBoxesRequested Int
+  qtyUnitsRequested Int
+  /// Set at confirmation (edits may only reduce). NULL ⇔ not yet confirmed.
+  qtyBoxesApproved  Int?
+  qtyUnitsApproved  Int?
+  /// Written only by AllocationService. < approved ⇒ the warehouse was short.
+  qtyUnitsFulfilled Int  @default(0)
+
+  unitsPerBoxSnapshot Int
+  pricePerBoxSnapshot Decimal @db.Decimal(12, 2)
+  /// The BILLED amount: price × boxes at placement; price × fulfilled units /
+  /// unitsPerBox (half-up, 2dp) from confirmation on.
+  lineTotal           Decimal @db.Decimal(12, 2)
+
+  allocations OrderLineAllocation[]
+
+  @@unique([orderId, itemId])
+  @@index([itemId])
+  @@map("order_lines")
+}
+
+/// Which warehouse batch satisfied how much of a line. Written by FEFO at
+/// confirmation, read at delivery to credit the client the exact batches.
+/// Never deleted: release stamps releasedAt, so a returned shipment still shows
+/// which batches went out and came back.
+model OrderLineAllocation {
+  id          String    @id @default(uuid())
+  orderLineId String
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
+  batchId     String
+  batch       WarehouseBatch @relation(fields: [batchId], references: [id])
+  qtyUnits    Int
+  releasedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([orderLineId])
+  @@index([batchId])
+  @@map("order_line_allocations")
+}
+
+/// A client's stock of one item, in base units. Cache, rebuildable by
+/// replaying CLIENT movements for (clientId, itemId). Phase 3 only credits it
+/// (DELIVERED); Phase 4 adds the estimator and auto-decrement on top.
+model ClientInventoryItem {
+  clientId String
+  client   User   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  itemId   String
+  item     Item   @relation(fields: [itemId], references: [id])
+
+  qtyUnits Int @default(0)
+
+  // Phase 4 fields, defaulted here so Phase 4 adds behaviour, not a backfill.
+  fractionalCarry      Decimal   @default(0) @db.Decimal(10, 4)
+  autoDecrementEnabled Boolean   @default(true)
+  usageRateOverride    Decimal?  @db.Decimal(10, 4)
+  minQtyUnits          Int?
+  lastAutoDecrementAt  DateTime?
+  lastCountedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([clientId, itemId])
+  @@map("client_inventory_items")
+}
+
+/// Which warehouse batches a client physically holds. References the batch
+/// rather than copying its number/expiry. Phase 3 invariant (asserted by tests):
+/// Σ holdings(client, item) == ClientInventoryItem.qtyUnits. Phase 4's
+/// auto-decrement must keep Σ holdings ≤ qtyUnits.
+model ClientBatchHolding {
+  id        String         @id @default(uuid())
+  clientId  String
+  client    User           @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  batchId   String
+  batch     WarehouseBatch @relation(fields: [batchId], references: [id])
+  qtyUnits  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([clientId, batchId])
+  @@index([batchId])
+  @@map("client_batch_holdings")
+}
+
+/// The rotating merchandising strip on the client home (§7.7).
+model HotDealEntry {
+  id         String      @id @default(uuid())
+  itemId     String
+  item       Item        @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  kind       HotDealKind
+  sortOrder  Int         @default(0)
+  computedAt DateTime    @default(now())
+
+  @@unique([itemId, kind])
+  @@index([kind, sortOrder])
+  @@map("hot_deal_entries")
 }

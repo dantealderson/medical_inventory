@@ -60,20 +60,42 @@ class _CartLineCard extends ConsumerStatefulWidget {
 }
 
 class _CartLineCardState extends ConsumerState<_CartLineCard> {
-  bool _busy = false;
+  /// The quantity the clinic has tapped to, shown at once, until the server
+  /// has it. Null when nothing is waiting.
+  int? _wanted;
+  bool _sending = false;
 
-  /// Runs one change. Busy until the server answers, so a fast double-tap on
-  /// a stepper cannot send two absolute quantities computed from the same
-  /// stale number.
-  Future<void> _change(Future<void> Function(CartActions actions) change) async {
+  int get _shown => _wanted ?? widget.line.qtyBoxes;
+
+  /// One tap is one box, whether or not a request is in flight: staff who
+  /// see nothing happen tap again, and every tap must count.
+  void _step(int delta) {
+    setState(() => _wanted = _shown + delta);
+    if (!_sending) _send();
+  }
+
+  /// Sends the latest wanted quantity, then again if more taps arrived while
+  /// it was in flight. Absolute quantities, so a repeated request cannot
+  /// double-count; zero removes the line.
+  Future<void> _send() async {
     final messenger = ScaffoldMessenger.of(context);
-    setState(() => _busy = true);
+    final actions = ref.read(cartActionsProvider);
+    final itemId = widget.line.itemId;
+    _sending = true;
     try {
-      await change(ref.read(cartActionsProvider));
+      int? sent;
+      while (_wanted != null && _wanted != sent) {
+        final qty = _wanted!;
+        sent = qty;
+        // Each action waits for the refreshed cart, so the line underneath
+        // already shows the server's number when the wanted one is dropped.
+        await (qty > 0 ? actions.setQty(itemId, qty) : actions.remove(itemId));
+      }
     } on ApiException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
     } finally {
-      if (mounted) setState(() => _busy = false);
+      _sending = false;
+      if (mounted) setState(() => _wanted = null);
     }
   }
 
@@ -103,22 +125,14 @@ class _CartLineCardState extends ConsumerState<_CartLineCard> {
                   tooltip: l10n.decreaseQty,
                   icon: const Icon(Icons.remove),
                   // At one box, "less" means "none": the line goes.
-                  onPressed: _busy
-                      ? null
-                      : () => _change(
-                          (a) => line.qtyBoxes > 1
-                              ? a.setQty(line.itemId, line.qtyBoxes - 1)
-                              : a.remove(line.itemId),
-                        ),
+                  onPressed: _shown > 0 ? () => _step(-1) : null,
                 ),
-                Text('${line.qtyBoxes}', style: text.titleMedium),
+                Text('$_shown', style: text.titleMedium),
                 IconButton(
                   tooltip: l10n.increaseQty,
                   icon: const Icon(Icons.add),
                   // An unavailable item can only be removed.
-                  onPressed: _busy || !line.isAvailable
-                      ? null
-                      : () => _change((a) => a.setQty(line.itemId, line.qtyBoxes + 1)),
+                  onPressed: line.isAvailable ? () => _step(1) : null,
                 ),
                 const SizedBox(width: 8),
                 Expanded(

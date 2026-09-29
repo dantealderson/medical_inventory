@@ -79,11 +79,17 @@ class CartActions {
     }
   }
 
+  /// Completes only once the refreshed cart has arrived, so a caller that
+  /// computes the next quantity from the cart never reads the old one. A
+  /// failed refresh is not the caller's error: the cart screen shows it.
   Future<void> _refreshAfter(Future<Object?> Function() call) async {
     try {
       await call();
     } finally {
       _ref.invalidate(cartProvider);
+      try {
+        await _ref.read(cartProvider.future);
+      } catch (_) {}
     }
   }
 }

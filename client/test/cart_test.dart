@@ -212,6 +212,46 @@ void main() {
       expect(backend.lastTo('/cart/lines/i2').method, 'DELETE');
     });
 
+    testWidgets('every quick tap on + counts, and shows at once, on a slow network', (tester) async {
+      // Staff who see nothing happen tap again. A stepper that ignores taps
+      // while busy, or that sends the old number again before the refreshed
+      // cart arrives, leaves fewer boxes than were tapped.
+      var qty = 2;
+      final serve = shop(
+        cart: () => cartJson([cartLineJson(syringe, qty, lineTotal: '25.00')], total: '25.00'),
+      );
+      await pumpSignedIn(tester, (req) {
+        if (req.method == 'PATCH' && req.path == '/cart/lines/i1') {
+          qty = (req.body as Map)['qtyBoxes'] as int;
+        }
+        return serve(req);
+      }, latency: const Duration(milliseconds: 300));
+      await tester.tap(find.byTooltip('السلة'));
+      await tester.pumpAndSettle();
+
+      final plus = onLine('سرنجة 5 مل', find.byTooltip('زيادة الكمية'));
+      // Three taps while the first request is in flight.
+      await tester.tap(plus);
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.tap(plus);
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.tap(plus);
+      // 450 ms in: the first answer is back, the refreshed cart is not.
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(onLine('سرنجة 5 مل', find.text('5')), findsOneWidget);
+
+      await tester.tap(plus);
+      await tester.pump();
+      expect(onLine('سرنجة 5 مل', find.text('6')), findsOneWidget);
+
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      await tester.pumpAndSettle();
+      expect(qty, 6);
+      expect(onLine('سرنجة 5 مل', find.text('6')), findsOneWidget);
+    });
+
     testWidgets('labels an unavailable line and will not increase it', (tester) async {
       await openCart(
         tester,

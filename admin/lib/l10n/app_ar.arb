@@ -535,5 +535,73 @@
   "orderCancelled": "تم إلغاء الطلب",
   "@orderCancelled": {
     "description": "Phase 3 orders: snackbar after a cancellation"
+  },
+  "hotDeals": "العروض",
+  "@hotDeals": {
+    "description": "Phase 3 hot deals: tab label and screen title"
+  },
+  "hotDealsRebuildHint": "تُحسب العروض «الأكثر طلباً» و«الجديدة» عند إعادة البناء، أما المثبّتة فتبقى كما هي.",
+  "@hotDealsRebuildHint": {
+    "description": "Phase 3 hot deals: what rebuild recomputes and what it leaves alone"
+  },
+  "rebuildHotDeals": "إعادة بناء القائمة",
+  "@rebuildHotDeals": {
+    "description": "Phase 3 hot deals: rebuild button"
+  },
+  "hotDealsRebuilt": "تمت إعادة بناء العروض",
+  "@hotDealsRebuilt": {
+    "description": "Phase 3 hot deals: snackbar after a rebuild"
+  },
+  "hotDealsLastRebuilt": "آخر إعادة بناء",
+  "@hotDealsLastRebuilt": {
+    "description": "Phase 3 hot deals: label before the last rebuild time"
+  },
+  "hotDealsNeverRebuilt": "لم تُبنَ القائمة بعد",
+  "@hotDealsNeverRebuilt": {
+    "description": "Phase 3 hot deals: no rebuild has run yet"
+  },
+  "noHotDeals": "لا توجد عروض بعد",
+  "@noHotDeals": {
+    "description": "Phase 3 hot deals: empty list"
+  },
+  "hotDealKindManual": "مثبّت",
+  "@hotDealKindManual": {
+    "description": "Phase 3 hot deals: kind MANUAL"
+  },
+  "hotDealKindFrequent": "الأكثر طلباً",
+  "@hotDealKindFrequent": {
+    "description": "Phase 3 hot deals: kind FREQUENT"
+  },
+  "hotDealKindNew": "جديد",
+  "@hotDealKindNew": {
+    "description": "Phase 3 hot deals: kind NEW"
+  },
+  "hotDealKindUnknown": "غير معروف",
+  "@hotDealKindUnknown": {
+    "description": "Phase 3 hot deals: a kind this app version does not know"
+  },
+  "hotDealHiddenInactive": "مخفي عن العملاء: الصنف غير مفعّل",
+  "@hotDealHiddenInactive": {
+    "description": "Phase 3 hot deals: the entry's item is inactive, so clinics do not see it"
+  },
+  "pinItem": "تثبيت صنف",
+  "@pinItem": {
+    "description": "Phase 3 hot deals: floating button that opens the pin picker"
+  },
+  "pinItemTitle": "اختر صنفاً لتثبيته في العروض",
+  "@pinItemTitle": {
+    "description": "Phase 3 hot deals: pin picker title"
+  },
+  "unpin": "إلغاء التثبيت",
+  "@unpin": {
+    "description": "Phase 3 hot deals: unpin button on a MANUAL entry"
+  },
+  "itemPinned": "تم تثبيت الصنف",
+  "@itemPinned": {
+    "description": "Phase 3 hot deals: snackbar after pinning"
+  },
+  "noItemsToPin": "لا توجد أصناف مفعّلة غير مثبّتة",
+  "@noItemsToPin": {
+    "description": "Phase 3 hot deals: every active item is already pinned"
   }
 }

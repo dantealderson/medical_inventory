@@ -420,4 +420,56 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orderCancelled => 'تم إلغاء الطلب';
+
+  @override
+  String get hotDeals => 'العروض';
+
+  @override
+  String get hotDealsRebuildHint =>
+      'تُحسب العروض «الأكثر طلباً» و«الجديدة» عند إعادة البناء، أما المثبّتة فتبقى كما هي.';
+
+  @override
+  String get rebuildHotDeals => 'إعادة بناء القائمة';
+
+  @override
+  String get hotDealsRebuilt => 'تمت إعادة بناء العروض';
+
+  @override
+  String get hotDealsLastRebuilt => 'آخر إعادة بناء';
+
+  @override
+  String get hotDealsNeverRebuilt => 'لم تُبنَ القائمة بعد';
+
+  @override
+  String get noHotDeals => 'لا توجد عروض بعد';
+
+  @override
+  String get hotDealKindManual => 'مثبّت';
+
+  @override
+  String get hotDealKindFrequent => 'الأكثر طلباً';
+
+  @override
+  String get hotDealKindNew => 'جديد';
+
+  @override
+  String get hotDealKindUnknown => 'غير معروف';
+
+  @override
+  String get hotDealHiddenInactive => 'مخفي عن العملاء: الصنف غير مفعّل';
+
+  @override
+  String get pinItem => 'تثبيت صنف';
+
+  @override
+  String get pinItemTitle => 'اختر صنفاً لتثبيته في العروض';
+
+  @override
+  String get unpin => 'إلغاء التثبيت';
+
+  @override
+  String get itemPinned => 'تم تثبيت الصنف';
+
+  @override
+  String get noItemsToPin => 'لا توجد أصناف مفعّلة غير مثبّتة';
 }

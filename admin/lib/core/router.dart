@@ -8,6 +8,7 @@ import '../features/auth/login_screen.dart';
 import '../features/catalog/batches_screen.dart';
 import '../features/catalog/categories_screen.dart';
 import '../features/catalog/items_screen.dart';
+import '../features/hot_deals/hot_deals_screen.dart';
 import '../features/orders/order_detail_screen.dart';
 import '../features/orders/orders_screen.dart';
 import 'auth_controller.dart';
@@ -22,6 +23,7 @@ abstract final class Routes {
   static const batches = '/catalog/batches';
   static const orders = '/orders';
   static String order(String id) => '/orders/$id';
+  static const hotDeals = '/hot-deals';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -65,6 +67,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/orders/:id',
         builder: (_, state) => OrderDetailScreen(orderId: state.pathParameters['id']!),
       ),
+      GoRoute(path: Routes.hotDeals, builder: (_, _) => const HotDealsScreen()),
     ],
   );
 });

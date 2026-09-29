@@ -897,6 +897,108 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم إلغاء الطلب'**
   String get orderCancelled;
+
+  /// Phase 3 hot deals: tab label and screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض'**
+  String get hotDeals;
+
+  /// Phase 3 hot deals: what rebuild recomputes and what it leaves alone
+  ///
+  /// In ar, this message translates to:
+  /// **'تُحسب العروض «الأكثر طلباً» و«الجديدة» عند إعادة البناء، أما المثبّتة فتبقى كما هي.'**
+  String get hotDealsRebuildHint;
+
+  /// Phase 3 hot deals: rebuild button
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة بناء القائمة'**
+  String get rebuildHotDeals;
+
+  /// Phase 3 hot deals: snackbar after a rebuild
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت إعادة بناء العروض'**
+  String get hotDealsRebuilt;
+
+  /// Phase 3 hot deals: label before the last rebuild time
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر إعادة بناء'**
+  String get hotDealsLastRebuilt;
+
+  /// Phase 3 hot deals: no rebuild has run yet
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُبنَ القائمة بعد'**
+  String get hotDealsNeverRebuilt;
+
+  /// Phase 3 hot deals: empty list
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد عروض بعد'**
+  String get noHotDeals;
+
+  /// Phase 3 hot deals: kind MANUAL
+  ///
+  /// In ar, this message translates to:
+  /// **'مثبّت'**
+  String get hotDealKindManual;
+
+  /// Phase 3 hot deals: kind FREQUENT
+  ///
+  /// In ar, this message translates to:
+  /// **'الأكثر طلباً'**
+  String get hotDealKindFrequent;
+
+  /// Phase 3 hot deals: kind NEW
+  ///
+  /// In ar, this message translates to:
+  /// **'جديد'**
+  String get hotDealKindNew;
+
+  /// Phase 3 hot deals: a kind this app version does not know
+  ///
+  /// In ar, this message translates to:
+  /// **'غير معروف'**
+  String get hotDealKindUnknown;
+
+  /// Phase 3 hot deals: the entry's item is inactive, so clinics do not see it
+  ///
+  /// In ar, this message translates to:
+  /// **'مخفي عن العملاء: الصنف غير مفعّل'**
+  String get hotDealHiddenInactive;
+
+  /// Phase 3 hot deals: floating button that opens the pin picker
+  ///
+  /// In ar, this message translates to:
+  /// **'تثبيت صنف'**
+  String get pinItem;
+
+  /// Phase 3 hot deals: pin picker title
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر صنفاً لتثبيته في العروض'**
+  String get pinItemTitle;
+
+  /// Phase 3 hot deals: unpin button on a MANUAL entry
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء التثبيت'**
+  String get unpin;
+
+  /// Phase 3 hot deals: snackbar after pinning
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تثبيت الصنف'**
+  String get itemPinned;
+
+  /// Phase 3 hot deals: every active item is already pinned
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف مفعّلة غير مثبّتة'**
+  String get noItemsToPin;
 }
 
 class _AppLocalizationsDelegate

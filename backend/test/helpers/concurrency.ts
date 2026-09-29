@@ -80,3 +80,22 @@ export async function waitForLockWaiters(
   }
   throw new Error(`waitForLockWaiters: wanted ${count} blocked session(s), saw ${seen}`);
 }
+
+export interface HeldLock {
+  /** Ends the holding transaction (it wrote nothing) and lets the waiters through. */
+  release(): Promise<void>;
+}
+
+/**
+ * Takes FOR UPDATE on one orders row and parks. Every order transition starts
+ * with lockOrder() (D1), so any request for this order queues behind it until
+ * release(). Tests use it to make two HTTP requests provably overlap.
+ */
+export async function holdOrderRowLock(prisma: PrismaClient, orderId: string): Promise<HeldLock> {
+  const held = await runAndHold(prisma, async (tx) => {
+    const rows = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM "orders" WHERE id = ${orderId} FOR UPDATE`;
+    if (rows.length !== 1) throw new Error(`holdOrderRowLock: no order ${orderId}`);
+  });
+  return { release: () => held.commit() };
+}

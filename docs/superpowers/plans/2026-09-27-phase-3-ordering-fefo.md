@@ -7598,7 +7598,7 @@ The 500 comes from Task 3's defence in depth. Without that check the second requ
 
 Run: `cd backend && npm run typecheck && npm run test:e2e`
 
-Expected: typecheck clean, and **325 passed**: Task 5's 308, plus 2 audit and 13 confirmation tests. That includes the Phase 1–2 suites that call `audit.record(entry)` without a client.
+Expected: typecheck clean, and **323 passed**: Task 5's 308, plus 2 audit and 13 confirmation tests. That includes the Phase 1–2 suites that call `audit.record(entry)` without a client.
 
 ```bash
 git add backend/src/orders/dto/confirm-order.dto.ts backend/src/orders/order-confirmation.service.ts backend/src/orders/admin-orders.controller.ts backend/src/orders/orders.module.ts backend/test/helpers/concurrency.ts backend/test/e2e/orders-confirm.e2e-spec.ts
@@ -9246,7 +9246,7 @@ Run: `cd backend && npm test && npm run test:e2e && npm run typecheck`
 
 Expected:
 - unit: **184 passed**
-- e2e + integration: **349 passed** (325 + 9 delivery + 17 cancellation), covering all Phase 1–2 suites plus Tasks 1–8
+- e2e + integration: **349 passed** (323 + 9 delivery + 17 cancellation), covering all Phase 1–2 suites plus Tasks 1–8
 - typecheck: clean
 
 ```bash

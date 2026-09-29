@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AllocationModule } from '../allocation/allocation.module';
 import { AdminOrdersController } from './admin-orders.controller';
+import { OrderConfirmationService } from './order-confirmation.service';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 
@@ -10,6 +11,6 @@ import { OrdersService } from './orders.service';
   // through AllocationService.
   imports: [AllocationModule],
   controllers: [OrdersController, AdminOrdersController],
-  providers: [OrdersService],
+  providers: [OrdersService, OrderConfirmationService],
 })
 export class OrdersModule {}

@@ -1,8 +1,12 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AccessTokenPayload } from '../auth/token.service';
+import { ConfirmOrderDto } from './dto/confirm-order.dto';
+import { OrderConfirmationService, type AllocationPreviewView } from './order-confirmation.service';
 import { AdminListOrdersDto } from './dto/list-orders.dto';
 import type { OrderPage, OrderView } from './order-views';
 import { OrdersService } from './orders.service';
@@ -14,7 +18,10 @@ import { OrdersService } from './orders.service';
 @Roles(Role.ADMIN)
 @Controller('admin/orders')
 export class AdminOrdersController {
-  constructor(private readonly orders: OrdersService) {}
+  constructor(
+    private readonly orders: OrdersService,
+    private readonly confirmation: OrderConfirmationService,
+  ) {}
 
   @Get()
   list(@Query() query: AdminListOrdersDto): Promise<OrderPage> {
@@ -24,5 +31,25 @@ export class AdminOrdersController {
   @Get(':id')
   get(@Param('id') id: string): Promise<OrderView> {
     return this.orders.getForAdmin(id);
+  }
+
+  /** Read-only: what confirm would allocate right now, with these edits. */
+  @Post(':id/allocation-preview')
+  @HttpCode(HttpStatus.OK)
+  previewAllocation(
+    @Param('id') id: string,
+    @Body() dto: ConfirmOrderDto,
+  ): Promise<AllocationPreviewView> {
+    return this.confirmation.preview(id, dto);
+  }
+
+  @Post(':id/confirm')
+  @HttpCode(HttpStatus.OK)
+  confirm(
+    @CurrentUser() admin: AccessTokenPayload,
+    @Param('id') id: string,
+    @Body() dto: ConfirmOrderDto,
+  ): Promise<OrderView> {
+    return this.confirmation.confirm(admin.sub, id, dto);
   }
 }

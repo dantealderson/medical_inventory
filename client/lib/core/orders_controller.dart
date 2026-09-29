@@ -100,7 +100,9 @@ class OrderHistoryState {
   bool get hasMore => nextCursor != null;
 }
 
-/// Order history, newest first, one page at a time.
+/// Order history, newest first, one page at a time. Auto-disposed, so each
+/// visit to the orders screen reads the current statuses rather than the ones
+/// cached from the last visit.
 class OrderHistory extends AsyncNotifier<OrderHistoryState> {
   bool _loadingMore = false;
 
@@ -130,12 +132,14 @@ class OrderHistory extends AsyncNotifier<OrderHistoryState> {
   }
 }
 
-final orderHistoryProvider = AsyncNotifierProvider<OrderHistory, OrderHistoryState>(
+final orderHistoryProvider = AsyncNotifierProvider.autoDispose<OrderHistory, OrderHistoryState>(
   OrderHistory.new,
 );
 
 /// One order, by id. The server answers 404 for another clinic's order.
-final orderProvider = FutureProvider.family<Order, String>((ref, id) {
+/// Auto-disposed: the supplier moves orders along, and reopening an order must
+/// show where it is now, not offer a cancel the server will refuse.
+final orderProvider = FutureProvider.autoDispose.family<Order, String>((ref, id) {
   _watchUserId(ref);
   return ref.watch(ordersApiProvider).get(id);
 });
@@ -148,8 +152,9 @@ final hotDealsProvider = FutureProvider<HotDeals>((ref) async {
 }, retry: _noRetry);
 
 /// The expiry of the stock a clinic would receive (§12.2). Item detail hides
-/// it on failure, so it is not retried.
-final itemAvailabilityProvider = FutureProvider.family<ItemAvailability, String>(
+/// it on failure, so it is not retried. Auto-disposed, so a restock shows up
+/// the next time the item is opened, not after an app restart.
+final itemAvailabilityProvider = FutureProvider.autoDispose.family<ItemAvailability, String>(
   (ref, itemId) => ref.watch(itemsApiProvider).availability(itemId),
   retry: _noRetry,
 );

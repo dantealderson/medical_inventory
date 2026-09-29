@@ -45,9 +45,15 @@ class SeenRequest {
 /// sequences testable (first call 401, second 200), the shape the
 /// refresh-and-retry behaviour actually needs.
 class FakeApiBackend implements HttpClientAdapter {
-  FakeApiBackend(this.handler);
+  FakeApiBackend(this.handler, {this.latency = Duration.zero});
 
   final List<Object?> Function(SeenRequest req, int nth) handler;
+
+  /// How long each response takes. Zero answers at once. A real network
+  /// never does, and a UI that only works when answers are instant (for
+  /// example one that ignores taps while a request is in flight) looks fine
+  /// until it meets one.
+  final Duration latency;
 
   final List<SeenRequest> seen = [];
   final Map<String, int> _counts = {};
@@ -77,6 +83,7 @@ class FakeApiBackend implements HttpClientAdapter {
     seen.add(req);
     final nth = _counts.update(options.path, (v) => v + 1, ifAbsent: () => 1);
 
+    if (latency > Duration.zero) await Future<void>.delayed(latency);
     final result = handler(req, nth);
     final status = result[0] as int;
     final body = result[1];

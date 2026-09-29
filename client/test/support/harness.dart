@@ -45,9 +45,10 @@ Future<FakeApiBackend> pumpApp(
   List<Object?> Function(SeenRequest req) handler, {
   TokenStore? store,
   Duration? Function(int retryCount, Object error)? retry,
+  Duration latency = Duration.zero,
 }) async {
   final client = ApiClient(baseUrl: 'http://test.local/api/v1');
-  final backend = FakeApiBackend((req, _) => handler(req))..attachTo(client);
+  final backend = FakeApiBackend((req, _) => handler(req), latency: latency)..attachTo(client);
 
   await tester.pumpWidget(
     ProviderScope(
@@ -69,10 +70,11 @@ Future<FakeApiBackend> pumpSignedIn(
   WidgetTester tester,
   List<Object?> Function(SeenRequest req) handler, {
   Duration? Function(int retryCount, Object error)? retry,
+  Duration latency = Duration.zero,
 }) async {
   final store = InMemoryTokenStore();
   await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
-  return pumpApp(tester, handler, store: store, retry: retry);
+  return pumpApp(tester, handler, store: store, retry: retry, latency: latency);
 }
 
 /// Finds a text field by the label its decoration carries.

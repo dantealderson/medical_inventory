@@ -73,6 +73,36 @@ void main() {
       expect(find.text('تمت إضافة سرنجة 5 مل إلى السلة'), findsOneWidget);
     });
 
+    testWidgets('five quick taps add five boxes, even while each request is in flight', (
+      tester,
+    ) async {
+      // Review Focus 1: five rapid taps are five boxes. With a real network
+      // the first request is still in flight when the second tap lands. A
+      // button that ignores taps while busy would send one request and
+      // quietly lose four boxes.
+      final backend = await pumpSignedIn(
+        tester,
+        shop(cart: () => emptyCartJson),
+        latency: const Duration(milliseconds: 300),
+      );
+      await tester.tap(find.text('سرنجات'));
+      await tester.pumpAndSettle();
+
+      final plus = find.descendant(
+        of: find.widgetWithText(ItemCard, 'سرنجة 5 مل'),
+        matching: find.byType(PlusButton),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.tap(plus);
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      await tester.pumpAndSettle();
+
+      final adds = backend.seen.where((r) => r.path == '/cart/lines' && r.method == 'POST');
+      expect(adds, hasLength(5));
+      expect(adds.every((r) => (r.body as Map)['qtyBoxes'] == 1), isTrue);
+    });
+
     testWidgets('+ on the item detail adds one box', (tester) async {
       final backend = await pumpSignedIn(tester, shop(cart: () => emptyCartJson));
       await tester.tap(find.text('سرنجات'));

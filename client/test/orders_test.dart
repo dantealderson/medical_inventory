@@ -210,6 +210,36 @@ void main() {
       expect(find.text('عدّل المورد الكمية التي طلبتها'), findsNothing);
     });
 
+    testWidgets('reopening an order shows its current status, not a cached one', (tester) async {
+      // The supplier confirmed it meanwhile. Showing the stale PLACED status
+      // would offer a cancel the server then refuses.
+      var current = orderJson();
+      final backend = await pumpSignedIn(tester, (req) {
+        if (req.path == '/orders/o1' && req.method == 'GET') return [200, current];
+        return orderBackend(
+          history: {
+            'items': [orderSummaryJson(id: 'o1')],
+            'nextCursor': null,
+          },
+        )(req);
+      });
+      await tester.tap(find.byTooltip('طلباتي'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ListTile).first);
+      await tester.pumpAndSettle();
+      expect(find.text('إلغاء الطلب'), findsOneWidget);
+
+      current = orderJson(status: 'CONFIRMED', confirmedAt: '2026-09-02T13:00:00.000Z');
+      await tester.tap(find.byType(BackButtonIcon));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ListTile).first);
+      await tester.pumpAndSettle();
+
+      expect(backend.callsTo('/orders/o1'), 2);
+      expect(find.text('مؤكد'), findsOneWidget);
+      expect(find.text('إلغاء الطلب'), findsNothing);
+    });
+
     testWidgets('offers cancel only while the order waits for confirmation', (tester) async {
       await openOrder(tester, orderJson(status: 'CONFIRMED', confirmedAt: '2026-09-02T13:00:00.000Z'));
       expect(find.text('إلغاء الطلب'), findsNothing);

@@ -155,6 +155,33 @@ void main() {
       expect(find.text('صلاحية الكمية التي ستصلك'), findsNothing);
     });
 
+    testWidgets('asks again on every visit, so a restock shows up', (tester) async {
+      // A clinic told «غير متوفر حالياً» must not keep being told so for the
+      // rest of the session after the warehouse restocks.
+      var availability = <Object?>[200, {'itemId': 'i1', 'inStock': false, 'nextExpiryDate': null}];
+      final base = home();
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/items/i1/availability') return availability;
+        return base(req);
+      });
+      await tester.tap(find.text('سرنجات'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('سرنجة 5 مل'));
+      await tester.pumpAndSettle();
+      expect(find.text('غير متوفر حالياً'), findsOneWidget);
+
+      availability = [200, {'itemId': 'i1', 'inStock': true, 'nextExpiryDate': '2027-03-01'}];
+      await tester.tap(find.byType(BackButtonIcon));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('سرنجات'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('سرنجة 5 مل'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2027/03/01'), findsOneWidget);
+      expect(find.text('غير متوفر حالياً'), findsNothing);
+    });
+
     testWidgets('hides the row when availability cannot be read', (tester) async {
       await openItem(tester, [404, null]);
 

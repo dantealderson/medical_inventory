@@ -269,4 +269,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dispositionUnknown => 'أُلغي الطلب.';
+
+  @override
+  String get nextExpiry => 'صلاحية الكمية التي ستصلك';
+
+  @override
+  String get currentlyUnavailable => 'غير متوفر حالياً';
 }

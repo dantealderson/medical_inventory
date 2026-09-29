@@ -579,6 +579,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أُلغي الطلب.'**
   String get dispositionUnknown;
+
+  /// Phase 3 item detail: label of the expiry date of the stock an order would receive now
+  ///
+  /// In ar, this message translates to:
+  /// **'صلاحية الكمية التي ستصلك'**
+  String get nextExpiry;
+
+  /// Phase 3 item detail: nothing in stock with enough shelf life to ship
+  ///
+  /// In ar, this message translates to:
+  /// **'غير متوفر حالياً'**
+  String get currentlyUnavailable;
 }
 
 class _AppLocalizationsDelegate

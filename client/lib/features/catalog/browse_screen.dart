@@ -9,12 +9,11 @@ import '../../core/catalog_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/cart_badge_button.dart';
+import '../home/hot_deals_carousel.dart';
 import 'item_card.dart';
 
-/// The client home: a search bar and the top-level categories.
-///
-/// Phase 3 adds the rotating hot-deals bar and the low-stock strip above the
-/// categories; Phase 4 adds the inventory entry point.
+/// The client home: a search bar, the rotating hot deals, and the top-level
+/// categories. Phase 4 adds the low-stock strip and the inventory entry point.
 class BrowseScreen extends ConsumerWidget {
   const BrowseScreen({super.key});
 
@@ -43,6 +42,7 @@ class BrowseScreen extends ConsumerWidget {
       body: Column(
         children: [
           const _SearchBar(),
+          const HotDealsCarousel(),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async => ref.invalidate(categoryTreeProvider),

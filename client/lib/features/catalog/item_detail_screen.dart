@@ -5,13 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/catalog_controller.dart';
+import '../../core/formatting.dart';
+import '../../core/orders_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
 
 /// Full detail for one item.
 ///
-/// It carries the large **+** that adds a box to the cart.
+/// It carries the large **+** that adds a box to the cart, and the expiry of
+/// the stock the clinic would actually receive (§12.2).
 class ItemDetailScreen extends ConsumerWidget {
   const ItemDetailScreen({required this.itemId, super.key});
 
@@ -63,6 +66,8 @@ class ItemDetailScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               _DetailRow(label: l10n.pricePerBox, value: data.pricePerBox),
+              const SizedBox(height: 12),
+              _NextExpiry(itemId: itemId),
               const SizedBox(height: 24),
               Align(
                 alignment: AlignmentDirectional.centerEnd,
@@ -80,6 +85,32 @@ class ItemDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+/// What an order confirmed now would receive: the expiry of the batch the
+/// warehouse would ship first, by the same shelf-life rule it allocates with.
+/// A date, never a quantity. Hidden while loading or when it cannot be read,
+/// because it is helpful, not essential.
+class _NextExpiry extends ConsumerWidget {
+  const _NextExpiry({required this.itemId});
+
+  final String itemId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final availability = ref.watch(itemAvailabilityProvider(itemId)).value;
+    if (availability == null) return const SizedBox.shrink();
+
+    final date = availability.nextExpiryDate;
+    if (!availability.inStock || date == null) {
+      return Text(
+        l10n.currentlyUnavailable,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.appColors.danger),
+      );
+    }
+    return _DetailRow(label: l10n.nextExpiry, value: formatCalendarDate(date));
   }
 }
 

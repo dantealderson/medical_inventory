@@ -358,5 +358,13 @@
   "dispositionUnknown": "أُلغي الطلب.",
   "@dispositionUnknown": {
     "description": "Phase 3 orders: a disposition this app version does not know"
+  },
+"nextExpiry": "صلاحية الكمية التي ستصلك",
+  "@nextExpiry": {
+    "description": "Phase 3 item detail: label of the expiry date of the stock an order would receive now"
+  },
+  "currentlyUnavailable": "غير متوفر حالياً",
+  "@currentlyUnavailable": {
+    "description": "Phase 3 item detail: nothing in stock with enough shelf life to ship"
   }
 }

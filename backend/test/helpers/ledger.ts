@@ -81,3 +81,54 @@ export async function expectClientLedgerMatchesCache(
     [],
   );
 }
+
+/**
+ * Phase 4's shelf invariant, per item: ledger == cache, and
+ * 0 ≤ Σ holdings ≤ cache.
+ *
+ * Holdings may fall short of the cache once a stock count finds more than the
+ * system believed: those extra units have no known batch, and inventing one
+ * would invent an expiry date. Phase 3 suites keep the strict
+ * expectClientLedgerMatchesCache, where holdings must equal the cache.
+ */
+export async function expectClientShelfConsistent(
+  prisma: PrismaClient,
+  clientId: string,
+): Promise<void> {
+  const broken = await prisma.$queryRaw<
+    Array<{ itemId: string; ledger: number; cache: number; holdings: number }>
+  >`
+    WITH ledger AS (
+      SELECT "itemId", SUM("qtyUnitsDelta")::int AS units
+      FROM "stock_movements"
+      WHERE "ownerType" = 'CLIENT' AND "clientId" = ${clientId}
+      GROUP BY "itemId"
+    ), cache AS (
+      SELECT "itemId", "qtyUnits" AS units
+      FROM "client_inventory_items"
+      WHERE "clientId" = ${clientId}
+    ), holdings AS (
+      SELECT b."itemId", SUM(h."qtyUnits")::int AS units, MIN(h."qtyUnits") AS smallest
+      FROM "client_batch_holdings" h
+      JOIN "warehouse_batches" b ON b.id = h."batchId"
+      WHERE h."clientId" = ${clientId}
+      GROUP BY b."itemId"
+    ), items AS (
+      SELECT "itemId" FROM ledger
+      UNION SELECT "itemId" FROM cache
+      UNION SELECT "itemId" FROM holdings
+    )
+    SELECT i."itemId",
+           COALESCE(l.units, 0) AS ledger,
+           COALESCE(c.units, 0) AS cache,
+           COALESCE(h.units, 0) AS holdings
+    FROM items i
+    LEFT JOIN ledger l ON l."itemId" = i."itemId"
+    LEFT JOIN cache c ON c."itemId" = i."itemId"
+    LEFT JOIN holdings h ON h."itemId" = i."itemId"
+    WHERE COALESCE(l.units, 0) <> COALESCE(c.units, 0)
+       OR COALESCE(h.units, 0) > COALESCE(c.units, 0)
+       OR COALESCE(h.smallest, 0) < 0
+    ORDER BY i."itemId"`;
+  expect(broken, `items where client ${clientId}'s shelf is inconsistent`).toEqual([]);
+}

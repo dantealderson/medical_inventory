@@ -167,3 +167,68 @@ export async function createPlacedOrder(
   });
   return { orderId: order.id, lineIds: order.lines.map((line) => line.id) };
 }
+
+/**
+ * What ClientInventoryService.creditDelivery writes for one batch, without an
+ * order: the holding, a DELIVERY_IN at `at`, and the item row. Phase 4 tests
+ * need deliveries at chosen dates, which the order flow cannot backdate. It
+ * does not touch the warehouse, whose units left at confirmation.
+ */
+export async function deliverToClient(
+  prisma: PrismaClient,
+  input: { clientId: string; itemId: string; batchId: string; qtyUnits: number; at?: Date },
+): Promise<void> {
+  const at = input.at ?? new Date();
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`
+      INSERT INTO "client_batch_holdings" ("id", "clientId", "batchId", "qtyUnits", "createdAt", "updatedAt")
+      VALUES (gen_random_uuid(), ${input.clientId}, ${input.batchId}, ${input.qtyUnits}::int, ${at}, ${at})
+      ON CONFLICT ("clientId", "batchId") DO UPDATE
+        SET "qtyUnits" = "client_batch_holdings"."qtyUnits" + EXCLUDED."qtyUnits"`;
+    await tx.stockMovement.create({
+      data: {
+        ownerType: OwnerType.CLIENT,
+        clientId: input.clientId,
+        itemId: input.itemId,
+        batchId: input.batchId,
+        qtyUnitsDelta: input.qtyUnits,
+        reason: MovementReason.DELIVERY_IN,
+        refType: 'order',
+        refId: 'fixture',
+        createdAt: at,
+      },
+    });
+    await tx.$executeRaw`
+      INSERT INTO "client_inventory_items" ("clientId", "itemId", "qtyUnits", "createdAt", "updatedAt")
+      VALUES (${input.clientId}, ${input.itemId}, ${input.qtyUnits}::int, ${at}, ${at})
+      ON CONFLICT ("clientId", "itemId") DO UPDATE
+        SET "qtyUnits" = "client_inventory_items"."qtyUnits" + EXCLUDED."qtyUnits"`;
+  });
+}
+
+/**
+ * A stock count of one item and nothing else: no movement, no reset. For
+ * estimator tests, which read counts and nothing more.
+ */
+export async function writeCount(
+  prisma: PrismaClient,
+  input: { clientId: string; itemId: string; countedAt: Date; qtyUnits: number; previousQtyUnits?: number },
+): Promise<string> {
+  const previous = input.previousQtyUnits ?? 0;
+  const count = await prisma.stockCount.create({
+    data: {
+      clientId: input.clientId,
+      countedAt: input.countedAt,
+      createdByUserId: input.clientId,
+      lines: {
+        create: {
+          itemId: input.itemId,
+          countedQtyUnits: input.qtyUnits,
+          previousQtyUnits: previous,
+          deltaUnits: input.qtyUnits - previous,
+        },
+      },
+    },
+  });
+  return count.id;
+}

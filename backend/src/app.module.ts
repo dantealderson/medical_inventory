@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ClientInventoryModule } from './client-inventory/client-inventory.module';
+import { EstimationModule } from './estimation/estimation.module';
 import { ItemsModule } from './items/items.module';
 import { MediaModule } from './media/media.module';
 import { OrdersModule } from './orders/orders.module';
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     ClientInventoryModule,
     OrdersModule,
     HotDealsModule,
+    EstimationModule,
   ],
   providers: [
     // Order matters: JwtAuthGuard populates request.user, which RolesGuard

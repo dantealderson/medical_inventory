@@ -47,6 +47,9 @@ export const ERROR_CODES = Object.freeze({
   ORDER_NOTHING_TO_FULFIL: 'لا تتوفر أي كمية من أصناف هذا الطلب، يرجى إلغاؤه بدلاً من تأكيده',
   DISPOSITION_REQUIRED: 'يجب تحديد مصير البضاعة عند إلغاء طلب خرج للتوصيل',
   DISPOSITION_NOT_APPLICABLE: 'لا يُحدَّد مصير البضاعة إلا عند إلغاء طلب خرج للتوصيل',
+  // --- Inventory (Phase 4) ---
+  INVENTORY_ITEM_NOT_FOUND: 'الصنف غير موجود في المخزون',
+  CLIENT_NOT_FOUND: 'العميل غير موجود',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

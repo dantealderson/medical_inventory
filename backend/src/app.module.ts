@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AllocationModule } from './allocation/allocation.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ItemsModule } from './items/items.module';
 import { MediaModule } from './media/media.module';
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
     SearchModule,
     HealthModule,
     AllocationModule,
+    CartModule,
   ],
   providers: [
     // Order matters: JwtAuthGuard populates request.user, which RolesGuard

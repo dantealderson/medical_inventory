@@ -33,6 +33,20 @@ export const ERROR_CODES = Object.freeze({
   BATCH_ALREADY_EXPIRED: 'تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل',
   INVALID_IMAGE: 'الملف ليس صورة صالحة',
   IMAGE_TOO_LARGE: 'حجم الصورة أكبر من الحد المسموح',
+  // --- Ordering (Phase 3) ---
+  CART_EMPTY: 'السلة فارغة',
+  ITEM_UNAVAILABLE: 'هذا الصنف غير متوفر حالياً',
+  CART_HAS_UNAVAILABLE_ITEMS:
+    'بعض الأصناف في السلة لم تعد متوفرة، يرجى إزالتها ثم المحاولة مجدداً',
+  CART_LINE_LIMIT: 'تجاوزت الحد الأقصى للكمية المسموح بها لهذا الصنف',
+  CART_LINE_NOT_FOUND: 'الصنف غير موجود في السلة',
+  ORDER_NOT_FOUND: 'الطلب غير موجود',
+  ORDER_INVALID_TRANSITION: 'لا يمكن تنفيذ هذا الإجراء على الطلب في حالته الحالية',
+  ORDER_NOT_CANCELLABLE_BY_CLIENT: 'لا يمكن إلغاء الطلب بعد تأكيده، يرجى التواصل مع الإدارة',
+  ORDER_EDIT_INVALID: 'الكمية المعدلة يجب أن تكون بين صفر والكمية المطلوبة',
+  ORDER_NOTHING_TO_FULFIL: 'لا تتوفر أي كمية من أصناف هذا الطلب، يرجى إلغاؤه بدلاً من تأكيده',
+  DISPOSITION_REQUIRED: 'يجب تحديد مصير البضاعة عند إلغاء طلب خرج للتوصيل',
+  DISPOSITION_NOT_APPLICABLE: 'لا يُحدَّد مصير البضاعة إلا عند إلغاء طلب خرج للتوصيل',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

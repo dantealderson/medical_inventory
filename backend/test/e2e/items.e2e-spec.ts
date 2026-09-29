@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 const UUID_ZERO = '00000000-0000-0000-0000-000000000000';
 
@@ -55,13 +56,7 @@ describe('Items (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.auditLog.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     adminToken = await makeUser('the_admin', Role.ADMIN);
     clientToken = await makeUser('lab_one', Role.CLIENT);
     const c = await prisma.category.create({ data: { nameAr: 'مستهلكات', level: 1 } });
@@ -69,12 +64,7 @@ describe('Items (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

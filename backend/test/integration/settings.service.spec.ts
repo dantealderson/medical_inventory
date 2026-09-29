@@ -6,6 +6,7 @@ import { AppConfigModule } from '../../src/config/config.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { SETTING_DEFAULTS, SETTING_KEYS } from '../../src/settings/setting-defaults';
 import { SettingsService } from '../../src/settings/settings.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('SettingsService (integration)', () => {
   let prisma: PrismaService;
@@ -24,11 +25,11 @@ describe('SettingsService (integration)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.setting.deleteMany();
+    await resetDb(prisma);
   });
 
   afterAll(async () => {
-    await prisma.setting.deleteMany();
+    await resetDb(prisma);
     await prisma.$disconnect();
   });
 

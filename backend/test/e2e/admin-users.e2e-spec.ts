@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('Admin account management (e2e)', () => {
   let app: INestApplication;
@@ -39,9 +40,7 @@ describe('Admin account management (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.auditLog.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
 
     // There is deliberately no route that creates an admin, so promote one
     // directly — the same thing the seed script does.
@@ -54,9 +53,7 @@ describe('Admin account management (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.auditLog.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

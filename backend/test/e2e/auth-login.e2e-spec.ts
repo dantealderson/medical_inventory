@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('Login (e2e)', () => {
   let app: INestApplication;
@@ -27,13 +28,11 @@ describe('Login (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
   });
 
   afterAll(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

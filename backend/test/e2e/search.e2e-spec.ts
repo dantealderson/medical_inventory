@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 /**
  * The acceptance test for requirement 14. Every spelling a clinic might
@@ -30,12 +31,7 @@ describe('Search (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
 
     await http()
       .post('/api/v1/auth/register')
@@ -65,12 +61,7 @@ describe('Search (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuditService } from '../../src/audit/audit.service';
 import { AppConfigModule } from '../../src/config/config.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('AuditService (integration)', () => {
   let prisma: PrismaService;
@@ -22,11 +23,11 @@ describe('AuditService (integration)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.auditLog.deleteMany();
+    await resetDb(prisma);
   });
 
   afterAll(async () => {
-    await prisma.auditLog.deleteMany();
+    await resetDb(prisma);
     await prisma.$disconnect();
   });
 

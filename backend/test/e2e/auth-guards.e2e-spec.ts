@@ -10,6 +10,7 @@ import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import type { Env } from '../../src/config/env.schema';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('Guards (e2e)', () => {
   let app: INestApplication;
@@ -44,13 +45,11 @@ describe('Guards (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
   });
 
   afterAll(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

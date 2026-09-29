@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 /**
  * The functional suites make dozens of auth calls a minute, so
@@ -34,11 +35,11 @@ describe('Auth throttling (e2e)', () => {
     app = ref.createNestApplication();
     applyAppConfig(app);
     await app.init();
-    await app.get(PrismaService).user.deleteMany();
+    await resetDb(app.get(PrismaService));
   });
 
   afterAll(async () => {
-    await app.get(PrismaService).user.deleteMany();
+    await resetDb(app.get(PrismaService));
     await app.close();
   });
 

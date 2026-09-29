@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 /** A genuinely valid 1x1 PNG. */
 const PNG = Buffer.from(
@@ -46,15 +47,13 @@ describe('Media upload (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     adminToken = await makeUser('the_admin', Role.ADMIN);
     clientToken = await makeUser('lab_one', Role.CLIENT);
   });
 
   afterAll(async () => {
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

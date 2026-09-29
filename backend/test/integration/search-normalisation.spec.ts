@@ -3,6 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { AppConfigModule } from '../../src/config/config.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 describe('search_normalize_v1 (integration)', () => {
   let prisma: PrismaService;
@@ -101,19 +102,13 @@ describe('items.searchText trigger (integration)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
+    await resetDb(prisma);
     const c = await prisma.category.create({ data: { nameAr: 'مستهلكات', level: 1 } });
     categoryId = c.id;
   });
 
   afterAll(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
+    await resetDb(prisma);
     await prisma.$disconnect();
   });
 
@@ -180,11 +175,7 @@ describe('CHECK constraints (integration)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
 
     const c = await prisma.category.create({ data: { nameAr: 'مستهلكات', level: 1 } });
     categoryId = c.id;
@@ -205,11 +196,7 @@ describe('CHECK constraints (integration)', () => {
   });
 
   afterAll(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await prisma.$disconnect();
   });
 

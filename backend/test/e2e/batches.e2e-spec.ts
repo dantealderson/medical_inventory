@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../../src/app.module';
 import { applyAppConfig } from '../../src/app.setup';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { resetDb } from '../helpers/reset-db';
 
 const MS_PER_DAY = 86_400_000;
 const inDays = (n: number): string =>
@@ -49,13 +50,7 @@ describe('Warehouse batches (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.auditLog.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
 
     adminToken = await makeUser('the_admin', Role.ADMIN);
     clientToken = await makeUser('lab_one', Role.CLIENT);
@@ -72,12 +67,7 @@ describe('Warehouse batches (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.stockMovement.deleteMany();
-    await prisma.warehouseBatch.deleteMany();
-    await prisma.item.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.refreshToken.deleteMany();
-    await prisma.user.deleteMany();
+    await resetDb(prisma);
     await app.close();
   });
 

@@ -8,6 +8,8 @@ import '../features/auth/login_screen.dart';
 import '../features/catalog/batches_screen.dart';
 import '../features/catalog/categories_screen.dart';
 import '../features/catalog/items_screen.dart';
+import '../features/orders/order_detail_screen.dart';
+import '../features/orders/orders_screen.dart';
 import 'auth_controller.dart';
 
 abstract final class Routes {
@@ -18,6 +20,8 @@ abstract final class Routes {
   static const categories = '/catalog/categories';
   static const items = '/catalog/items';
   static const batches = '/catalog/batches';
+  static const orders = '/orders';
+  static String order(String id) => '/orders/$id';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -56,6 +60,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.categories, builder: (_, _) => const CategoriesScreen()),
       GoRoute(path: Routes.items, builder: (_, _) => const ItemsScreen()),
       GoRoute(path: Routes.batches, builder: (_, _) => const BatchesScreen()),
+      GoRoute(path: Routes.orders, builder: (_, _) => const OrdersScreen()),
+      GoRoute(
+        path: '/orders/:id',
+        builder: (_, state) => OrderDetailScreen(orderId: state.pathParameters['id']!),
+      ),
     ],
   );
 });

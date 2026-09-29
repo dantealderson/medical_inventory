@@ -67,8 +67,9 @@ class _AdminTabs extends StatelessWidget implements PreferredSizeWidget {
     final l10n = AppLocalizations.of(context)!;
     final location = GoRouterState.of(context).matchedLocation;
 
-    // A scrolling row rather than a TabBar: at 390px four fixed tabs overflow,
-    // and the admin must work in a phone browser.
+    // A scrolling row rather than a TabBar: at 390px the fixed tabs overflow,
+    // and the admin must work in a phone browser. Tabs past the edge are
+    // reached by scrolling, which is why tests ensureVisible before tapping.
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
@@ -78,6 +79,7 @@ class _AdminTabs extends StatelessWidget implements PreferredSizeWidget {
           _Tab(label: l10n.categories, route: Routes.categories, current: location),
           _Tab(label: l10n.items, route: Routes.items, current: location),
           _Tab(label: l10n.batches, route: Routes.batches, current: location),
+          _Tab(label: l10n.orders, route: Routes.orders, current: location),
         ],
       ),
     );

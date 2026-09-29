@@ -291,5 +291,249 @@
   "batchReceived": "تم تسجيل التشغيلة",
   "@batchReceived": {
     "description": "Phase 2 catalog: batchReceived"
+  },
+  "orders": "الطلبات",
+  "@orders": {
+    "description": "Phase 3 orders: tab label and queue title"
+  },
+  "orderDetails": "تفاصيل الطلب",
+  "@orderDetails": {
+    "description": "Phase 3 orders: detail screen title"
+  },
+  "noOrders": "لا توجد طلبات بهذه الحالة",
+  "@noOrders": {
+    "description": "Phase 3 orders: empty queue for the chosen status"
+  },
+  "ordersNotAllShown": "توجد طلبات أخرى غير معروضة هنا",
+  "@ordersNotAllShown": {
+    "description": "Phase 3 orders: the queue has more than one page"
+  },
+  "allStatuses": "الكل",
+  "@allStatuses": {
+    "description": "Phase 3 orders: filter chip for every status"
+  },
+  "orderStatusPlaced": "بانتظار التأكيد",
+  "@orderStatusPlaced": {
+    "description": "Phase 3 orders: status PLACED"
+  },
+  "orderStatusConfirmed": "مؤكد",
+  "@orderStatusConfirmed": {
+    "description": "Phase 3 orders: status CONFIRMED"
+  },
+  "orderStatusOutForDelivery": "قيد التوصيل",
+  "@orderStatusOutForDelivery": {
+    "description": "Phase 3 orders: status OUT_FOR_DELIVERY"
+  },
+  "orderStatusDelivered": "تم التسليم",
+  "@orderStatusDelivered": {
+    "description": "Phase 3 orders: status DELIVERED"
+  },
+  "orderStatusCancelled": "ملغى",
+  "@orderStatusCancelled": {
+    "description": "Phase 3 orders: status CANCELLED"
+  },
+  "orderStatusUnknown": "حالة غير معروفة",
+  "@orderStatusUnknown": {
+    "description": "Phase 3 orders: a status this app version does not know"
+  },
+  "placedAt": "تاريخ الطلب",
+  "@placedAt": {
+    "description": "Phase 3 orders: placement timestamp label"
+  },
+  "confirmedAt": "تاريخ التأكيد",
+  "@confirmedAt": {
+    "description": "Phase 3 orders: confirmation timestamp label"
+  },
+  "dispatchedAt": "تاريخ الإرسال",
+  "@dispatchedAt": {
+    "description": "Phase 3 orders: dispatch timestamp label"
+  },
+  "deliveredAt": "تاريخ التسليم",
+  "@deliveredAt": {
+    "description": "Phase 3 orders: delivery timestamp label"
+  },
+  "cancelledAt": "تاريخ الإلغاء",
+  "@cancelledAt": {
+    "description": "Phase 3 orders: cancellation timestamp label"
+  },
+  "orderTotal": "الإجمالي",
+  "@orderTotal": {
+    "description": "Phase 3 orders: cash total of the order"
+  },
+  "lineCount": "عدد الأصناف",
+  "@lineCount": {
+    "description": "Phase 3 orders: number of lines on a queue card"
+  },
+  "addressLabel": "العنوان",
+  "@addressLabel": {
+    "description": "Phase 3 orders: delivery address snapshot label"
+  },
+  "phoneLabel": "الهاتف",
+  "@phoneLabel": {
+    "description": "Phase 3 orders: phone snapshot label"
+  },
+  "clientNote": "ملاحظة العميل",
+  "@clientNote": {
+    "description": "Phase 3 orders: the clinic's note on the order"
+  },
+  "requestedQty": "المطلوب",
+  "@requestedQty": {
+    "description": "Phase 3 orders: quantity the clinic asked for"
+  },
+  "approvedQty": "المعتمد",
+  "@approvedQty": {
+    "description": "Phase 3 orders: quantity the admin approved"
+  },
+  "fulfilledQty": "المُجهَّز",
+  "@fulfilledQty": {
+    "description": "Phase 3 orders: quantity actually allocated from the warehouse"
+  },
+  "lineTotal": "إجمالي الصنف",
+  "@lineTotal": {
+    "description": "Phase 3 orders: billed amount of one line"
+  },
+  "adjustedFlag": "عُدّلت الكمية عند التأكيد",
+  "@adjustedFlag": {
+    "description": "Phase 3 orders: the admin approved less than requested"
+  },
+  "shortFlag": "نقص في المستودع",
+  "@shortFlag": {
+    "description": "Phase 3 orders: the warehouse could not fill the approved quantity"
+  },
+  "allocatedBatches": "التشغيلات المخصّصة",
+  "@allocatedBatches": {
+    "description": "Phase 3 orders: heading over the FEFO allocation rows"
+  },
+  "expires": "ينتهي في",
+  "@expires": {
+    "description": "Phase 3 orders: prefix before a batch expiry date"
+  },
+  "releasedFlag": "أُلغي الحجز",
+  "@releasedFlag": {
+    "description": "Phase 3 orders: an allocation released back to its batch"
+  },
+  "reviewTitle": "مراجعة الكميات قبل التأكيد",
+  "@reviewTitle": {
+    "description": "Phase 3 orders: heading of the PLACED review panel"
+  },
+  "approvedBoxesLabel": "الكمية المعتمدة (علب)",
+  "@approvedBoxesLabel": {
+    "description": "Phase 3 orders: stepper label, in boxes"
+  },
+  "decreaseQty": "إنقاص علبة",
+  "@decreaseQty": {
+    "description": "Phase 3 orders: stepper minus tooltip"
+  },
+  "increaseQty": "زيادة علبة",
+  "@increaseQty": {
+    "description": "Phase 3 orders: stepper plus tooltip"
+  },
+  "previewAllocation": "معاينة التخصيص",
+  "@previewAllocation": {
+    "description": "Phase 3 orders: FEFO preview button"
+  },
+  "previewCutoff": "لا تُخصَّص تشغيلة تنتهي في هذا التاريخ أو قبله",
+  "@previewCutoff": {
+    "description": "Phase 3 orders: explains the shelf-life cutoff in the preview"
+  },
+  "projectedLineTotal": "الإجمالي المتوقع للصنف",
+  "@projectedLineTotal": {
+    "description": "Phase 3 orders: preview billed amount of one line"
+  },
+  "projectedTotal": "الإجمالي المتوقع",
+  "@projectedTotal": {
+    "description": "Phase 3 orders: preview billed total"
+  },
+  "confirmOrder": "تأكيد الطلب",
+  "@confirmOrder": {
+    "description": "Phase 3 orders: confirm button"
+  },
+  "orderConfirmed": "تم تأكيد الطلب",
+  "@orderConfirmed": {
+    "description": "Phase 3 orders: snackbar after confirmation"
+  },
+  "dispatchOrder": "إرسال للتوصيل",
+  "@dispatchOrder": {
+    "description": "Phase 3 orders: dispatch button"
+  },
+  "orderDispatched": "خرج الطلب للتوصيل",
+  "@orderDispatched": {
+    "description": "Phase 3 orders: snackbar after dispatch"
+  },
+  "deliverOrder": "تأكيد التسليم",
+  "@deliverOrder": {
+    "description": "Phase 3 orders: deliver button"
+  },
+  "confirmDeliver": "بعد تأكيد التسليم تُضاف الكميات إلى مخزون العيادة، ولا يمكن إلغاء الطلب بعدها.",
+  "@confirmDeliver": {
+    "description": "Phase 3 orders: deliver confirmation, stating it is final"
+  },
+  "orderDelivered": "تم تسليم الطلب",
+  "@orderDelivered": {
+    "description": "Phase 3 orders: snackbar after delivery"
+  },
+  "cancelOrder": "إلغاء الطلب",
+  "@cancelOrder": {
+    "description": "Phase 3 orders: cancel button and cancel dialog title/confirm"
+  },
+  "keepOrder": "تراجع",
+  "@keepOrder": {
+    "description": "Phase 3 orders: dismiss the cancel dialog without cancelling"
+  },
+  "cancelEffectPlaced": "لم يُحجز أي مخزون لهذا الطلب بعد، فلن يتغير المستودع.",
+  "@cancelEffectPlaced": {
+    "description": "Phase 3 orders: stock effect of cancelling at PLACED"
+  },
+  "cancelEffectConfirmed": "ستُعاد الكميات المحجوزة إلى تشغيلاتها في المستودع.",
+  "@cancelEffectConfirmed": {
+    "description": "Phase 3 orders: stock effect of cancelling at CONFIRMED"
+  },
+  "dispositionPrompt": "خرج الطلب للتوصيل. أين البضاعة الآن؟",
+  "@dispositionPrompt": {
+    "description": "Phase 3 orders: asks where the goods are, at OUT_FOR_DELIVERY"
+  },
+  "dispositionReturned": "أُعيدت إلى المستودع",
+  "@dispositionReturned": {
+    "description": "Phase 3 orders: disposition RETURNED_TO_WAREHOUSE"
+  },
+  "dispositionReturnedEffect": "أعادها السائق: تُضاف الكميات إلى تشغيلاتها في المستودع.",
+  "@dispositionReturnedEffect": {
+    "description": "Phase 3 orders: stock effect of RETURNED_TO_WAREHOUSE"
+  },
+  "dispositionWrittenOff": "شُطبت",
+  "@dispositionWrittenOff": {
+    "description": "Phase 3 orders: disposition WRITTEN_OFF"
+  },
+  "dispositionWrittenOffEffect": "فُقدت أو تلفت أو بقيت لدى العيادة: لا تُضاف إلى المستودع.",
+  "@dispositionWrittenOffEffect": {
+    "description": "Phase 3 orders: stock effect of WRITTEN_OFF"
+  },
+  "cancelReasonLabel": "سبب الإلغاء (اختياري)",
+  "@cancelReasonLabel": {
+    "description": "Phase 3 orders: optional reason field in the cancel dialog"
+  },
+  "dispositionLabel": "مصير البضاعة",
+  "@dispositionLabel": {
+    "description": "Phase 3 orders: label before a cancelled order's disposition"
+  },
+  "dispositionNotAllocated": "أُلغي قبل التأكيد، ولم يُحجز مخزون",
+  "@dispositionNotAllocated": {
+    "description": "Phase 3 orders: disposition NOT_ALLOCATED"
+  },
+  "dispositionReleasedBeforeDispatch": "أُلغي قبل الإرسال، وأُعيد المخزون المحجوز",
+  "@dispositionReleasedBeforeDispatch": {
+    "description": "Phase 3 orders: disposition RELEASED_BEFORE_DISPATCH"
+  },
+  "dispositionUnknown": "غير معروف",
+  "@dispositionUnknown": {
+    "description": "Phase 3 orders: a disposition this app version does not know"
+  },
+  "cancelReason": "سبب الإلغاء",
+  "@cancelReason": {
+    "description": "Phase 3 orders: label before a cancelled order's reason"
+  },
+  "orderCancelled": "تم إلغاء الطلب",
+  "@orderCancelled": {
+    "description": "Phase 3 orders: snackbar after a cancellation"
   }
 }

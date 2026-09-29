@@ -531,6 +531,372 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم تسجيل التشغيلة'**
   String get batchReceived;
+
+  /// Phase 3 orders: tab label and queue title
+  ///
+  /// In ar, this message translates to:
+  /// **'الطلبات'**
+  String get orders;
+
+  /// Phase 3 orders: detail screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'تفاصيل الطلب'**
+  String get orderDetails;
+
+  /// Phase 3 orders: empty queue for the chosen status
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات بهذه الحالة'**
+  String get noOrders;
+
+  /// Phase 3 orders: the queue has more than one page
+  ///
+  /// In ar, this message translates to:
+  /// **'توجد طلبات أخرى غير معروضة هنا'**
+  String get ordersNotAllShown;
+
+  /// Phase 3 orders: filter chip for every status
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get allStatuses;
+
+  /// Phase 3 orders: status PLACED
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار التأكيد'**
+  String get orderStatusPlaced;
+
+  /// Phase 3 orders: status CONFIRMED
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤكد'**
+  String get orderStatusConfirmed;
+
+  /// Phase 3 orders: status OUT_FOR_DELIVERY
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التوصيل'**
+  String get orderStatusOutForDelivery;
+
+  /// Phase 3 orders: status DELIVERED
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التسليم'**
+  String get orderStatusDelivered;
+
+  /// Phase 3 orders: status CANCELLED
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغى'**
+  String get orderStatusCancelled;
+
+  /// Phase 3 orders: a status this app version does not know
+  ///
+  /// In ar, this message translates to:
+  /// **'حالة غير معروفة'**
+  String get orderStatusUnknown;
+
+  /// Phase 3 orders: placement timestamp label
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الطلب'**
+  String get placedAt;
+
+  /// Phase 3 orders: confirmation timestamp label
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ التأكيد'**
+  String get confirmedAt;
+
+  /// Phase 3 orders: dispatch timestamp label
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الإرسال'**
+  String get dispatchedAt;
+
+  /// Phase 3 orders: delivery timestamp label
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ التسليم'**
+  String get deliveredAt;
+
+  /// Phase 3 orders: cancellation timestamp label
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الإلغاء'**
+  String get cancelledAt;
+
+  /// Phase 3 orders: cash total of the order
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي'**
+  String get orderTotal;
+
+  /// Phase 3 orders: number of lines on a queue card
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الأصناف'**
+  String get lineCount;
+
+  /// Phase 3 orders: delivery address snapshot label
+  ///
+  /// In ar, this message translates to:
+  /// **'العنوان'**
+  String get addressLabel;
+
+  /// Phase 3 orders: phone snapshot label
+  ///
+  /// In ar, this message translates to:
+  /// **'الهاتف'**
+  String get phoneLabel;
+
+  /// Phase 3 orders: the clinic's note on the order
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظة العميل'**
+  String get clientNote;
+
+  /// Phase 3 orders: quantity the clinic asked for
+  ///
+  /// In ar, this message translates to:
+  /// **'المطلوب'**
+  String get requestedQty;
+
+  /// Phase 3 orders: quantity the admin approved
+  ///
+  /// In ar, this message translates to:
+  /// **'المعتمد'**
+  String get approvedQty;
+
+  /// Phase 3 orders: quantity actually allocated from the warehouse
+  ///
+  /// In ar, this message translates to:
+  /// **'المُجهَّز'**
+  String get fulfilledQty;
+
+  /// Phase 3 orders: billed amount of one line
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي الصنف'**
+  String get lineTotal;
+
+  /// Phase 3 orders: the admin approved less than requested
+  ///
+  /// In ar, this message translates to:
+  /// **'عُدّلت الكمية عند التأكيد'**
+  String get adjustedFlag;
+
+  /// Phase 3 orders: the warehouse could not fill the approved quantity
+  ///
+  /// In ar, this message translates to:
+  /// **'نقص في المستودع'**
+  String get shortFlag;
+
+  /// Phase 3 orders: heading over the FEFO allocation rows
+  ///
+  /// In ar, this message translates to:
+  /// **'التشغيلات المخصّصة'**
+  String get allocatedBatches;
+
+  /// Phase 3 orders: prefix before a batch expiry date
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي في'**
+  String get expires;
+
+  /// Phase 3 orders: an allocation released back to its batch
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي الحجز'**
+  String get releasedFlag;
+
+  /// Phase 3 orders: heading of the PLACED review panel
+  ///
+  /// In ar, this message translates to:
+  /// **'مراجعة الكميات قبل التأكيد'**
+  String get reviewTitle;
+
+  /// Phase 3 orders: stepper label, in boxes
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية المعتمدة (علب)'**
+  String get approvedBoxesLabel;
+
+  /// Phase 3 orders: stepper minus tooltip
+  ///
+  /// In ar, this message translates to:
+  /// **'إنقاص علبة'**
+  String get decreaseQty;
+
+  /// Phase 3 orders: stepper plus tooltip
+  ///
+  /// In ar, this message translates to:
+  /// **'زيادة علبة'**
+  String get increaseQty;
+
+  /// Phase 3 orders: FEFO preview button
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة التخصيص'**
+  String get previewAllocation;
+
+  /// Phase 3 orders: explains the shelf-life cutoff in the preview
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تُخصَّص تشغيلة تنتهي في هذا التاريخ أو قبله'**
+  String get previewCutoff;
+
+  /// Phase 3 orders: preview billed amount of one line
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي المتوقع للصنف'**
+  String get projectedLineTotal;
+
+  /// Phase 3 orders: preview billed total
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي المتوقع'**
+  String get projectedTotal;
+
+  /// Phase 3 orders: confirm button
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد الطلب'**
+  String get confirmOrder;
+
+  /// Phase 3 orders: snackbar after confirmation
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تأكيد الطلب'**
+  String get orderConfirmed;
+
+  /// Phase 3 orders: dispatch button
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال للتوصيل'**
+  String get dispatchOrder;
+
+  /// Phase 3 orders: snackbar after dispatch
+  ///
+  /// In ar, this message translates to:
+  /// **'خرج الطلب للتوصيل'**
+  String get orderDispatched;
+
+  /// Phase 3 orders: deliver button
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد التسليم'**
+  String get deliverOrder;
+
+  /// Phase 3 orders: deliver confirmation, stating it is final
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد تأكيد التسليم تُضاف الكميات إلى مخزون العيادة، ولا يمكن إلغاء الطلب بعدها.'**
+  String get confirmDeliver;
+
+  /// Phase 3 orders: snackbar after delivery
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تسليم الطلب'**
+  String get orderDelivered;
+
+  /// Phase 3 orders: cancel button and cancel dialog title/confirm
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء الطلب'**
+  String get cancelOrder;
+
+  /// Phase 3 orders: dismiss the cancel dialog without cancelling
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع'**
+  String get keepOrder;
+
+  /// Phase 3 orders: stock effect of cancelling at PLACED
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُحجز أي مخزون لهذا الطلب بعد، فلن يتغير المستودع.'**
+  String get cancelEffectPlaced;
+
+  /// Phase 3 orders: stock effect of cancelling at CONFIRMED
+  ///
+  /// In ar, this message translates to:
+  /// **'ستُعاد الكميات المحجوزة إلى تشغيلاتها في المستودع.'**
+  String get cancelEffectConfirmed;
+
+  /// Phase 3 orders: asks where the goods are, at OUT_FOR_DELIVERY
+  ///
+  /// In ar, this message translates to:
+  /// **'خرج الطلب للتوصيل. أين البضاعة الآن؟'**
+  String get dispositionPrompt;
+
+  /// Phase 3 orders: disposition RETURNED_TO_WAREHOUSE
+  ///
+  /// In ar, this message translates to:
+  /// **'أُعيدت إلى المستودع'**
+  String get dispositionReturned;
+
+  /// Phase 3 orders: stock effect of RETURNED_TO_WAREHOUSE
+  ///
+  /// In ar, this message translates to:
+  /// **'أعادها السائق: تُضاف الكميات إلى تشغيلاتها في المستودع.'**
+  String get dispositionReturnedEffect;
+
+  /// Phase 3 orders: disposition WRITTEN_OFF
+  ///
+  /// In ar, this message translates to:
+  /// **'شُطبت'**
+  String get dispositionWrittenOff;
+
+  /// Phase 3 orders: stock effect of WRITTEN_OFF
+  ///
+  /// In ar, this message translates to:
+  /// **'فُقدت أو تلفت أو بقيت لدى العيادة: لا تُضاف إلى المستودع.'**
+  String get dispositionWrittenOffEffect;
+
+  /// Phase 3 orders: optional reason field in the cancel dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'سبب الإلغاء (اختياري)'**
+  String get cancelReasonLabel;
+
+  /// Phase 3 orders: label before a cancelled order's disposition
+  ///
+  /// In ar, this message translates to:
+  /// **'مصير البضاعة'**
+  String get dispositionLabel;
+
+  /// Phase 3 orders: disposition NOT_ALLOCATED
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي قبل التأكيد، ولم يُحجز مخزون'**
+  String get dispositionNotAllocated;
+
+  /// Phase 3 orders: disposition RELEASED_BEFORE_DISPATCH
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي قبل الإرسال، وأُعيد المخزون المحجوز'**
+  String get dispositionReleasedBeforeDispatch;
+
+  /// Phase 3 orders: a disposition this app version does not know
+  ///
+  /// In ar, this message translates to:
+  /// **'غير معروف'**
+  String get dispositionUnknown;
+
+  /// Phase 3 orders: label before a cancelled order's reason
+  ///
+  /// In ar, this message translates to:
+  /// **'سبب الإلغاء'**
+  String get cancelReason;
+
+  /// Phase 3 orders: snackbar after a cancellation
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إلغاء الطلب'**
+  String get orderCancelled;
 }
 
 class _AppLocalizationsDelegate

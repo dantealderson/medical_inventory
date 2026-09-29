@@ -231,4 +231,193 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get batchReceived => 'تم تسجيل التشغيلة';
+
+  @override
+  String get orders => 'الطلبات';
+
+  @override
+  String get orderDetails => 'تفاصيل الطلب';
+
+  @override
+  String get noOrders => 'لا توجد طلبات بهذه الحالة';
+
+  @override
+  String get ordersNotAllShown => 'توجد طلبات أخرى غير معروضة هنا';
+
+  @override
+  String get allStatuses => 'الكل';
+
+  @override
+  String get orderStatusPlaced => 'بانتظار التأكيد';
+
+  @override
+  String get orderStatusConfirmed => 'مؤكد';
+
+  @override
+  String get orderStatusOutForDelivery => 'قيد التوصيل';
+
+  @override
+  String get orderStatusDelivered => 'تم التسليم';
+
+  @override
+  String get orderStatusCancelled => 'ملغى';
+
+  @override
+  String get orderStatusUnknown => 'حالة غير معروفة';
+
+  @override
+  String get placedAt => 'تاريخ الطلب';
+
+  @override
+  String get confirmedAt => 'تاريخ التأكيد';
+
+  @override
+  String get dispatchedAt => 'تاريخ الإرسال';
+
+  @override
+  String get deliveredAt => 'تاريخ التسليم';
+
+  @override
+  String get cancelledAt => 'تاريخ الإلغاء';
+
+  @override
+  String get orderTotal => 'الإجمالي';
+
+  @override
+  String get lineCount => 'عدد الأصناف';
+
+  @override
+  String get addressLabel => 'العنوان';
+
+  @override
+  String get phoneLabel => 'الهاتف';
+
+  @override
+  String get clientNote => 'ملاحظة العميل';
+
+  @override
+  String get requestedQty => 'المطلوب';
+
+  @override
+  String get approvedQty => 'المعتمد';
+
+  @override
+  String get fulfilledQty => 'المُجهَّز';
+
+  @override
+  String get lineTotal => 'إجمالي الصنف';
+
+  @override
+  String get adjustedFlag => 'عُدّلت الكمية عند التأكيد';
+
+  @override
+  String get shortFlag => 'نقص في المستودع';
+
+  @override
+  String get allocatedBatches => 'التشغيلات المخصّصة';
+
+  @override
+  String get expires => 'ينتهي في';
+
+  @override
+  String get releasedFlag => 'أُلغي الحجز';
+
+  @override
+  String get reviewTitle => 'مراجعة الكميات قبل التأكيد';
+
+  @override
+  String get approvedBoxesLabel => 'الكمية المعتمدة (علب)';
+
+  @override
+  String get decreaseQty => 'إنقاص علبة';
+
+  @override
+  String get increaseQty => 'زيادة علبة';
+
+  @override
+  String get previewAllocation => 'معاينة التخصيص';
+
+  @override
+  String get previewCutoff => 'لا تُخصَّص تشغيلة تنتهي في هذا التاريخ أو قبله';
+
+  @override
+  String get projectedLineTotal => 'الإجمالي المتوقع للصنف';
+
+  @override
+  String get projectedTotal => 'الإجمالي المتوقع';
+
+  @override
+  String get confirmOrder => 'تأكيد الطلب';
+
+  @override
+  String get orderConfirmed => 'تم تأكيد الطلب';
+
+  @override
+  String get dispatchOrder => 'إرسال للتوصيل';
+
+  @override
+  String get orderDispatched => 'خرج الطلب للتوصيل';
+
+  @override
+  String get deliverOrder => 'تأكيد التسليم';
+
+  @override
+  String get confirmDeliver =>
+      'بعد تأكيد التسليم تُضاف الكميات إلى مخزون العيادة، ولا يمكن إلغاء الطلب بعدها.';
+
+  @override
+  String get orderDelivered => 'تم تسليم الطلب';
+
+  @override
+  String get cancelOrder => 'إلغاء الطلب';
+
+  @override
+  String get keepOrder => 'تراجع';
+
+  @override
+  String get cancelEffectPlaced =>
+      'لم يُحجز أي مخزون لهذا الطلب بعد، فلن يتغير المستودع.';
+
+  @override
+  String get cancelEffectConfirmed =>
+      'ستُعاد الكميات المحجوزة إلى تشغيلاتها في المستودع.';
+
+  @override
+  String get dispositionPrompt => 'خرج الطلب للتوصيل. أين البضاعة الآن؟';
+
+  @override
+  String get dispositionReturned => 'أُعيدت إلى المستودع';
+
+  @override
+  String get dispositionReturnedEffect =>
+      'أعادها السائق: تُضاف الكميات إلى تشغيلاتها في المستودع.';
+
+  @override
+  String get dispositionWrittenOff => 'شُطبت';
+
+  @override
+  String get dispositionWrittenOffEffect =>
+      'فُقدت أو تلفت أو بقيت لدى العيادة: لا تُضاف إلى المستودع.';
+
+  @override
+  String get cancelReasonLabel => 'سبب الإلغاء (اختياري)';
+
+  @override
+  String get dispositionLabel => 'مصير البضاعة';
+
+  @override
+  String get dispositionNotAllocated => 'أُلغي قبل التأكيد، ولم يُحجز مخزون';
+
+  @override
+  String get dispositionReleasedBeforeDispatch =>
+      'أُلغي قبل الإرسال، وأُعيد المخزون المحجوز';
+
+  @override
+  String get dispositionUnknown => 'غير معروف';
+
+  @override
+  String get cancelReason => 'سبب الإلغاء';
+
+  @override
+  String get orderCancelled => 'تم إلغاء الطلب';
 }

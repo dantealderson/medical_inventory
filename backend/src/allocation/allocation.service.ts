@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { MovementReason, OwnerType, Prisma } from '@prisma/client';
 
 import { addDaysIso, assertIsoDate, businessDateOf } from '../common/business-date';
+import { AppException } from '../common/errors/app.exception';
+import { ERROR_CODES } from '../common/errors/error-codes';
 import { assertInteractiveTransaction } from '../prisma/transaction';
+import { PrismaService } from '../prisma/prisma.service';
 import { SettingsService } from '../settings/settings.service';
 import { planFefo, type AllocatedPortion, type PlanRequest } from './fefo-plan';
 
@@ -50,6 +53,15 @@ export interface ReleasedPortion {
   batchId: string;
   itemId: string;
   qtyUnits: number;
+}
+
+/** §12.2 item detail: what a clinic would receive if an order were confirmed now. */
+export interface ItemAvailabilityView {
+  itemId: string;
+  /** True when a confirmation now would allocate something. Not a stock level. */
+  inStock: boolean;
+  /** 'YYYY-MM-DD' of the batch FEFO would ship first; null when nothing is eligible. */
+  nextExpiryDate: string | null;
 }
 
 /** One row of the candidate query. */
@@ -118,7 +130,12 @@ function selectCandidates(
  */
 @Injectable()
 export class AllocationService {
-  constructor(private readonly settings: SettingsService) {}
+  constructor(
+    private readonly settings: SettingsService,
+    // Only availability() uses the root client. allocate/preview/release keep
+    // taking the caller's transaction client, which is what makes them safe.
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * The shelf-life cutoff: batches must expire strictly after this business
@@ -363,5 +380,53 @@ export class AllocationService {
       }
     }
     return released;
+  }
+
+  /**
+   * The date on the batch FEFO would ship first if an order were confirmed
+   * now (§12.2). It uses cutoffFor() and the same candidate predicate and
+   * ORDER BY as allocate/preview, so the date on the item page is the date
+   * that arrives. The e2e cross-check against allocation-preview fails if
+   * the two queries drift apart.
+   *
+   * It differs from allocate() in two deliberate ways:
+   * - It filters on "qtyUnitsRemaining" > 0. allocate() must not filter on
+   *   quantity before taking its lock (D3), because a batch refilled by a
+   *   concurrent release would be skipped. This query takes no lock, and the
+   *   planner skips an empty batch anyway, so the answer is the same.
+   * - It takes no lock and opens no transaction. The answer is advisory:
+   *   stock leaves at CONFIRMED (D17), so it can change before the clinic
+   *   orders.
+   */
+  async availability(itemId: string): Promise<ItemAvailabilityView> {
+    const item = await this.prisma.item.findUnique({
+      where: { id: itemId },
+      select: { isActive: true },
+    });
+    // An inactive item cannot be carted (ITEM_UNAVAILABLE). Showing its
+    // expiry would advertise stock the clinic cannot order.
+    if (!item?.isActive) {
+      throw new AppException(HttpStatus.NOT_FOUND, 'ITEM_NOT_FOUND', ERROR_CODES.ITEM_NOT_FOUND);
+    }
+
+    // Business-date cutoff from settings. It is never recomputed here: a UTC
+    // "now + 30 days" is a day early from 00:00 to 03:00 Baghdad and ignores
+    // the setting.
+    const minExpiryExclusive = await this.cutoffFor();
+
+    // to_char: the DATE comes back as the string the client shows, with no
+    // Date object and no timezone in between. The alias is deliberately not
+    // "expiryDate", so ORDER BY sorts the DATE column, not this text.
+    const rows = await this.prisma.$queryRaw<Array<{ nextExpiryDate: string }>>`
+      SELECT to_char("expiryDate", 'YYYY-MM-DD') AS "nextExpiryDate"
+      FROM "warehouse_batches"
+      WHERE "itemId" = ${itemId}
+        AND "expiryDate" > ${minExpiryExclusive}::date
+        AND "qtyUnitsRemaining" > 0
+      ORDER BY "expiryDate", "receivedAt", id
+      LIMIT 1`;
+
+    const next = rows[0]?.nextExpiryDate ?? null;
+    return { itemId, inStock: next !== null, nextExpiryDate: next };
   }
 }

@@ -41,17 +41,53 @@ class OrdersScreen extends ConsumerWidget {
                   itemCount: page.items.length + (page.hasMore ? 1 : 0),
                   itemBuilder: (context, i) => i < page.items.length
                       ? _OrderCard(order: page.items[i])
-                      // Said out loud rather than silently truncated: the
-                      // admin must know the queue goes on past this screen.
-                      : Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-                          child: Text(l10n.ordersNotAllShown, textAlign: TextAlign.center),
-                        ),
+                      : const _LoadMoreButton(),
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The next page of the queue. Delivered orders pass one page within weeks,
+/// and every older one must stay reachable.
+class _LoadMoreButton extends ConsumerStatefulWidget {
+  const _LoadMoreButton();
+
+  @override
+  ConsumerState<_LoadMoreButton> createState() => _LoadMoreButtonState();
+}
+
+class _LoadMoreButtonState extends ConsumerState<_LoadMoreButton> {
+  bool _busy = false;
+
+  Future<void> _loadMore() async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      await ref.read(ordersQueueProvider.notifier).loadMore();
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+      child: Center(
+        child: OutlinedButton(
+          onPressed: _busy ? null : _loadMore,
+          child: _busy
+              ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              : Text(l10n.loadMore),
+        ),
       ),
     );
   }

@@ -315,22 +315,33 @@ void main() {
       expect(find.text('لا توجد طلبات بهذه الحالة'), findsOneWidget);
     });
 
-    testWidgets('a queue longer than one page says so instead of stopping silently', (
-      tester,
-    ) async {
-      final backend = await openQueue(
-        tester,
-        routes(
-          {},
-          queue: {
-            'items': [summaryOf(order('o1', 'PLACED', lines: [line('l1', 'سرنجة 5 مل')]))],
-            'nextCursor': 'o1',
-          },
-        ),
-      );
+    testWidgets('a queue longer than one page loads the next page on request', (tester) async {
+      // Delivered orders pass 50 within weeks. Stopping there would hide
+      // every older order from the admin for good.
+      final first = order('o1', 'PLACED', lines: [line('l1', 'سرنجة 5 مل')]);
+      final second = {
+        ...order('o2', 'PLACED', lines: [line('l2', 'قفازات')]),
+        'client': {..._client, 'clinicName': 'عيادة الشفاء'},
+      };
+      final others = routes({});
+      final backend = await openQueue(tester, (req) {
+        if (req.path != '/admin/orders') return others(req);
+        return req.query['cursor'] == 'o1'
+            ? [200, {'items': [summaryOf(second)], 'nextCursor': null}]
+            : [200, {'items': [summaryOf(first)], 'nextCursor': 'o1'}];
+      });
 
       expect(backend.lastTo('/admin/orders').query['limit'], 50);
-      expect(find.text('توجد طلبات أخرى غير معروضة هنا'), findsOneWidget);
+      expect(find.text('عيادة الشفاء'), findsNothing);
+
+      await tapVisible(tester, find.widgetWithText(OutlinedButton, 'عرض المزيد'));
+
+      expect(backend.lastTo('/admin/orders').query['cursor'], 'o1');
+      expect(backend.lastTo('/admin/orders').query['status'], 'PLACED');
+      expect(find.text('مختبر النور'), findsOneWidget);
+      expect(find.text('عيادة الشفاء'), findsOneWidget);
+      // The last page is loaded, so there is nothing more to offer.
+      expect(find.widgetWithText(OutlinedButton, 'عرض المزيد'), findsNothing);
     });
   });
 
@@ -579,6 +590,43 @@ void main() {
       expect(find.widgetWithText(FilledButton, 'إرسال للتوصيل'), findsOneWidget);
       expect(find.textContaining('B-001'), findsOneWidget);
       expect(find.text('عُدّلت الكمية عند التأكيد'), findsOneWidget);
+      // The admin's own cut is not a shortage: the plain message.
+      expect(find.text('تم تأكيد الطلب'), findsOneWidget);
+    });
+
+    testWidgets('a confirm that ships short says so, not just "confirmed"', (tester) async {
+      final orders = <String, Map<String, dynamic>>{
+        'o1': order('o1', 'PLACED', lines: [line('l1', 'سرنجة 5 مل', requested: 2)]),
+      };
+      await openOrder(
+        tester,
+        orders,
+        onPost: (req) {
+          if (req.path != '/admin/orders/o1/confirm') return [404, null];
+          // Two boxes approved, one in stock.
+          orders['o1'] = order(
+            'o1',
+            'CONFIRMED',
+            lines: [
+              line(
+                'l1',
+                'سرنجة 5 مل',
+                requested: 2,
+                approved: 2,
+                fulfilled: 100,
+                lineTotal: '10.00',
+                allocations: [allocation('B-001', '2027-03-01', 100)],
+              ),
+            ],
+          );
+          return [200, orders['o1']];
+        },
+      );
+
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'تأكيد الطلب'));
+
+      expect(find.text('تم تأكيد الطلب مع نقص في بعض الأصناف'), findsOneWidget);
+      expect(find.text('تم تأكيد الطلب'), findsNothing);
     });
 
     testWidgets('a refused confirm shows the server message and keeps the order reviewable', (

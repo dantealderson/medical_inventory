@@ -28,16 +28,49 @@ class OrdersFilter extends Notifier<OrderStatus?> {
 
 final ordersFilterProvider = NotifierProvider<OrdersFilter, OrderStatus?>(OrdersFilter.new);
 
-/// The queue for the current filter. The server returns the open statuses
-/// oldest first (a work queue is FIFO) and the closed ones newest first.
+/// The queue for the current filter, one page at a time. The server returns
+/// the open statuses oldest first (a work queue is FIFO) and the closed ones
+/// newest first.
 ///
 /// autoDispose: clinics keep placing orders while the admin is on another
 /// tab, so coming back refetches instead of showing the queue as it was.
-final ordersQueueProvider = FutureProvider.autoDispose<OrderPage>((ref) {
-  final api = ref.watch(adminOrdersApiProvider);
-  final status = ref.watch(ordersFilterProvider);
-  return api.list(status: status, limit: ordersQueuePageSize);
-});
+/// Changing the filter starts again from the first page.
+class OrdersQueue extends AsyncNotifier<OrderPage> {
+  bool _loadingMore = false;
+
+  @override
+  Future<OrderPage> build() {
+    final api = ref.watch(adminOrdersApiProvider);
+    final status = ref.watch(ordersFilterProvider);
+    return api.list(status: status, limit: ordersQueuePageSize);
+  }
+
+  /// Appends the next page. A second tap while a page is loading is ignored:
+  /// the same cursor twice would list those orders twice. A failure is thrown
+  /// to the caller, and the orders already loaded stay on screen.
+  Future<void> loadMore() async {
+    final current = state.value;
+    if (current == null || !current.hasMore || _loadingMore) return;
+    _loadingMore = true;
+    try {
+      final page = await ref.read(adminOrdersApiProvider).list(
+        status: ref.read(ordersFilterProvider),
+        cursor: current.nextCursor,
+        limit: ordersQueuePageSize,
+      );
+      if (!ref.mounted) return;
+      state = AsyncData(
+        OrderPage(items: [...current.items, ...page.items], nextCursor: page.nextCursor),
+      );
+    } finally {
+      _loadingMore = false;
+    }
+  }
+}
+
+final ordersQueueProvider = AsyncNotifierProvider.autoDispose<OrdersQueue, OrderPage>(
+  OrdersQueue.new,
+);
 
 /// One order, fetched each time its screen opens. The queue holds summaries
 /// only, and another admin may have moved the order since it was listed.

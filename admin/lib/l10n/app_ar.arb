@@ -304,9 +304,9 @@
   "@noOrders": {
     "description": "Phase 3 orders: empty queue for the chosen status"
   },
-  "ordersNotAllShown": "توجد طلبات أخرى غير معروضة هنا",
-  "@ordersNotAllShown": {
-    "description": "Phase 3 orders: the queue has more than one page"
+  "loadMore": "عرض المزيد",
+  "@loadMore": {
+    "description": "Orders: loads the next page of the queue"
   },
   "allStatuses": "الكل",
   "@allStatuses": {
@@ -451,6 +451,10 @@
   "orderConfirmed": "تم تأكيد الطلب",
   "@orderConfirmed": {
     "description": "Phase 3 orders: snackbar after confirmation"
+  },
+  "orderConfirmedShort": "تم تأكيد الطلب مع نقص في بعض الأصناف",
+  "@orderConfirmedShort": {
+    "description": "Orders: snackbar after a confirmation that could not fill every line from stock"
   },
   "dispatchOrder": "إرسال للتوصيل",
   "@dispatchOrder": {

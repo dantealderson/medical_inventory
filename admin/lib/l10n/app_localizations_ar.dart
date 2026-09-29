@@ -242,7 +242,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noOrders => 'لا توجد طلبات بهذه الحالة';
 
   @override
-  String get ordersNotAllShown => 'توجد طلبات أخرى غير معروضة هنا';
+  String get loadMore => 'عرض المزيد';
 
   @override
   String get allStatuses => 'الكل';
@@ -351,6 +351,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orderConfirmed => 'تم تأكيد الطلب';
+
+  @override
+  String get orderConfirmedShort => 'تم تأكيد الطلب مع نقص في بعض الأصناف';
 
   @override
   String get dispatchOrder => 'إرسال للتوصيل';

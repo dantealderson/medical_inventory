@@ -62,10 +62,16 @@ class _OrderReviewPanelState extends ConsumerState<OrderReviewPanel>
 
   Future<void> _confirm() {
     final l10n = AppLocalizations.of(context)!;
-    return perform(
-      () => ref.read(orderActionsProvider).confirm(widget.order.id, _edits),
-      done: l10n.orderConfirmed,
-    );
+    final messenger = ScaffoldMessenger.of(context);
+    return perform(() async {
+      final order = await ref.read(orderActionsProvider).confirm(widget.order.id, _edits);
+      // A shortage must not read as a full confirmation: the clinic will
+      // receive less than was approved. The admin's own cuts are not one.
+      final short = order.lines.any((line) => line.shortByUnits > 0);
+      messenger.showSnackBar(
+        SnackBar(content: Text(short ? l10n.orderConfirmedShort : l10n.orderConfirmed)),
+      );
+    });
   }
 
   @override

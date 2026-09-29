@@ -550,11 +550,11 @@ abstract class AppLocalizations {
   /// **'لا توجد طلبات بهذه الحالة'**
   String get noOrders;
 
-  /// Phase 3 orders: the queue has more than one page
+  /// Orders: loads the next page of the queue
   ///
   /// In ar, this message translates to:
-  /// **'توجد طلبات أخرى غير معروضة هنا'**
-  String get ordersNotAllShown;
+  /// **'عرض المزيد'**
+  String get loadMore;
 
   /// Phase 3 orders: filter chip for every status
   ///
@@ -771,6 +771,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم تأكيد الطلب'**
   String get orderConfirmed;
+
+  /// Orders: snackbar after a confirmation that could not fill every line from stock
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تأكيد الطلب مع نقص في بعض الأصناف'**
+  String get orderConfirmedShort;
 
   /// Phase 3 orders: dispatch button
   ///

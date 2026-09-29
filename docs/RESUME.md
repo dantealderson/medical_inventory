@@ -1,5 +1,31 @@
 # Resume Point
 
+## >>> PHASE 4 IN PROGRESS (2026-09-30): Tasks 1–5 of 14 done
+
+- **Branch:** `phase-4-inventory-estimation`, from `main`. `main` holds Phases 0–3, merged and verified at 835 tests.
+- **Plan:** `docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`.
+- **Ledger:** `.superpowers/sdd/2026-09-30-phase-4-inventory-estimation/progress.md` (git-ignored). It holds the rulings and one line per finished task.
+- **How to run it:** executing-plans, inline. Resume at **Task 6 (auto-decrement)**.
+- **Done:**
+  - schema (stock counts, usage estimates);
+  - stock status rules;
+  - the four-tier estimator;
+  - EstimationService;
+  - stock counts with `POST /inventory/counts`.
+- **Tests:** backend unit + e2e 409 on the last run, typecheck clean.
+- **Left:**
+  - 6 auto-decrement;
+  - 7 `GET /inventory` and movement history;
+  - 8 admin controls, the post-delivery recompute and the full-loop e2e;
+  - 9 api_client;
+  - 10 StockBadge;
+  - 11 client My Inventory and the home strip;
+  - 12 the stock count screen;
+  - 13 the admin client-inventory screen;
+  - 14 docs;
+  - then the final review.
+
+
 ## >>> PHASE 3 COMPLETE (2026-09-30). Phase 4 is next: give the reminder below first
 
 Phase 3 (ordering and FEFO) is built, reviewed and fixed, on `phase-0-foundations` as 20 commits after `1b9eabe` (the plan commit). The plan is `docs/superpowers/plans/2026-09-27-phase-3-ordering-fefo.md`.

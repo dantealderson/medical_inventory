@@ -1,7 +1,31 @@
 # Resume Point
 
-**Last updated:** 2026-09-27
-**Branch:** `phase-0-foundations` (41 commits, clean tree, `main` untouched)
+## >>> PHASE 3 PLAN READY AND VERIFIED (2026-09-29): read this first
+
+`docs/superpowers/plans/2026-09-27-phase-3-ordering-fefo.md` is the finished Phase 3 plan: 17 tasks, header, completion checklist. It replaces the old draft.
+
+**Every task was executed before the plan was finalised.** The run used a scratch copy of the repo and throwaway databases, which have since been dropped:
+- Every expected count, expected failure message and "watch it fail" proof step was observed.
+- Every "replace this" snippet matched its real file exactly once.
+- The backend's real JSON responses were parsed by the Dart models.
+
+So if a step misbehaves while executing, treat it as a real signal. Do not tune the test until it passes.
+
+Expected totals after Phase 3: backend 184 unit + 377 e2e, api_client 98, ui_kit 37, client 71, admin 63 (**830**, up from 348).
+
+Defects found by executing, and fixed in the plan:
+- **Two CHECK constraints accepted exactly the rows they exist to reject.** A CHECK passes when its expression is NULL. An unguarded `"cancelDisposition" = 'NOT_ALLOCATED'` let a cancelled order with a NULL disposition through, and the same happened with a half-set approval. Both are now guarded with `IS NOT NULL` (plan decision 17, and `contract.md` §1), with tests for both rows.
+- **The admin cancel dialog disposed its text controller while the dialog was still closing.** It is now a StatefulWidget that owns the controller.
+- The confirm race's proof now fails with a 500, not a silent double allocation. `allocate` refuses a line that already holds unreleased stock (plan decision 18).
+
+Working files, all untracked, are in `docs/superpowers/plans/phase-3-work/` (contract, scopes, fact sheets, plan parts, `progress.md`). They are kept for reference and can be deleted.
+
+The spec edits that match the plan's decisions are done but **uncommitted**, as are this file and the new plan.
+
+**Budget note (2026-09-29):** the user declined ultracode ("i cant afford ultracod"). The plan was written and verified inline, with no multi-agent workflow.
+
+**Last updated:** 2026-09-29
+**Branch:** `phase-0-foundations` (41 commits, `main` untouched). Uncommitted: RESUME, spec, the Phase 3 plan and `phase-3-work/`.
 **Blocked on:** nothing
 
 ---

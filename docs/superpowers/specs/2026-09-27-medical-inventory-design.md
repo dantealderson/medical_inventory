@@ -143,8 +143,11 @@ enum OwnerType       { ADMIN CLIENT }
 enum MovementReason  { PURCHASE_IN ORDER_OUT DELIVERY_IN AUTO_DECREMENT
                        STOCK_COUNT_ADJUST EXPIRY_WRITEOFF MANUAL_ADJUST }
 enum OrderStatus     { PLACED CONFIRMED OUT_FOR_DELIVERY DELIVERED CANCELLED }
-/// Where the goods went when an already-dispatched order is cancelled (§7.4).
-enum CancelDisposition{ NOT_ALLOCATED RETURNED_TO_WAREHOUSE WRITTEN_OFF }
+/// Where the goods went when an order is cancelled (§7.4). Set by the server
+/// except at OUT_FOR_DELIVERY; a DB CHECK ties each value to confirmedAt/dispatchedAt.
+enum CancelDisposition{ NOT_ALLOCATED RELEASED_BEFORE_DISPATCH
+                       RETURNED_TO_WAREHOUSE WRITTEN_OFF }
+enum HotDealKind     { FREQUENT NEW MANUAL }
 enum EstimateSource  { MANUAL MEASURED PURCHASE NONE }
 enum StockStatus     { RED YELLOW GREEN UNKNOWN }
 enum NotificationType{ ACCOUNT_APPROVED ACCOUNT_REJECTED ORDER_PLACED ORDER_CONFIRMED
@@ -286,13 +289,14 @@ model Order {
   id           String @id @default(uuid())
   clientId     String
   status       OrderStatus @default(PLACED)
-  placedAt     DateTime?
+  placedAt     DateTime @default(now())
   confirmedAt  DateTime?
+  dispatchedAt DateTime?                // load-bearing: the disposition CHECK uses it
   deliveredAt  DateTime?
   cancelledAt  DateTime?
   cancelReason String?
   cancelDisposition CancelDisposition?  // required when cancelling from OUT_FOR_DELIVERY
-  totalAmount  Decimal @db.Decimal(12,2)
+  totalAmount  Decimal @db.Decimal(12,2)  // always Σ lineTotal, never computed on its own
   addressSnapshot String?
   phoneSnapshot   String?
   note         String?
@@ -301,13 +305,16 @@ model Order {
 model OrderLine {
   id              String @id @default(uuid())
   orderId         String
-  itemId          String
+  itemId          String                // @@unique([orderId, itemId])
+  position        Int                   // display order, copied from the cart
   qtyBoxesRequested Int
-  qtyUnitsRequested Int
-  qtyUnitsFulfilled Int @default(0)     // < requested ⇒ partial fulfilment
+  qtyUnitsRequested Int                 // CHECK: = qtyBoxesRequested × unitsPerBoxSnapshot
+  qtyBoxesApproved  Int?                // set at confirmation; admin edits may only reduce
+  qtyUnitsApproved  Int?
+  qtyUnitsFulfilled Int @default(0)     // < approved ⇒ warehouse short; written only by FEFO
   unitsPerBoxSnapshot Int
   pricePerBoxSnapshot Decimal @db.Decimal(12,2)
-  lineTotal       Decimal @db.Decimal(12,2)
+  lineTotal       Decimal @db.Decimal(12,2)  // BILLED amount: recomputed from fulfilled units at confirmation
 }
 
 model OrderLineAllocation {              // FEFO result
@@ -315,6 +322,7 @@ model OrderLineAllocation {              // FEFO result
   orderLineId String
   batchId     String
   qtyUnits    Int
+  releasedAt  DateTime?                 // stamped on release; rows are never deleted
 }
 
 model Notification {
@@ -347,8 +355,8 @@ model AuditLog {
 }
 
 model HotDealEntry { id String @id @default(uuid())  itemId String
-                     kind String        // FREQUENT | NEW | MANUAL
-                     sortOrder Int  isActive Boolean @default(true)  computedAt DateTime }
+                     kind HotDealKind  sortOrder Int  computedAt DateTime
+                     @@unique([itemId, kind]) }
 
 model Setting     { key String @id  value Json  updatedAt DateTime }
 ```
@@ -374,14 +382,18 @@ Admin adds stock as a batch: item, batch number, expiry date, quantity (entered 
 
 On order confirmation, for each line:
 
-1. Load candidate batches: `itemId`, `qtyUnitsRemaining > 0`, `expiryDate > today + expiry.minShelfLifeOnDeliveryDays`.
-2. Order by `expiryDate ASC`, then `receivedAt ASC` — **first expiry, first out**.
-3. Allocate greedily until the line is satisfied; write `OrderLineAllocation` rows, decrement `qtyUnitsRemaining`, write `ORDER_OUT` movements against the warehouse.
-4. If stock is short, allocate what exists and set `qtyUnitsFulfilled` below requested — a partial fulfilment the admin explicitly approves.
+1. Load candidate batches: `itemId`, `expiryDate > today + expiry.minShelfLifeOnDeliveryDays`, where **`today` is the calendar date in `business.timezone`**. `expiryDate` is a `DATE`, and a UTC timestamp is the wrong calendar day in Baghdad from 00:00 to 03:00 every night.
+2. Order by `expiryDate ASC`, then `receivedAt ASC`, then `id` — **first expiry, first out**, with a total order.
+3. Allocate greedily until the line is satisfied. In the same code path: decrement `qtyUnitsRemaining`, write the negative `ORDER_OUT` movement, write the `OrderLineAllocation` row and set `qtyUnitsFulfilled`. One code path writes all four, so they cannot disagree.
+4. If stock is short, allocate what exists and set `qtyUnitsFulfilled` below the approved quantity. This is a partial fulfilment the admin explicitly approves. The line is billed for what was fulfilled: `price × units ÷ unitsPerBox`, rounded half-up to 2 dp.
 
-The whole confirmation runs in **one transaction with `SELECT … FOR UPDATE` on the candidate batches**. Without the row lock, two orders confirmed seconds apart both read the same `qtyUnitsRemaining` and oversell the batch.
+The whole confirmation runs in **one transaction**, with the order row locked first and then the candidate batches locked. The batches are locked by **one statement for every item in the order**, under one global order (`itemId, expiryDate, receivedAt, id`), `FOR NO KEY UPDATE`. The reasons:
+- Without the row lock, two orders confirmed seconds apart both read the same `qtyUnitsRemaining` and oversell the batch.
+- Locking item by item in line order deadlocks two orders whose lines are `[X,Y]` and `[Y,X]`.
+- `FOR NO KEY UPDATE` rather than `FOR UPDATE` keeps delivery's foreign-key checks from blocking behind confirmations.
+- Zero-stock batches are locked too. A batch that a concurrent cancellation is refilling must be seen once its lock is released, or a later-expiring batch ships instead.
 
-Cancelling a confirmed, undelivered order releases allocations and writes compensating movements.
+Cancelling a confirmed, undelivered order releases allocations and writes compensating movements (§7.4).
 
 ### 7.4 Order lifecycle (points 8, 9)
 
@@ -396,7 +408,7 @@ Cart → PLACED → CONFIRMED → OUT_FOR_DELIVERY → DELIVERED  (terminal)
 | Transition | Actor | Effect |
 |---|---|---|
 | Cart → PLACED | client | Snapshot prices, units-per-box, address, phone. Notify admin. |
-| PLACED → CONFIRMED | admin | May edit quantities or partially fulfil. Runs FEFO allocation. Notifies client. |
+| PLACED → CONFIRMED | admin | May reduce quantities (stored as *approved*, the client's request is kept) or partially fulfil. Runs FEFO allocation. Refused if nothing at all can be fulfilled — cancel instead. Notifies client. |
 | CONFIRMED → OUT_FOR_DELIVERY | admin | Notifies client. |
 | → DELIVERED | admin | Cash collected offline. Allocated batches become `ClientBatchHolding` rows; `DELIVERY_IN` movements credit the client's inventory. |
 
@@ -408,15 +420,33 @@ Warehouse stock is decremented at `CONFIRMED`, so what cancelling means depends 
 
 | From | Who | Effect |
 |---|---|---|
-| `PLACED` | client or admin | No allocation exists yet. Nothing to release. |
-| `CONFIRMED` | admin only | Release every allocation: restore `qtyUnitsRemaining` on each batch, write compensating movements. Goods never left. |
+| `PLACED` | client or admin | No allocation exists yet. Nothing to release. Recorded as `NOT_ALLOCATED`. |
+| `CONFIRMED` | admin only | Release every allocation: restore `qtyUnitsRemaining` on each batch, write compensating movements. Goods never left. Recorded as `RELEASED_BEFORE_DISPATCH`. |
 | `OUT_FOR_DELIVERY` | admin only, **disposition required** | The goods are with the driver or already at the clinic. The admin must declare which happened — the system cannot infer it. |
 | `DELIVERED` | **nobody** | Terminal. Not cancellable. |
 
 At `OUT_FOR_DELIVERY` the admin picks one:
 
-- **`RETURNED_TO_WAREHOUSE`** — the driver brought it back. Restore `qtyUnitsRemaining` on the original batches. The stock re-enters normal FEFO, which means the ordinary shelf-life filter still applies: anything that expired in transit will not be re-allocated.
-- **`WRITTEN_OFF`** — lost, damaged, or left with the client. Stock is **not** restored; an `EXPIRY_WRITEOFF`-style adjustment records the loss against the warehouse.
+- **`RETURNED_TO_WAREHOUSE`** — the driver brought it back. Restore `qtyUnitsRemaining` on the original batches and write a compensating ledger movement. The stock re-enters normal FEFO, which means the ordinary shelf-life filter still applies: anything that expired in transit will not be re-allocated.
+- **`WRITTEN_OFF`** — lost, damaged, or left with the client. Stock is **not** restored, and **no further stock movement is written.**
+
+**Why `WRITTEN_OFF` writes no movement.** The warehouse ledger already lost these units at `CONFIRMED`, via the `ORDER_OUT` movements that FEFO allocation wrote. The goods are gone from the warehouse and the ledger already says so. Writing an additional write-off movement would subtract them a second time, leaving the warehouse permanently showing less stock than it physically holds — and because the cache and the ledger would agree on the wrong number, the §8 `ledger-assert` job would never notice.
+
+The disposition is not a stock correction; it is a record of *where the goods went*. It lives on the order and in the audit log (§7.9). An earlier draft of this spec called for an `EXPIRY_WRITEOFF`-style adjustment here; that was wrong for exactly this reason.
+
+**Compensating movements reuse `ORDER_OUT` with a positive delta**, rather than inventing a reversal reason. `reason` describes what a movement *relates to*; the sign describes direction.
+- Summing `ORDER_OUT` for an order cancelled with any disposition other than `WRITTEN_OFF` yields zero.
+- For `WRITTEN_OFF` the sum is `−Σ allocations`, by design, because the goods really are gone.
+
+What makes the ledger replayable is the per-batch sum, not the per-order sum. For every batch, Σ warehouse movements = `qtyUnitsRemaining`.
+
+Release stamps `releasedAt` on the allocation rows rather than deleting them, so a returned shipment still shows which batches went out and came back.
+
+**Every transition locks the order row first.** Confirm, dispatch, deliver and cancel each begin with `SELECT … FOR UPDATE` on the order, and validate the transition against the status that lock returns. A double-clicked confirm, deliver or cancel then has exactly one effect; the second request gets a 409.
+
+The other outcome is invisible. Stock would be allocated twice, the clinic credited twice, or stock restored twice, while the ledger and cache agree.
+
+**The disposition is set by the server except at `OUT_FOR_DELIVERY`.** A database CHECK ties each value to the lifecycle timestamps, so the database itself rejects `WRITTEN_OFF` on an order that was never dispatched.
 
 Forcing the choice is the point. "Requires admin handling" without a recorded disposition means the code guesses, and a guess here either fabricates inventory or destroys it. Both dispositions are written to the audit log (§7.9).
 
@@ -531,7 +561,7 @@ A horizontally rotating bar on the client home showing an item image, name and a
 - `NEW` — items created within `hotDeals.newItemDays`.
 - `MANUAL` — admin-pinned, sorted first.
 
-Capped at `hotDeals.maxEntries`. The carousel pauses on touch, respects the reduce-motion accessibility flag, and advances **right-to-left** to match the RTL layout.
+Capped at `hotDeals.maxEntries`. An item that qualifies under several kinds appears once, with MANUAL ahead of FREQUENT ahead of NEW. A deactivated item disappears immediately, without waiting for the rebuild. Phase 3 ships the rebuild as an admin action; Phase 5's job runner schedules it nightly. The carousel pauses on touch, respects the reduce-motion accessibility flag, and advances **right-to-left** to match the RTL layout.
 
 **Scope cap — this is a carousel, not a recommender.** It is a decorative merchandising strip; it must not consume Phase 3. Explicitly out of bounds: any ranking beyond `ORDER BY count DESC`, personalisation or per-client tailoring, A/B testing, impression or click analytics, custom animation engines, and parallax or 3D transitions. The implementation is a `PageView` plus a `Timer`, and a query that counts delivered order lines. If this takes more than a day, it has been misunderstood.
 
@@ -629,7 +659,7 @@ Also shared: `StockBadge` (red/yellow/green + days-of-cover label), `QtyStepper`
 - **All** user-facing strings in `.arb` files. No Arabic literals inside widgets — otherwise nothing is reviewable or fixable in one place.
 - Padding/alignment use `EdgeInsetsDirectional` and `start`/`end`. `left`/`right` is banned by lint; it silently breaks mirroring.
 - Directional icons (back, chevrons, carousel arrows) mirror automatically.
-- Arabic-Indic numeral formatting via `intl`, centralised in one formatter.
+- Arabic-Indic numeral formatting via `intl`, centralised in one formatter. **Deferred to the Phase 7 RTL audit:** Phases 0–3 render Western digits, which existing screens and tests depend on. Note that `intl`'s `ar` locale itself emits Western digits; only `ar_EG` emits `٠١٢`.
 - Item names may be Arabic, English, or both — display prefers `nameAr`, falls back to `nameEn`, and shows both on the detail screen.
 
 ### 10.4 Bilingual search (point 19, 14)
@@ -656,7 +686,10 @@ Indexed with `pg_trgm` GIN for typo tolerance. Queries are normalised through th
 - Admin approves or rejects from a pending queue; approval sends `ACCOUNT_APPROVED`.
 - **Password reset is admin-only** (point 17): the client phones the admin, who sets a new password from the client's account page. There is no self-service reset flow and no email, by design.
 - JWT access token 15 min; rotating refresh token 30 days, stored hashed, revoked on logout and on admin password reset.
-- Guards: `@Roles(ADMIN)` / `@Roles(CLIENT)`. A `ClientOwnershipGuard` ensures a client can only ever read or write their own cart, orders and inventory — enforced server-side on every route, never assumed from the UI.
+- Guards: `@Roles(ADMIN)` / `@Roles(CLIENT)`. A client can only ever read or write their own cart, orders and inventory, and this is enforced server-side on every route, never assumed from the UI.
+  - `ClientOwnershipGuard` protects routes keyed by a client id (`:clientId`).
+  - Routes keyed by a resource id (`/orders/:id`) are scoped in the service query: `where: { id, clientId: user.sub }`.
+  - A miss returns **404**, not 403, so order ids are not confirmed to exist.
 - Rate limiting on login and registration.
 
 ### 10.6 Media
@@ -667,7 +700,7 @@ Item and category images upload to the VPS filesystem under `/uploads`, served a
 
 REST, prefix `/api/v1`. Swagger/OpenAPI generated from decorators and used to keep `api_client` honest. Uniform error envelope `{ statusCode, code, messageAr, details? }` — `code` is a stable machine string the apps switch on; `messageAr` is display-ready. Cursor pagination on all list endpoints. `class-validator` DTOs on every input.
 
-Principal endpoint groups: `auth`, `admin/users`, `categories`, `items`, `admin/batches`, `cart`, `orders`, `admin/orders`, `inventory` (client self) `admin/clients/:id/inventory`, `stock-counts`, `notifications`, `admin/notifications`, `hot-deals`, `search`, `admin/settings`, `admin/dashboard`.
+Principal endpoint groups: `auth`, `admin/users`, `categories`, `items`, `admin/batches`, `cart`, `orders`, `admin/orders`, `inventory` (client self) `admin/clients/:id/inventory`, `stock-counts`, `notifications`, `admin/notifications`, `hot-deals`, `admin/hot-deals`, `search`, `admin/settings`, `admin/dashboard`.
 
 ---
 
@@ -706,7 +739,7 @@ Test weight follows risk, not uniformity.
 
 **Home:** search bar · **rotating hot deals bar** · categories · low-stock strip of the client's own red items, each with a **+**.
 
-**Other screens:** Catalog (3-level drill-down, `PlusButton` on every card) · Item detail (images, box size, price, expiry of stock they'd receive, `PlusButton`) · Search results · Cart (boxes, line + grand total, place order) · Orders (status timeline, history) · **My Inventory** (the core screen: per-item quantity in boxes + units, red/yellow/green badge, days of cover, estimate source label, **+** on red rows, expiry warnings on held batches) · Stock count (جرد — enter real quantities, submit, see the adjustment) · Notifications centre · Profile.
+**Other screens:** Catalog (3-level drill-down, `PlusButton` on every card) · Item detail (images, box size, price, expiry of stock they'd receive — `GET /items/:id/availability`, the same shelf-life rule as FEFO, exposing a date and in-stock flag but never quantities — `PlusButton`) · Search results · Cart (boxes, line + grand total, place order) · Orders (status timeline, history) · **My Inventory** (the core screen: per-item quantity in boxes + units, red/yellow/green badge, days of cover, estimate source label, **+** on red rows, expiry warnings on held batches) · Stock count (جرد — enter real quantities, submit, see the adjustment) · Notifications centre · Profile.
 
 ---
 
@@ -753,6 +786,8 @@ Eight phases. Each ends in a demonstrable, working state.
 | 5 | **Automation & notifications** | All six nightly jobs, alert engine with dedupe, FCM, notification centre, admin targeted broadcast | 5, 13 |
 | 6 | **Admin dashboard** | Essentials-only dashboard, out-of-stock client popups, account and client-inventory access | 10 |
 | 7 | **Hardening** | RTL audit, theme audit, responsive admin audit, performance, E2E loop, seed data, deployment, backups | — |
+
+**Phase 3 also creates `ClientInventoryItem` and `ClientBatchHolding`,** even though Phase 4 is where clients *see* their inventory. §7.4's `DELIVERED` transition credits the client's stock, so the models must exist for delivery to work at all. Phase 4 then adds the screens, the estimator and the auto-decrement job on top of data that has been accumulating correctly since the first delivery — which is strictly better than Phase 4 having to backfill it.
 
 Phases 3 and 4 carry the real risk — FEFO correctness and estimator correctness. They get the test weight described in §11. The rest is CRUD and should move fast.
 

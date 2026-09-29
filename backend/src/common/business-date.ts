@@ -54,6 +54,16 @@ export function addDaysIso(isoDate: string, days: number): string {
   return new Date(parseIsoDate(isoDate) + days * MS_PER_DAY).toISOString().slice(0, 10);
 }
 
+/**
+ * Whole calendar days from `earlier` to `later`, both 'YYYY-MM-DD' (negative
+ * when `later` comes first). Phase 4 measures every "day" this way, as a
+ * difference of business dates, never of instants: a run at 00:30 Baghdad is
+ * a new day even though only an hour has passed since 23:30.
+ */
+export function diffDaysIso(later: string, earlier: string): number {
+  return Math.round((parseIsoDate(later) - parseIsoDate(earlier)) / MS_PER_DAY);
+}
+
 /** Midnight UTC of a 'YYYY-MM-DD' date, in epoch milliseconds. */
 function parseIsoDate(isoDate: string): number {
   const match = ISO_DATE.exec(isoDate);

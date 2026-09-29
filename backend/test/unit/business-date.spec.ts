@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { addDaysIso, assertIsoDate, businessDateOf } from '../../src/common/business-date';
+import {
+  addDaysIso,
+  assertIsoDate,
+  businessDateOf,
+  diffDaysIso,
+} from '../../src/common/business-date';
 
 const BAGHDAD = 'Asia/Baghdad';
 
@@ -92,5 +97,23 @@ describe('assertIsoDate', () => {
 
   it('rejects a date that does not exist', () => {
     expect(() => assertIsoDate('2027-02-29')).toThrow();
+  });
+});
+
+describe('diffDaysIso', () => {
+  it.each([
+    ['2027-01-20', '2027-01-10', 10],
+    ['2027-01-10', '2027-01-10', 0],
+    ['2027-01-10', '2027-01-20', -10],
+    ['2027-01-01', '2026-12-31', 1],
+    // 2028 is a leap year: 28 Feb, 29 Feb, 1 Mar.
+    ['2028-03-01', '2028-02-28', 2],
+  ])('counts whole days from %s back to %s', (later, earlier, days) => {
+    expect(diffDaysIso(later, earlier)).toBe(days);
+  });
+
+  it('refuses anything that is not a YYYY-MM-DD calendar date', () => {
+    expect(() => diffDaysIso('2027-1-5', '2027-01-01')).toThrow();
+    expect(() => diffDaysIso('2027-01-05', '2027-01-01T00:00:00Z')).toThrow();
   });
 });

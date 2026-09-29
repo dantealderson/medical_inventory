@@ -57,6 +57,8 @@ model User {
   orders         Order[]
   inventoryItems ClientInventoryItem[]
   batchHoldings  ClientBatchHolding[]
+  stockCounts    StockCount[]
+  usageEstimates UsageEstimate[]
 
   @@index([status])
   @@map("users")
@@ -191,6 +193,8 @@ model Item {
   orderLines           OrderLine[]
   clientInventoryItems ClientInventoryItem[]
   hotDealEntries       HotDealEntry[]
+  stockCountLines      StockCountLine[]
+  usageEstimates       UsageEstimate[]
 
   /// Maintained by a PostgreSQL trigger (items_search_text_trg, see the
   /// search_text_via_trigger migration), not by application code and not a
@@ -467,4 +471,77 @@ model HotDealEntry {
   @@unique([itemId, kind])
   @@index([kind, sortOrder])
   @@map("hot_deal_entries")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4 — Inventory & estimation
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Where a usage rate came from (§7.5), in resolution order.
+enum EstimateSource {
+  MANUAL
+  MEASURED
+  PURCHASE
+  NONE
+}
+
+/// NULL for MANUAL (the admin's number is not an estimate) and NONE.
+enum EstimateConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+/// A clinic's جرد: the real quantities it found on its shelf. Only these rows
+/// may bound a MEASURED window (§7.5). The cached qtyUnits never can, because
+/// it is the very number a count exists to correct.
+model StockCount {
+  id              String           @id @default(uuid())
+  clientId        String
+  client          User             @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  countedAt       DateTime
+  createdByUserId String
+  note            String?
+  createdAt       DateTime         @default(now())
+  lines           StockCountLine[]
+
+  @@index([clientId, countedAt])
+  @@map("stock_counts")
+}
+
+/// One item of a count. `deltaUnits = countedQtyUnits − previousQtyUnits` is a
+/// CHECK, and it is the quantity of the STOCK_COUNT_ADJUST movement.
+model StockCountLine {
+  id               String     @id @default(uuid())
+  stockCountId     String
+  stockCount       StockCount @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
+  itemId           String
+  item             Item       @relation(fields: [itemId], references: [id])
+  countedQtyUnits  Int
+  previousQtyUnits Int
+  deltaUnits       Int
+
+  @@unique([stockCountId, itemId])
+  @@index([itemId])
+  @@map("stock_count_lines")
+}
+
+/// The resolved usage rate per (clinic, item), in units per day. A NONE row is
+/// stored rather than omitted, and its rate is NULL (a CHECK): stored as 0,
+/// "no data" would read as "uses nothing" and show a false green.
+model UsageEstimate {
+  clientId    String
+  client      User                @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  itemId      String
+  item        Item                @relation(fields: [itemId], references: [id])
+  ratePerDay  Decimal?            @db.Decimal(10, 4)
+  source      EstimateSource
+  confidence  EstimateConfidence?
+  windowStart DateTime?
+  windowEnd   DateTime?
+  sampleDays  Int?
+  computedAt  DateTime
+
+  @@id([clientId, itemId])
+  @@map("usage_estimates")
 }

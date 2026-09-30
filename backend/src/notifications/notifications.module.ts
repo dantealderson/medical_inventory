@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import type { Env } from '../config/env.schema';
+import { AdminBroadcastController } from './admin-broadcast.controller';
 import { DevicesController, NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
 import { PUSH_SENDER, createPushSender } from './push-sender';
@@ -12,7 +13,7 @@ import { PUSH_SENDER, createPushSender } from './push-sender';
  */
 @Global()
 @Module({
-  controllers: [NotificationsController, DevicesController],
+  controllers: [NotificationsController, DevicesController, AdminBroadcastController],
   providers: [
     NotificationsService,
     {

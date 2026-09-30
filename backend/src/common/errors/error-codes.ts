@@ -53,6 +53,7 @@ export const ERROR_CODES = Object.freeze({
   // --- Notifications and jobs (Phase 5) ---
   NOTIFICATION_NOT_FOUND: 'الإشعار غير موجود',
   DEVICE_NOT_FOUND: 'الجهاز غير مسجل',
+  JOBS_ALREADY_RUNNING: 'التحديث الليلي قيد التشغيل حالياً',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

@@ -79,7 +79,7 @@ describe('AutoDecrementService (integration)', () => {
 
     const result = await autoDecrement.run(day(3));
 
-    expect(result).toEqual({ examined: 1, decremented: 1, unitsDecremented: 30 });
+    expect(result).toEqual({ examined: 1, decremented: 1, unitsDecremented: 30, failed: 0 });
     const item = await row();
     expect(item.qtyUnits).toBe(270);
     expect(item.lastAutoDecrementAt).toEqual(day(3));

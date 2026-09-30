@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MovementReason, OwnerType, type Prisma } from '@prisma/client';
 
 import { depleteHoldings, lockShelf } from '../client-inventory/holdings';
@@ -14,6 +14,8 @@ export interface AutoDecrementResult {
   /** Rows that lost at least one unit. */
   decremented: number;
   unitsDecremented: number;
+  /** Rows whose transaction failed; they catch up on the next run. */
+  failed: number;
 }
 
 /**
@@ -28,6 +30,8 @@ export interface AutoDecrementResult {
  */
 @Injectable()
 export class AutoDecrementService {
+  private readonly logger = new Logger(AutoDecrementService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly settings: SettingsService,
@@ -55,12 +59,26 @@ export class AutoDecrementService {
       (r) => r.usageRateOverride !== null || hasEstimate.has(`${r.clientId}:${r.itemId}`),
     );
 
-    const result: AutoDecrementResult = { examined: candidates.length, decremented: 0, unitsDecremented: 0 };
+    const result: AutoDecrementResult = {
+      examined: candidates.length,
+      decremented: 0,
+      unitsDecremented: 0,
+      failed: 0,
+    };
     for (const c of candidates) {
-      const taken = await this.prisma.$transaction(
-        (tx) => this.decrementOne(tx, c.clientId, c.itemId, now, timeZone, maxCatchUpDays),
-        ORDER_TX_OPTIONS,
-      );
+      let taken: number;
+      try {
+        taken = await this.prisma.$transaction(
+          (tx) => this.decrementOne(tx, c.clientId, c.itemId, now, timeZone, maxCatchUpDays),
+          ORDER_TX_OPTIONS,
+        );
+      } catch (error) {
+        // One row must not cost every clinic after it a night. Its baseline
+        // did not move, so the next run catches it up.
+        result.failed += 1;
+        this.logger.warn(`auto-decrement of ${c.clientId}/${c.itemId} failed: ${String(error)}`);
+        continue;
+      }
       if (taken > 0) {
         result.decremented += 1;
         result.unitsDecremented += taken;

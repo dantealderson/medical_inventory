@@ -83,6 +83,15 @@ describe('Item and category pictures (e2e)', () => {
     expect(await prisma.mediaFile.count()).toBe(0);
   });
 
+  it('deleting an empty category deletes its picture too', async () => {
+    const empty = await prisma.category.create({ data: { nameAr: 'فارغ', level: 1 } });
+    await upload(`/api/v1/admin/categories/${empty.id}/image`, await png()).expect(200);
+
+    await remove(`/api/v1/admin/categories/${empty.id}`).expect(204);
+
+    expect(await prisma.mediaFile.count()).toBe(0);
+  });
+
   it('shows the picture to clinics on the item', async () => {
     const clinic = await makeUser(app, prisma, 'clinic_one', Role.CLIENT);
     const set = await upload(`/api/v1/admin/items/${itemId}/image`, await png()).expect(200);

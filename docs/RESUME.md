@@ -1,6 +1,14 @@
 # Resume Point
 
-## >>> PHASE 7 COMPLETE (2026-09-30). Phase 8 (Firebase push) is next, and needs the user first
+## >>> PHASE 10 COMPLETE (2026-10-01). Next: Phase 9 prep (hosting), then a first UI pass. Phase 8 waits for the user
+
+**Work order agreed with the user (2026-10-01):**
+1. Pictures (Phase 10), which is done.
+2. Hosting prep (Phase 9, up to the accounts only the user can create).
+3. My own UI pass: the spec's audits plus a clean-up for older users.
+4. The user's UI comments.
+
+Phase 8 (Firebase) and manual testing wait until the user has time.
 
 **For the user:** `docs/SETUP-AND-TESTING.md` covers what to set up, how to test by hand, and current progress.
 
@@ -14,14 +22,26 @@
    - Postgres kept on UTC.
    - A demo-data seed for the fresh database.
    - The admin web hosted as static files; the client built with the hosted `API_BASE_URL`.
-4. **Phase 10: item pictures**, per spec §10.6.
-   - Upload with checks: 5 MB max, jpg/png/webp, magic bytes.
-   - A `sharp` thumbnail and a full-size variant.
-   - An admin upload screen; the client shows the pictures.
-   - Storage must suit the chosen host.
+4. **Phase 10: item pictures.** Done; see below.
 5. **Phase 11: UI and looks.**
    - The user has many UI comments, deliberately held until here.
    - This phase also takes the spec's RTL, theme and responsive audits, the large-text check, and Arabic-Indic digits.
+
+**Phase 10 (pictures).** The plan is `docs/superpowers/plans/2026-10-01-phase-10-item-pictures.md`.
+- **Stored in Postgres (`media_files`), not on disk.**
+  - Free hosts wipe their disk on restart, and a table is in every backup.
+  - This supersedes the spec's "VPS filesystem".
+  - `UPLOAD_DIR` and `/uploads` are gone.
+- **Served publicly** at `GET /api/v1/media/<id>.webp`, with the thumbnail at `<id>.thumb.webp`.
+  - Cached for a year, because every upload gets a new id.
+  - Full size fits 1200 px and the thumbnail 300 px, never enlarged. `rotate()` applies the EXIF orientation of phone photos.
+- **One request uploads and attaches:**
+  - `PUT` and `DELETE` on `/admin/items/:id/image` and `/admin/categories/:id/image`;
+  - the picture being replaced is deleted, and so is a deleted category's;
+  - audited with `imageUrl` before and after.
+- **Admin:** a thumbnail on each item and category row, plus «إضافة صورة» / «تغيير الصورة» / «حذف الصورة». Uses `file_picker` via `picturePickerProvider`.
+- **Client:** `ItemPicture`, showing the thumbnail in item cards, category tiles, hot deals and cart lines, and the full size on the item's page, with a placeholder when missing.
+- **Dart helpers:** `thumbnailOf` and `mediaUri` in `api_client`.
 
 **Phase 7 (everything works).** The plan is `docs/superpowers/plans/2026-09-30-phase-7-functional-hardening.md`. It was re-scoped from "hardening" after the user's own test run, and fixed:
 - **Admin:**
@@ -100,12 +120,12 @@ Until then, every notification still reaches the in-app centre.
 | Suite | Tests |
 |---|---|
 | backend unit | 279 |
-| backend e2e + integration | 530 |
-| `packages/api_client` | 135 |
+| backend e2e + integration | 539 |
+| `packages/api_client` | 141 |
 | `packages/ui_kit` | 44 |
-| `admin` | 102 |
-| `client` | 128 |
-| **total** | **1218** |
+| `admin` | 107 |
+| `client` | 132 |
+| **total** | **1242** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 

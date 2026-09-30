@@ -280,6 +280,19 @@ The jobs run by themselves at 00:30 Baghdad time. To run them now:
 41. Admin: open the accounts tab, then register a new clinic on the phone. Switch to another admin tab and back (or to another browser tab and back).
     → The new clinic is listed.
 
+### K. Pictures (Phase 10)
+
+42. Admin: on «الأصناف», press «إضافة صورة» on an item and choose a photo from your PC (jpg, png or webp, up to 5 MB).
+    → «تم حفظ الصورة», and the small picture appears on the item's row.
+43. Client: open that item's category, then the item.
+    → A small picture in the list, and the full picture at the top of the item's page. Items with no picture show a grey placeholder.
+44. Admin: press «تغيير الصورة» and choose another photo, then «حذف الصورة».
+    → Replacing shows the new one. Removing asks «حذف الصورة؟» first.
+45. Admin: on «الأقسام», give a category a picture.
+    → On the phone's home screen, that category shows it.
+46. Admin: try a file that is not a picture, for example a PDF renamed to .jpg.
+    → «الملف ليس صورة صالحة», and the old picture stays.
+
 Anything that looks wrong: note the step number and what you saw, and send it to me.
 
 ---
@@ -301,25 +314,24 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 | 7 — Everything works | Fixes from your test run: admin red screen, instant tabs, in-place search, phone back button, staying signed in, fresh data | ✅ Done |
 | 8 — Firebase push | Notifications that pop up on a locked phone | ⬜ Next (needs your Firebase project, 1.6) |
 | 9 — Temporary hosting | Backend and admin online on a free host, demo data, so you can test from anywhere | ⬜ |
-| 10 — Item pictures | Upload in the admin, shown in the clinics' app | ⬜ |
+| 10 — Item pictures | Upload in the admin, shown in the clinics' app | ✅ Done |
 | 11 — Looks | Your UI comments, plus the RTL, theme, phone-width and large-text checks and Arabic-Indic digits | ⬜ |
 
-**Overall: about 70% of the work is done.** This is weighted by effort per phase, and it is a rough estimate.
+**Overall: about 75% of the work is done.** This is weighted by effort per phase, and it is a rough estimate.
 - **Why it is lower than the 87% given before:** your roadmap added item pictures, temporary hosting and a full look-and-feel pass, which were not in the original plan.
-- **Left:** roughly 4–4.5 working days of building.
+- **Left:** roughly 3–3.5 working days of building.
   - Firebase: about half a day.
   - Hosting: about 1 day.
-  - Pictures: about 1 day.
   - Looks: 1.5–2 days, depending on your comments.
 - **Outside the code, on your side:** Firebase, a hosting account, a Google Play account, and the Play review (usually a few days).
 
 ### 3.2 Quality
 
-- **1,218 automated tests, all passing:**
-  - backend: 279 unit, 530 database and API;
-  - shared packages: 135 and 44;
-  - admin app: 102;
-  - client app: 128.
+- **1,242 automated tests, all passing:**
+  - backend: 279 unit, 539 database and API;
+  - shared packages: 141 and 44;
+  - admin app: 107;
+  - client app: 132.
 - **Clean on every check:** type checks, the Flutter analyzer, the colour check (no hard-coded colours), the admin web build, and the "no email anywhere" check.
 - **Stock is always traceable.** Every stock change, in the warehouse and on every clinic's shelf, is written to a history that the nightly check compares with the current quantities.
 

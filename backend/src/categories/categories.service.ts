@@ -169,6 +169,8 @@ export class CategoriesService {
     }
 
     await this.prisma.category.delete({ where: { id } });
+    // Nothing else points at its picture, so it would only take up space.
+    await this.media.removeByUrl(category.imageUrl);
     await this.audit.record({
       actorUserId,
       action: 'CATEGORY_DELETED',

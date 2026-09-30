@@ -85,7 +85,22 @@ flutter run
 
 The emulator reaches your PC's backend at `10.0.2.2` automatically.
 
-**On a real Android phone** on the same Wi-Fi:
+**On a real Android phone, with a USB cable** (recommended). This works on any network: the phone can stay on mobile data, because the app talks to your PC through the cable.
+1. On the phone, turn on USB debugging: Settings → About phone → tap «Build number» 7 times. Then open Developer options and turn on «USB debugging». On Xiaomi/Redmi phones, also turn on «Install via USB».
+2. Connect the phone to the PC with the cable. On the phone, accept «Allow USB debugging?».
+3. Check that Flutter sees the phone: `flutter devices` should list it.
+4. Forward the phone's port 3000 to your PC. In PowerShell:
+   ```powershell
+   & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:3000 tcp:3000
+   ```
+5. Run the app on the phone:
+   ```bash
+   cd D:\PROJECTS\medical_inventory\client
+   flutter run --dart-define=API_BASE_URL=http://127.0.0.1:3000/api/v1
+   ```
+6. The forwarding stops when you unplug the cable. After you plug it back in, run step 4 again. The app stays installed on the phone, so after that you can open it from the home screen. The backend must be running on the PC.
+
+**On a real Android phone, over Wi-Fi** (only if the phone and the PC are on the same Wi-Fi):
 1. Find your PC's local address: run `ipconfig`, and take the IPv4 address, e.g. `192.168.1.20`.
 2. Allow port 3000 through Windows Firewall. The first time Node asks, choose "Allow"; otherwise add an inbound rule for TCP 3000.
 3. Run:

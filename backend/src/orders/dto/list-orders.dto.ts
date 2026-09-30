@@ -21,6 +21,11 @@ export class ListOrdersDto {
 }
 
 export class AdminListOrdersDto extends ListOrdersDto {
+  @ApiPropertyOptional({ description: 'Only this clinic’s orders (the account page)' })
+  @IsOptional()
+  @IsString()
+  clientId?: string;
+
   @ApiPropertyOptional({ enum: OrderStatus })
   @IsOptional()
   @IsEnum(OrderStatus)

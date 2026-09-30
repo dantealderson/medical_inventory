@@ -5,6 +5,7 @@ import {
   assertIsoDate,
   businessDateOf,
   diffDaysIso,
+  startOfBusinessDay,
 } from '../../src/common/business-date';
 
 const BAGHDAD = 'Asia/Baghdad';
@@ -115,5 +116,25 @@ describe('diffDaysIso', () => {
   it('refuses anything that is not a YYYY-MM-DD calendar date', () => {
     expect(() => diffDaysIso('2027-1-5', '2027-01-01')).toThrow();
     expect(() => diffDaysIso('2027-01-05', '2027-01-01T00:00:00Z')).toThrow();
+  });
+});
+
+describe('startOfBusinessDay', () => {
+  it('is local midnight as an instant: 21:00Z the day before, in Baghdad', () => {
+    expect(startOfBusinessDay('2027-01-10', 'Asia/Baghdad')).toEqual(new Date('2027-01-09T21:00:00Z'));
+  });
+
+  it('is plain midnight in UTC', () => {
+    expect(startOfBusinessDay('2027-01-10', 'UTC')).toEqual(new Date('2027-01-10T00:00:00Z'));
+  });
+
+  it('follows the zone it is given, west of UTC too', () => {
+    expect(startOfBusinessDay('2027-01-10', 'America/New_York')).toEqual(new Date('2027-01-10T05:00:00Z'));
+  });
+
+  it('agrees with businessDateOf on both sides of the boundary', () => {
+    const start = startOfBusinessDay('2027-01-10', 'Asia/Baghdad');
+    expect(businessDateOf(start, 'Asia/Baghdad')).toBe('2027-01-10');
+    expect(businessDateOf(new Date(start.getTime() - 1), 'Asia/Baghdad')).toBe('2027-01-09');
   });
 });

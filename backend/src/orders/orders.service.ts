@@ -144,7 +144,14 @@ export class OrdersService {
    */
   listForAdmin(query: AdminListOrdersDto): Promise<OrderPage> {
     const direction = query.status && WORK_QUEUE.has(query.status) ? 'asc' : 'desc';
-    return this.page(query.status ? { status: query.status } : {}, direction, query);
+    return this.page(
+      {
+        ...(query.status ? { status: query.status } : {}),
+        ...(query.clientId ? { clientId: query.clientId } : {}),
+      },
+      direction,
+      query,
+    );
   }
 
   /** 404 for another clinic's order (D10): a 403 would confirm that the id exists. */

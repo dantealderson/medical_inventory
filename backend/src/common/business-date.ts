@@ -64,6 +64,40 @@ export function diffDaysIso(later: string, earlier: string): number {
   return Math.round((parseIsoDate(later) - parseIsoDate(earlier)) / MS_PER_DAY);
 }
 
+/**
+ * The instant a business day begins: local midnight of `isoDate` in
+ * `timeZone`. For filtering stored instants by a calendar day the admin
+ * picked, e.g. "audit entries on 10 January" in Baghdad starts at 21:00Z on
+ * the 9th.
+ *
+ * Found by asking what local time UTC midnight of that date is, and moving
+ * back by that offset — then correcting once more, so a zone whose offset
+ * changes that day (daylight saving) still lands on local midnight.
+ */
+export function startOfBusinessDay(isoDate: string, timeZone: string): Date {
+  const utcMidnight = parseIsoDate(isoDate);
+  let guess = utcMidnight - offsetMs(utcMidnight, timeZone);
+  guess = utcMidnight - offsetMs(guess, timeZone);
+  return new Date(guess);
+}
+
+/** How far `timeZone` is ahead of UTC at `instantMs`. */
+function offsetMs(instantMs: number, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(new Date(instantMs));
+  const get = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === type)?.value);
+  const asUtc = Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second'));
+  return asUtc - Math.floor(instantMs / 1000) * 1000;
+}
+
 /** Midnight UTC of a 'YYYY-MM-DD' date, in epoch milliseconds. */
 function parseIsoDate(isoDate: string): number {
   const match = ISO_DATE.exec(isoDate);

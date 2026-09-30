@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import type { Notification, NotificationType, Prisma } from '@prisma/client';
+import { type Notification, type NotificationType, type Prisma, Role, UserStatus } from '@prisma/client';
 
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
@@ -62,6 +62,23 @@ export class NotificationsService {
         dedupeKey: input.dedupeKey ?? null,
       },
     });
+  }
+
+  /** One notification per ACTIVE admin, in the caller's transaction. */
+  async createForAdmins(
+    db: Prisma.TransactionClient,
+    input: Omit<NewNotification, 'recipientUserId'>,
+  ): Promise<Notification[]> {
+    const admins = await db.user.findMany({
+      where: { role: Role.ADMIN, status: UserStatus.ACTIVE },
+      select: { id: true },
+      orderBy: { id: 'asc' },
+    });
+    const created: Notification[] = [];
+    for (const admin of admins) {
+      created.push(await this.create(db, { ...input, recipientUserId: admin.id }));
+    }
+    return created;
   }
 
   /** Best-effort: never throws. Tokens FCM reports dead are forgotten. */

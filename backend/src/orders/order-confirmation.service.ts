@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { OrderStatus, type Prisma } from '@prisma/client';
+import { type Notification, NotificationType, OrderStatus, type Prisma } from '@prisma/client';
 
 import {
   AllocationService,
@@ -12,6 +12,8 @@ import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
 import { billedAmount, formatMoney, sumMoney } from '../common/money';
 import { boxesToUnits } from '../common/units';
+import { texts } from '../notifications/notification-texts';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ORDER_TX_OPTIONS } from '../prisma/transaction';
 import type { ConfirmOrderDto, LineEditDto } from './dto/confirm-order.dto';
@@ -68,6 +70,7 @@ export class OrderConfirmationService {
     private readonly prisma: PrismaService,
     private readonly allocation: AllocationService,
     private readonly audit: AuditService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /**
@@ -135,7 +138,8 @@ export class OrderConfirmationService {
     // connection while this one holds row locks.
     const minExpiryExclusive = await this.allocation.cutoffFor();
 
-    return this.prisma.$transaction(async (tx) => {
+    let created: Notification[] = [];
+    const confirmed = await this.prisma.$transaction(async (tx) => {
       // D1: the order row comes before anything else. A double-clicked
       // confirm queues here. Under READ COMMITTED the second request then
       // re-reads the committed row, sees CONFIRMED and gets a 409. Without
@@ -239,8 +243,19 @@ export class OrderConfirmationService {
         tx,
       );
 
-      return loadOrderView(tx, orderId);
+      const view = await loadOrderView(tx, orderId);
+      created = [
+        await this.notifications.create(tx, {
+          recipientUserId: order.clientId,
+          type: NotificationType.ORDER_CONFIRMED,
+          ...texts.orderConfirmed(view.lines.some((l) => l.shortByUnits > 0)),
+          payload: { orderId },
+        }),
+      ];
+      return view;
     }, ORDER_TX_OPTIONS);
+    await this.notifications.push(created);
+    return confirmed;
   }
 }
 

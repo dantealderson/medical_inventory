@@ -1,8 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
+import { type Notification, NotificationType, OrderStatus } from '@prisma/client';
 
 import { ClientInventoryService } from '../client-inventory/client-inventory.service';
 import { EstimationService } from '../estimation/estimation.service';
+import { texts } from '../notifications/notification-texts';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ORDER_TX_OPTIONS } from '../prisma/transaction';
 import { lockOrder } from './order-lock';
@@ -17,6 +19,7 @@ export class OrderFulfilmentService {
     private readonly prisma: PrismaService,
     private readonly clientInventory: ClientInventoryService,
     private readonly estimation: EstimationService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /**
@@ -26,7 +29,8 @@ export class OrderFulfilmentService {
    * signature for Phase 5's order-status notification.
    */
   async dispatch(adminId: string, orderId: string): Promise<OrderView> {
-    return this.prisma.$transaction(async (tx) => {
+    let created: Notification[] = [];
+    const view = await this.prisma.$transaction(async (tx) => {
       // D1: a double-clicked dispatch queues here and gets a 409.
       const order = await lockOrder(tx, orderId);
       assertTransition(order.status, OrderStatus.OUT_FOR_DELIVERY);
@@ -38,12 +42,23 @@ export class OrderFulfilmentService {
         where: { id: orderId },
         data: { status: OrderStatus.OUT_FOR_DELIVERY, dispatchedAt: new Date() },
       });
+      created = [
+        await this.notifications.create(tx, {
+          recipientUserId: order.clientId,
+          type: NotificationType.ORDER_OUT_FOR_DELIVERY,
+          ...texts.orderOutForDelivery(),
+          payload: { orderId },
+        }),
+      ];
       return loadOrderView(tx, orderId);
     }, ORDER_TX_OPTIONS);
+    await this.notifications.push(created);
+    return view;
   }
 
   /** OUT_FOR_DELIVERY → DELIVERED: the clinic is credited with exactly what was allocated. */
   async deliver(adminId: string, orderId: string): Promise<OrderView> {
+    let created: Notification[] = [];
     const delivered = await this.prisma.$transaction(async (tx) => {
       // D1: without this, a double-clicked deliver credits the clinic twice,
       // with its ledger and cache in agreement.
@@ -78,6 +93,14 @@ export class OrderFulfilmentService {
         where: { id: orderId },
         data: { status: OrderStatus.DELIVERED, deliveredAt: new Date() },
       });
+      created = [
+        await this.notifications.create(tx, {
+          recipientUserId: order.clientId,
+          type: NotificationType.ORDER_DELIVERED,
+          ...texts.orderDelivered(),
+          payload: { orderId },
+        }),
+      ];
       return {
         view: await loadOrderView(tx, orderId),
         clientId: order.clientId,
@@ -93,6 +116,7 @@ export class OrderFulfilmentService {
     } catch (error) {
       this.logger.warn(`estimate recompute after delivering ${orderId} failed: ${String(error)}`);
     }
+    await this.notifications.push(created);
     return delivered.view;
   }
 }

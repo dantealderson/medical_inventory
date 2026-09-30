@@ -1,10 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UserStatus, type User } from '@prisma/client';
+import { NotificationType, UserStatus, type User } from '@prisma/client';
 
 import { AuditService } from '../audit/audit.service';
 import { PasswordService } from '../auth/password.service';
 import { toSessionUser, type SessionUser } from '../auth/auth.service';
 import { TokenService } from '../auth/token.service';
+import { type NotificationText, texts } from '../notifications/notification-texts';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
 import { PrismaService } from '../prisma/prisma.service';
@@ -22,6 +24,7 @@ export class UsersService {
     private readonly passwords: PasswordService,
     private readonly tokens: TokenService,
     private readonly audit: AuditService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async list(query: ListUsersDto): Promise<UserPage> {
@@ -43,15 +46,29 @@ export class UsersService {
     };
   }
 
-  approve(adminId: string, userId: string): Promise<SessionUser> {
-    return this.transition(adminId, userId, UserStatus.ACTIVE, 'CLIENT_APPROVED', {
+  async approve(adminId: string, userId: string): Promise<SessionUser> {
+    const user = await this.transition(adminId, userId, UserStatus.ACTIVE, 'CLIENT_APPROVED', {
       approvedById: adminId,
       approvedAt: new Date(),
     });
+    await this.tell(userId, NotificationType.ACCOUNT_APPROVED, texts.accountApproved());
+    return user;
   }
 
-  reject(adminId: string, userId: string): Promise<SessionUser> {
-    return this.transition(adminId, userId, UserStatus.REJECTED, 'CLIENT_REJECTED');
+  async reject(adminId: string, userId: string): Promise<SessionUser> {
+    const user = await this.transition(adminId, userId, UserStatus.REJECTED, 'CLIENT_REJECTED');
+    await this.tell(userId, NotificationType.ACCOUNT_REJECTED, texts.accountRejected());
+    return user;
+  }
+
+  /** After the change is saved: the account's notification, then its push. */
+  private async tell(userId: string, type: NotificationType, text: NotificationText): Promise<void> {
+    const created = await this.notifications.create(this.prisma, {
+      recipientUserId: userId,
+      type,
+      ...text,
+    });
+    await this.notifications.push([created]);
   }
 
   async suspend(adminId: string, userId: string): Promise<SessionUser> {

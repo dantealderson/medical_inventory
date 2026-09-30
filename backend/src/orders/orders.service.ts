@@ -1,10 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { OrderStatus, UserStatus, type Prisma } from '@prisma/client';
+import { type Notification, NotificationType, OrderStatus, UserStatus, type Prisma } from '@prisma/client';
 
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
 import { billedAmount, formatMoney, sumMoney } from '../common/money';
 import { boxesToUnits } from '../common/units';
+import { texts } from '../notifications/notification-texts';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ORDER_TX_OPTIONS } from '../prisma/transaction';
 import type { AdminListOrdersDto, ListOrdersDto } from './dto/list-orders.dto';
@@ -31,14 +33,18 @@ const orderNotFound = () =>
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   /**
    * Cart → PLACED (§7.4). Snapshots everything a later change could rewrite,
    * and moves no stock (D17).
    */
   async place(clientId: string, dto: PlaceOrderDto): Promise<OrderView> {
-    return this.prisma.$transaction(async (tx) => {
+    let created: Notification[] = [];
+    const view = await this.prisma.$transaction(async (tx) => {
       // D16: lock the cart row first. A double-tapped "place order" is two
       // concurrent requests, and without the lock both read the same lines
       // and create two orders. The second request waits here, then reads the
@@ -51,7 +57,7 @@ export class OrdersService {
       // look at the database.
       const client = await tx.user.findUniqueOrThrow({
         where: { id: clientId },
-        select: { status: true, address: true, phone: true },
+        select: { status: true, address: true, phone: true, clinicName: true, username: true },
       });
       if (client.status !== UserStatus.ACTIVE) {
         throw new AppException(
@@ -115,8 +121,15 @@ export class OrdersService {
       });
       await tx.cartLine.deleteMany({ where: { cartId: carts[0].id } });
 
+      created = await this.notifications.createForAdmins(tx, {
+        type: NotificationType.ORDER_PLACED,
+        ...texts.orderPlaced(client.clinicName ?? client.username),
+        payload: { orderId: order.id },
+      });
       return loadOrderView(tx, order.id);
     }, ORDER_TX_OPTIONS);
+    await this.notifications.push(created);
+    return view;
   }
 
   /** The clinic's own orders, newest first. */

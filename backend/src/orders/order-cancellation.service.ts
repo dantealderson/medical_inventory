@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { type CancelDisposition, OrderStatus } from '@prisma/client';
+import { type CancelDisposition, type Notification, NotificationType, OrderStatus } from '@prisma/client';
 
 import { AllocationService } from '../allocation/allocation.service';
 import { AuditService } from '../audit/audit.service';
+import { texts } from '../notifications/notification-texts';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ORDER_TX_OPTIONS } from '../prisma/transaction';
 import type { AdminCancelOrderDto, ClientCancelOrderDto } from './dto/cancel-order.dto';
@@ -26,6 +28,7 @@ export class OrderCancellationService {
     private readonly prisma: PrismaService,
     private readonly allocation: AllocationService,
     private readonly audit: AuditService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   cancelByClient(clientId: string, orderId: string, dto: ClientCancelOrderDto): Promise<OrderView> {
@@ -48,8 +51,9 @@ export class OrderCancellationService {
     });
   }
 
-  private cancel(cmd: CancelCommand): Promise<OrderView> {
-    return this.prisma.$transaction(async (tx) => {
+  private async cancel(cmd: CancelCommand): Promise<OrderView> {
+    let created: Notification[] = [];
+    const cancelled = await this.prisma.$transaction(async (tx) => {
       // D1: the order row first. The status the matrix reads is the one this
       // lock returns, so a double-clicked cancel, or a cancel racing a
       // confirm, sees the winner's committed status and gets a 409.
@@ -102,7 +106,26 @@ export class OrderCancellationService {
         tx,
       );
 
-      return loadOrderView(tx, cmd.orderId);
+      const view = await loadOrderView(tx, cmd.orderId);
+      // Tell the other party, never the one who just acted.
+      created =
+        cmd.actor === 'ADMIN'
+          ? [
+              await this.notifications.create(tx, {
+                recipientUserId: order.clientId,
+                type: NotificationType.ORDER_CANCELLED,
+                ...texts.orderCancelledForClient(cmd.reason ?? null),
+                payload: { orderId: cmd.orderId },
+              }),
+            ]
+          : await this.notifications.createForAdmins(tx, {
+              type: NotificationType.ORDER_CANCELLED,
+              ...texts.orderCancelledByClient(view.client.clinicName ?? view.client.username),
+              payload: { orderId: cmd.orderId },
+            });
+      return view;
     }, ORDER_TX_OPTIONS);
+    await this.notifications.push(created);
+    return cancelled;
   }
 }

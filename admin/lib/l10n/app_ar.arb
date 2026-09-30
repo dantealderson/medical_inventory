@@ -684,5 +684,58 @@
   "changesSaved": "تم حفظ التغييرات",
   "@changesSaved": {
     "description": "Phase 4: the controls were saved"
+  },
+  "notifications": "الإشعارات",
+  "@notifications": {
+    "description": "Phase 5: the notifications tab and screen"
+  },
+  "noNotifications": "لا توجد إشعارات",
+  "@noNotifications": {
+    "description": "Phase 5: an empty inbox"
+  },
+  "markAllRead": "تحديد الكل كمقروء",
+  "@markAllRead": {
+    "description": "Phase 5: marks every notification read"
+  },
+  "unreadLabel": "جديد",
+  "@unreadLabel": {
+    "description": "Phase 5: an unread notification"
+  },
+  "newMessage": "رسالة جديدة",
+  "@newMessage": {
+    "description": "Phase 5: opens the broadcast composer"
+  },
+  "messageTitle": "العنوان",
+  "@messageTitle": {
+    "description": "Phase 5: broadcast title field"
+  },
+  "messageBody": "نص الرسالة",
+  "@messageBody": {
+    "description": "Phase 5: broadcast body field"
+  },
+  "audienceAll": "جميع العملاء",
+  "@audienceAll": {
+    "description": "Phase 5: send to every active clinic"
+  },
+  "audienceSelected": "عملاء محددون",
+  "@audienceSelected": {
+    "description": "Phase 5: send to chosen clinics"
+  },
+  "send": "إرسال",
+  "@send": {
+    "description": "Phase 5: sends the broadcast"
+  },
+  "chooseAtLeastOneClinic": "اختر عميلاً واحداً على الأقل",
+  "@chooseAtLeastOneClinic": {
+    "description": "Phase 5: SELECTED with nobody chosen"
+  },
+  "sentTo": "{count, plural, =0{لم يتم الإرسال إلى أي عميل} =1{تم الإرسال إلى عميل واحد} =2{تم الإرسال إلى عميلين} few{تم الإرسال إلى {count} عملاء} many{تم الإرسال إلى {count} عميلاً} other{تم الإرسال إلى {count} عميل}}",
+  "@sentTo": {
+    "description": "Phase 5: how many clinics the broadcast reached",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

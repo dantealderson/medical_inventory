@@ -1113,6 +1113,78 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم حفظ التغييرات'**
   String get changesSaved;
+
+  /// Phase 5: the notifications tab and screen
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات'**
+  String get notifications;
+
+  /// Phase 5: an empty inbox
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد إشعارات'**
+  String get noNotifications;
+
+  /// Phase 5: marks every notification read
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد الكل كمقروء'**
+  String get markAllRead;
+
+  /// Phase 5: an unread notification
+  ///
+  /// In ar, this message translates to:
+  /// **'جديد'**
+  String get unreadLabel;
+
+  /// Phase 5: opens the broadcast composer
+  ///
+  /// In ar, this message translates to:
+  /// **'رسالة جديدة'**
+  String get newMessage;
+
+  /// Phase 5: broadcast title field
+  ///
+  /// In ar, this message translates to:
+  /// **'العنوان'**
+  String get messageTitle;
+
+  /// Phase 5: broadcast body field
+  ///
+  /// In ar, this message translates to:
+  /// **'نص الرسالة'**
+  String get messageBody;
+
+  /// Phase 5: send to every active clinic
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع العملاء'**
+  String get audienceAll;
+
+  /// Phase 5: send to chosen clinics
+  ///
+  /// In ar, this message translates to:
+  /// **'عملاء محددون'**
+  String get audienceSelected;
+
+  /// Phase 5: sends the broadcast
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال'**
+  String get send;
+
+  /// Phase 5: SELECTED with nobody chosen
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر عميلاً واحداً على الأقل'**
+  String get chooseAtLeastOneClinic;
+
+  /// Phase 5: how many clinics the broadcast reached
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =0{لم يتم الإرسال إلى أي عميل} =1{تم الإرسال إلى عميل واحد} =2{تم الإرسال إلى عميلين} few{تم الإرسال إلى {count} عملاء} many{تم الإرسال إلى {count} عميلاً} other{تم الإرسال إلى {count} عميل}}'**
+  String sentTo(int count);
 }
 
 class _AppLocalizationsDelegate

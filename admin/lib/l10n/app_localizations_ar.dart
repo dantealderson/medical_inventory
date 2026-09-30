@@ -541,4 +541,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get changesSaved => 'تم حفظ التغييرات';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get noNotifications => 'لا توجد إشعارات';
+
+  @override
+  String get markAllRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get unreadLabel => 'جديد';
+
+  @override
+  String get newMessage => 'رسالة جديدة';
+
+  @override
+  String get messageTitle => 'العنوان';
+
+  @override
+  String get messageBody => 'نص الرسالة';
+
+  @override
+  String get audienceAll => 'جميع العملاء';
+
+  @override
+  String get audienceSelected => 'عملاء محددون';
+
+  @override
+  String get send => 'إرسال';
+
+  @override
+  String get chooseAtLeastOneClinic => 'اختر عميلاً واحداً على الأقل';
+
+  @override
+  String sentTo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم الإرسال إلى $count عميل',
+      many: 'تم الإرسال إلى $count عميلاً',
+      few: 'تم الإرسال إلى $count عملاء',
+      two: 'تم الإرسال إلى عميلين',
+      one: 'تم الإرسال إلى عميل واحد',
+      zero: 'لم يتم الإرسال إلى أي عميل',
+    );
+    return '$_temp0';
+  }
 }

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../features/accounts/account_detail_screen.dart';
 import '../features/accounts/client_inventory_screen.dart';
+import '../features/notifications/compose_broadcast_screen.dart';
+import '../features/notifications/notifications_screen.dart';
 import '../features/accounts/pending_accounts_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/catalog/batches_screen.dart';
@@ -26,6 +28,8 @@ abstract final class Routes {
   static const orders = '/orders';
   static String order(String id) => '/orders/$id';
   static const hotDeals = '/hot-deals';
+  static const notifications = '/notifications';
+  static const composeBroadcast = '/notifications/compose';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -74,6 +78,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => OrderDetailScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(path: Routes.hotDeals, builder: (_, _) => const HotDealsScreen()),
+      GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: Routes.composeBroadcast, builder: (_, _) => const ComposeBroadcastScreen()),
     ],
   );
 });

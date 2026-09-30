@@ -31,6 +31,10 @@ abstract class _CatalogApiBase {
   }
 }
 
+/// A picture upload: the server reads multipart field `file`.
+FormData _pictureForm(List<int> bytes, String filename) =>
+    FormData.fromMap({'file': MultipartFile.fromBytes(bytes, filename: filename)});
+
 class CategoriesApi extends _CatalogApiBase {
   CategoriesApi(super.client);
 
@@ -71,6 +75,17 @@ class CategoriesApi extends _CatalogApiBase {
 
   Future<void> delete(String id) =>
       call(() => dio.delete<dynamic>('/admin/categories/$id'), (_) {});
+
+  /// Uploads a picture and attaches it, replacing any before (admin).
+  Future<Category> setImage(String id, List<int> bytes, String filename) => call(
+    () => dio.put<dynamic>('/admin/categories/$id/image', data: _pictureForm(bytes, filename)),
+    (data) => Category.fromJson(asMap(data)),
+  );
+
+  Future<Category> removeImage(String id) => call(
+    () => dio.delete<dynamic>('/admin/categories/$id/image'),
+    (data) => Category.fromJson(asMap(data)),
+  );
 }
 
 class ItemsApi extends _CatalogApiBase {
@@ -138,6 +153,17 @@ class ItemsApi extends _CatalogApiBase {
   /// Deactivates. Order history must keep resolving its items.
   Future<void> deactivate(String id) =>
       call(() => dio.delete<dynamic>('/admin/items/$id'), (_) {});
+
+  /// Uploads a picture and attaches it, replacing any before (admin).
+  Future<Item> setImage(String id, List<int> bytes, String filename) => call(
+    () => dio.put<dynamic>('/admin/items/$id/image', data: _pictureForm(bytes, filename)),
+    (data) => Item.fromJson(asMap(data)),
+  );
+
+  Future<Item> removeImage(String id) => call(
+    () => dio.delete<dynamic>('/admin/items/$id/image'),
+    (data) => Item.fromJson(asMap(data)),
+  );
 }
 
 /// What a search returned.

@@ -1,5 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:api_client/testing.dart';
+import 'package:dio/dio.dart' show FormData;
 import 'package:test/test.dart';
 
 const _category = {
@@ -52,6 +53,69 @@ const _batch = {
 }
 
 void main() {
+  group('Pictures', () {
+    const url = '/api/v1/media/0b0c0d0e-0000-4000-8000-000000000001.webp';
+
+    test('the thumbnail sits next to the full size', () {
+      expect(thumbnailOf(url), '/api/v1/media/0b0c0d0e-0000-4000-8000-000000000001.thumb.webp');
+      expect(thumbnailOf(thumbnailOf(url)), thumbnailOf(url), reason: 'already a thumbnail');
+      expect(thumbnailOf('/elsewhere/photo.png'), '/elsewhere/photo.png', reason: 'not ours');
+    });
+
+    test('a picture resolves against the server, not under /api/v1 twice', () {
+      expect(
+        mediaUri('http://10.0.2.2:3000/api/v1', url).toString(),
+        'http://10.0.2.2:3000$url',
+      );
+      expect(
+        mediaUri('http://10.0.2.2:3000/api/v1', url, thumbnail: true).toString(),
+        'http://10.0.2.2:3000${thumbnailOf(url)}',
+      );
+    });
+
+    test('ItemsApi.setImage PUTs the file as multipart field "file"', () async {
+      final h = _build((req, nth) => [200, {..._item, 'imageUrl': url}]);
+
+      final item = await ItemsApi(h.client).setImage('i1', [1, 2, 3], 'photo.jpg');
+
+      final sent = h.backend.lastTo('/admin/items/i1/image');
+      expect(sent.method, 'PUT');
+      final form = sent.body! as FormData;
+      expect(form.files.single.key, 'file');
+      expect(form.files.single.value.filename, 'photo.jpg');
+      expect(form.files.single.value.length, 3);
+      expect(item.imageUrl, url);
+    });
+
+    test('ItemsApi.removeImage DELETEs it', () async {
+      final h = _build((req, nth) => [200, _item]);
+      await ItemsApi(h.client).removeImage('i1');
+      expect(h.backend.lastTo('/admin/items/i1/image').method, 'DELETE');
+    });
+
+    test('CategoriesApi sets and removes a picture', () async {
+      final h = _build((req, nth) => [200, {..._category, 'imageUrl': url}]);
+
+      final category = await CategoriesApi(h.client).setImage('c1', [9], 'cat.png');
+      await CategoriesApi(h.client).removeImage('c1');
+
+      expect(category.imageUrl, url);
+      expect(h.backend.seen.map((r) => '${r.method} ${r.path}'), [
+        'PUT /admin/categories/c1/image',
+        'DELETE /admin/categories/c1/image',
+      ]);
+    });
+
+    test('a refused picture surfaces the server message', () async {
+      final h = _build((req, nth) => [400, errorEnvelope(400, 'INVALID_IMAGE', 'الملف ليس صورة صالحة')]);
+
+      await expectLater(
+        ItemsApi(h.client).setImage('i1', [0], 'x.png'),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'INVALID_IMAGE')),
+      );
+    });
+  });
+
   group('Category', () {
     test('displayName prefers Arabic, falls back to English', () {
       expect(Category.fromJson(_category).displayName, 'مستهلكات');

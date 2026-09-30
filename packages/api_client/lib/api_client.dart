@@ -19,6 +19,7 @@ export 'src/models/hot_deal.dart';
 export 'src/models/inventory.dart';
 export 'src/models/item.dart';
 export 'src/models/item_availability.dart';
+export 'src/models/media.dart';
 export 'src/models/notification.dart';
 export 'src/models/order.dart';
 export 'src/models/session_user.dart';

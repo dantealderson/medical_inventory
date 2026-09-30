@@ -10,6 +10,8 @@ import '../features/catalog/browse_screen.dart';
 import '../features/catalog/category_screen.dart';
 import '../features/catalog/item_detail_screen.dart';
 import '../features/catalog/search_screen.dart';
+import '../features/inventory/inventory_item_screen.dart';
+import '../features/inventory/inventory_screen.dart';
 import '../features/orders/order_detail_screen.dart';
 import '../features/orders/orders_screen.dart';
 import 'auth_controller.dart';
@@ -26,6 +28,8 @@ abstract final class Routes {
   static const cart = '/cart';
   static const orders = '/orders';
   static String order(String id) => '/orders/$id';
+  static const inventory = '/inventory';
+  static String inventoryItem(String id) => '/inventory/item/$id';
 }
 
 /// Routes reachable without a session.
@@ -84,6 +88,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/orders/:id',
         builder: (_, state) => OrderDetailScreen(orderId: state.pathParameters['id']!),
+      ),
+      GoRoute(path: Routes.inventory, builder: (_, _) => const InventoryScreen()),
+      GoRoute(
+        path: '/inventory/item/:id',
+        builder: (_, state) => InventoryItemScreen(itemId: state.pathParameters['id']!),
       ),
     ],
   );

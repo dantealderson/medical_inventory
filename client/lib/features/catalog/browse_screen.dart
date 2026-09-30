@@ -10,10 +10,11 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/cart_badge_button.dart';
 import '../home/hot_deals_carousel.dart';
+import '../inventory/low_stock_strip.dart';
 import 'item_card.dart';
 
-/// The client home: a search bar, the rotating hot deals, and the top-level
-/// categories. Phase 4 adds the low-stock strip and the inventory entry point.
+/// The client home: a search bar, a big «مخزوني» button, the rotating hot
+/// deals, the clinic's red items, and the top-level categories.
 class BrowseScreen extends ConsumerWidget {
   const BrowseScreen({super.key});
 
@@ -42,7 +43,9 @@ class BrowseScreen extends ConsumerWidget {
       body: Column(
         children: [
           const _SearchBar(),
+          const _MyInventoryButton(),
           const HotDealsCarousel(),
+          const LowStockStrip(),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async => ref.invalidate(categoryTreeProvider),
@@ -60,6 +63,26 @@ class BrowseScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A labelled, full-width button rather than an app-bar icon: My Inventory is
+/// the clinic's core screen, and an unlabelled icon is easy to miss.
+class _MyInventoryButton extends StatelessWidget {
+  const _MyInventoryButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
+      child: FilledButton.tonalIcon(
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+        onPressed: () => context.go(Routes.inventory),
+        icon: const Icon(Icons.inventory_2_outlined),
+        label: Text(l10n.myInventory),
       ),
     );
   }

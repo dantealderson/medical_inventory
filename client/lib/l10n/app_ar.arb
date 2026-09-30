@@ -366,5 +366,123 @@
   "currentlyUnavailable": "غير متوفر حالياً",
   "@currentlyUnavailable": {
     "description": "Phase 3 item detail: nothing in stock with enough shelf life to ship"
+  },
+  "myInventory": "مخزوني",
+  "@myInventory": {
+    "description": "Phase 4: the clinic's own inventory, as a home button and a screen title"
+  },
+  "inventoryEmpty": "لا توجد أصناف في مخزونك بعد. ستظهر هنا بعد استلام أول طلب.",
+  "@inventoryEmpty": {
+    "description": "Phase 4: My Inventory with nothing on the shelf yet"
+  },
+  "stockRed": "ناقص",
+  "@stockRed": {
+    "description": "Phase 4: RED stock badge"
+  },
+  "stockOut": "نفد",
+  "@stockOut": {
+    "description": "Phase 4: RED stock badge when the shelf is empty"
+  },
+  "stockYellow": "قليل",
+  "@stockYellow": {
+    "description": "Phase 4: YELLOW stock badge"
+  },
+  "stockGreen": "جيد",
+  "@stockGreen": {
+    "description": "Phase 4: GREEN stock badge"
+  },
+  "stockUnknown": "غير محدد",
+  "@stockUnknown": {
+    "description": "Phase 4: UNKNOWN stock badge (no usage data and no minimum)"
+  },
+  "daysOfCover": "{days, plural, =0{يكفي أقل من يوم} =1{يكفي يوماً واحداً} =2{يكفي يومين} few{يكفي حوالي {days} أيام} many{يكفي حوالي {days} يوماً} other{يكفي حوالي {days} يوم}}",
+  "@daysOfCover": {
+    "description": "Phase 4: how many days the stock should last",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noEstimate": "لا توجد بيانات كافية",
+  "@noEstimate": {
+    "description": "Phase 4: no usage rate yet (spec §7.5)"
+  },
+  "sourceManual": "معدل الاستهلاك حدده المورد",
+  "@sourceManual": {
+    "description": "Phase 4: the usage rate was set by the supplier"
+  },
+  "sourceMeasured": "تقدير من الجرد",
+  "@sourceMeasured": {
+    "description": "Phase 4: the usage rate was measured between stock counts"
+  },
+  "sourcePurchase": "تقدير من مشترياتك",
+  "@sourcePurchase": {
+    "description": "Phase 4: the usage rate was estimated from purchases"
+  },
+  "batchExpiresOn": "الدفعة {batch} تنتهي صلاحيتها في {date}",
+  "@batchExpiresOn": {
+    "description": "Phase 4: a held batch that expires soon",
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "batchExpired": "الدفعة {batch} منتهية الصلاحية منذ {date}",
+  "@batchExpired": {
+    "description": "Phase 4: a held batch that has expired",
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "batchLabel": "الدفعة {batch}",
+  "@batchLabel": {
+    "description": "Phase 4: a batch number in the history",
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      }
+    }
+  },
+  "lowStockTitle": "أصناف تحتاج إلى طلب",
+  "@lowStockTitle": {
+    "description": "Phase 4: home strip of the clinic's red items"
+  },
+  "seeAll": "عرض الكل",
+  "@seeAll": {
+    "description": "Phase 4: opens My Inventory from the home strip"
+  },
+  "movementHistory": "سجل الحركة",
+  "@movementHistory": {
+    "description": "Phase 4: an item's history of stock changes"
+  },
+  "reasonDeliveryIn": "استلام طلب",
+  "@reasonDeliveryIn": {
+    "description": "Phase 4: history reason DELIVERY_IN"
+  },
+  "reasonAutoDecrement": "استهلاك تقديري",
+  "@reasonAutoDecrement": {
+    "description": "Phase 4: history reason AUTO_DECREMENT"
+  },
+  "reasonStockCount": "تصحيح بالجرد",
+  "@reasonStockCount": {
+    "description": "Phase 4: history reason STOCK_COUNT_ADJUST"
+  },
+  "reasonManualAdjust": "تعديل من المورد",
+  "@reasonManualAdjust": {
+    "description": "Phase 4: history reason MANUAL_ADJUST"
+  },
+  "reasonOther": "حركة",
+  "@reasonOther": {
+    "description": "Phase 4: history reason not otherwise named"
   }
 }

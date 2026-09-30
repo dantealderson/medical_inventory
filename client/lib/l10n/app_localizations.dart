@@ -591,6 +591,144 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'غير متوفر حالياً'**
   String get currentlyUnavailable;
+
+  /// Phase 4: the clinic's own inventory, as a home button and a screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'مخزوني'**
+  String get myInventory;
+
+  /// Phase 4: My Inventory with nothing on the shelf yet
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف في مخزونك بعد. ستظهر هنا بعد استلام أول طلب.'**
+  String get inventoryEmpty;
+
+  /// Phase 4: RED stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'ناقص'**
+  String get stockRed;
+
+  /// Phase 4: RED stock badge when the shelf is empty
+  ///
+  /// In ar, this message translates to:
+  /// **'نفد'**
+  String get stockOut;
+
+  /// Phase 4: YELLOW stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'قليل'**
+  String get stockYellow;
+
+  /// Phase 4: GREEN stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'جيد'**
+  String get stockGreen;
+
+  /// Phase 4: UNKNOWN stock badge (no usage data and no minimum)
+  ///
+  /// In ar, this message translates to:
+  /// **'غير محدد'**
+  String get stockUnknown;
+
+  /// Phase 4: how many days the stock should last
+  ///
+  /// In ar, this message translates to:
+  /// **'{days, plural, =0{يكفي أقل من يوم} =1{يكفي يوماً واحداً} =2{يكفي يومين} few{يكفي حوالي {days} أيام} many{يكفي حوالي {days} يوماً} other{يكفي حوالي {days} يوم}}'**
+  String daysOfCover(int days);
+
+  /// Phase 4: no usage rate yet (spec §7.5)
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بيانات كافية'**
+  String get noEstimate;
+
+  /// Phase 4: the usage rate was set by the supplier
+  ///
+  /// In ar, this message translates to:
+  /// **'معدل الاستهلاك حدده المورد'**
+  String get sourceManual;
+
+  /// Phase 4: the usage rate was measured between stock counts
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدير من الجرد'**
+  String get sourceMeasured;
+
+  /// Phase 4: the usage rate was estimated from purchases
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدير من مشترياتك'**
+  String get sourcePurchase;
+
+  /// Phase 4: a held batch that expires soon
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفعة {batch} تنتهي صلاحيتها في {date}'**
+  String batchExpiresOn(String batch, String date);
+
+  /// Phase 4: a held batch that has expired
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفعة {batch} منتهية الصلاحية منذ {date}'**
+  String batchExpired(String batch, String date);
+
+  /// Phase 4: a batch number in the history
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفعة {batch}'**
+  String batchLabel(String batch);
+
+  /// Phase 4: home strip of the clinic's red items
+  ///
+  /// In ar, this message translates to:
+  /// **'أصناف تحتاج إلى طلب'**
+  String get lowStockTitle;
+
+  /// Phase 4: opens My Inventory from the home strip
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض الكل'**
+  String get seeAll;
+
+  /// Phase 4: an item's history of stock changes
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل الحركة'**
+  String get movementHistory;
+
+  /// Phase 4: history reason DELIVERY_IN
+  ///
+  /// In ar, this message translates to:
+  /// **'استلام طلب'**
+  String get reasonDeliveryIn;
+
+  /// Phase 4: history reason AUTO_DECREMENT
+  ///
+  /// In ar, this message translates to:
+  /// **'استهلاك تقديري'**
+  String get reasonAutoDecrement;
+
+  /// Phase 4: history reason STOCK_COUNT_ADJUST
+  ///
+  /// In ar, this message translates to:
+  /// **'تصحيح بالجرد'**
+  String get reasonStockCount;
+
+  /// Phase 4: history reason MANUAL_ADJUST
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل من المورد'**
+  String get reasonManualAdjust;
+
+  /// Phase 4: history reason not otherwise named
+  ///
+  /// In ar, this message translates to:
+  /// **'حركة'**
+  String get reasonOther;
 }
 
 class _AppLocalizationsDelegate

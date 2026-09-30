@@ -275,4 +275,92 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get currentlyUnavailable => 'غير متوفر حالياً';
+
+  @override
+  String get myInventory => 'مخزوني';
+
+  @override
+  String get inventoryEmpty =>
+      'لا توجد أصناف في مخزونك بعد. ستظهر هنا بعد استلام أول طلب.';
+
+  @override
+  String get stockRed => 'ناقص';
+
+  @override
+  String get stockOut => 'نفد';
+
+  @override
+  String get stockYellow => 'قليل';
+
+  @override
+  String get stockGreen => 'جيد';
+
+  @override
+  String get stockUnknown => 'غير محدد';
+
+  @override
+  String daysOfCover(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'يكفي حوالي $days يوم',
+      many: 'يكفي حوالي $days يوماً',
+      few: 'يكفي حوالي $days أيام',
+      two: 'يكفي يومين',
+      one: 'يكفي يوماً واحداً',
+      zero: 'يكفي أقل من يوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noEstimate => 'لا توجد بيانات كافية';
+
+  @override
+  String get sourceManual => 'معدل الاستهلاك حدده المورد';
+
+  @override
+  String get sourceMeasured => 'تقدير من الجرد';
+
+  @override
+  String get sourcePurchase => 'تقدير من مشترياتك';
+
+  @override
+  String batchExpiresOn(String batch, String date) {
+    return 'الدفعة $batch تنتهي صلاحيتها في $date';
+  }
+
+  @override
+  String batchExpired(String batch, String date) {
+    return 'الدفعة $batch منتهية الصلاحية منذ $date';
+  }
+
+  @override
+  String batchLabel(String batch) {
+    return 'الدفعة $batch';
+  }
+
+  @override
+  String get lowStockTitle => 'أصناف تحتاج إلى طلب';
+
+  @override
+  String get seeAll => 'عرض الكل';
+
+  @override
+  String get movementHistory => 'سجل الحركة';
+
+  @override
+  String get reasonDeliveryIn => 'استلام طلب';
+
+  @override
+  String get reasonAutoDecrement => 'استهلاك تقديري';
+
+  @override
+  String get reasonStockCount => 'تصحيح بالجرد';
+
+  @override
+  String get reasonManualAdjust => 'تعديل من المورد';
+
+  @override
+  String get reasonOther => 'حركة';
 }

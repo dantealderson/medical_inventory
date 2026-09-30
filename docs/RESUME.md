@@ -18,7 +18,7 @@ What exists now:
 - **The admin app has a notifications tab** (inbox plus composer).
 
 **Last updated:** 2026-09-30
-**Branch:** `phase-5-automation-notifications` (merge locally into `main` when wrapping up, as for Phases 3–4)
+**Branch:** `main` — Phases 0–5 merged locally (fast-forward). No remote is configured yet.
 **Blocked on:** nothing for Phase 6. Push to phones is blocked on the Firebase hand-off below.
 
 ### Push notifications: what only you can do (FCM hand-off)

@@ -1,79 +1,67 @@
 # Resume Point
 
-## >>> PHASE 4 IN PROGRESS (2026-09-30): Tasks 1–5 of 14 done
+## >>> PHASE 4 COMPLETE (2026-09-30). Phase 5 is next
 
-- **Branch:** `phase-4-inventory-estimation`, from `main`. `main` holds Phases 0–3, merged and verified at 835 tests.
-- **Plan:** `docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`.
-- **Ledger:** `.superpowers/sdd/2026-09-30-phase-4-inventory-estimation/progress.md` (git-ignored). It holds the rulings and one line per finished task.
-- **How to run it:** executing-plans, inline. Resume at **Task 6 (auto-decrement)**.
-- **Done:**
-  - schema (stock counts, usage estimates);
-  - stock status rules;
-  - the four-tier estimator;
-  - EstimationService;
-  - stock counts with `POST /inventory/counts`.
-- **Tests:** backend unit + e2e 409 on the last run, typecheck clean.
-- **Left:**
-  - 6 auto-decrement;
-  - 7 `GET /inventory` and movement history;
-  - 8 admin controls, the post-delivery recompute and the full-loop e2e;
-  - 9 api_client;
-  - 10 StockBadge;
-  - 11 client My Inventory and the home strip;
-  - 12 the stock count screen;
-  - 13 the admin client-inventory screen;
-  - 14 docs;
-  - then the final review.
-
-
-## >>> PHASE 3 COMPLETE (2026-09-30). Phase 4 is next: give the reminder below first
-
-Phase 3 (ordering and FEFO) is built, reviewed and fixed, on `phase-0-foundations` as 20 commits after `1b9eabe` (the plan commit). The plan is `docs/superpowers/plans/2026-09-27-phase-3-ordering-fefo.md`.
+Phase 4 (inventory and estimation) is built on `phase-4-inventory-estimation`, branched from `main` (which holds Phases 0–3). The plan is `docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`.
 
 How it was done:
-- **Inline, with no multi-agent workflow.** The user declined ultracode ("i cant afford ultracod").
-- **The plan was verified by running it** in a scratch copy before it was finalised.
-- **It was executed task by task under TDD.** Each test was watched failing, each "remove the lock and watch the test fail" proof was run, and the result is committed per task.
-- **One fresh reviewer (Opus) checked the whole range** and found 0 Critical and 2 Important issues, both fixed with RED→GREEN tests in `0483303`:
-  - Rapid **+** taps were dropped while a request was in flight. Now five taps give five boxes.
-  - Item availability and order status stayed cached for the whole session. They now refetch on every visit.
-- **Of the nine Minor findings, the three people will really meet were fixed afterwards:**
-  - cart steppers count every tap, even on a slow network;
-  - the admin order list pages past 50;
-  - a short confirm says so.
-  The rest are listed below as deliberately not fixed.
+- **Inline at the user's chosen effort** (xhigh, no ultracode).
+- **The plan carries decisions, interfaces and exact test cases.** Code was written once, test-first, in the repo.
+- **Each task's tests were watched failing.** Two "remove it and watch it fail" proofs were run:
+  - Holdings depletion: 9 of 10 property seeds fail without it.
+  - The count dialog's double-answer guard: its test still passed without it, so the guard was removed as unproven code.
+- **A real-JSON wire check** had the Dart models parse actual backend responses.
+- **One fresh final reviewer** checks the whole branch (see the ledger for its findings and the fix pass).
 
 **Last updated:** 2026-09-30
-**Branch:** `phase-0-foundations` (`main` untouched)
+**Branch:** `phase-4-inventory-estimation` (not merged; `main` = Phases 0–3)
 **Blocked on:** nothing
-
----
-
-## ⚠️ Raise the effort level before Phase 4
-
-The user asked to be reminded (2026-09-27): **Phases 3 and 4 should be run at ultracode.**
-
-Not because the code is harder, but because of how the bugs fail. An off-by-one in the usage estimator quietly drifts every client's inventory for weeks, filling the ledger with wrong decrements before anyone questions the number.
-
-**Do not silently start Phase 4 at the current level. Say so first.** The user is budget-constrained, though. For Phase 3 they chose inline work at the current effort, so offer that as a first-class option too. For Phase 3 the rigour went into a plan verified by execution, watched-failing proofs, and one final reviewer.
 
 ---
 
 ## Where we are
 
-**Phases 0–3 are complete and verified.** Phase 4 (inventory and estimation) is next. **Give the reminder above first.**
+**Phases 0–4 are complete and verified.** Phase 5 (automation and notifications) is next.
 
 | Suite | Tests |
 |---|---|
-| backend unit | 184 |
-| backend e2e + integration | 377 |
-| `packages/api_client` | 98 |
-| `packages/ui_kit` | 37 |
-| `admin` | 64 |
-| `client` | 75 |
-| **total** | **835** |
+| backend unit | 258 |
+| backend e2e + integration | 449 |
+| `packages/api_client` | 113 |
+| `packages/ui_kit` | 44 |
+| `admin` | 72 |
+| `client` | 92 |
+| **total** | **1028** |
 
-The typecheck, `flutter analyze`, `check_colors` and no-email gates are clean; `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433).
+The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433).
+
+### What Phase 5 must schedule (spec §8), in this order, nightly (Baghdad)
+
+1. `AutoDecrementService.run(now)` (`src/estimation/auto-decrement.service.ts`)
+2. `EstimationService.recomputeAll(now)` (`src/estimation/estimation.service.ts`)
+3. Then the alert, expiry, hot-deals and ledger-assert jobs.
+
+Both services are idempotent and take `now`, so there is no need to fake time. Add the run log in Phase 5.
+
+### Phase 4 decisions worth not relitigating
+
+- **"Day" means a Baghdad business date.** Elapsed days and estimate windows are `diffDaysIso(businessDateOf(…))` differences, never differences of UTC instants.
+- **Rates and carries are `Prisma.Decimal`.** A decrement never uses a float: 10 days at 0.3 is exactly 3.
+- **`UsageEstimate.ratePerDay` is NULL exactly when the source is NONE** (a CHECK). Stored as 0, "no data" would read as "uses nothing", a false green. Confidence is an enum, NULL for MANUAL and NONE.
+- **An admin override wins at once,** in the views and in auto-decrement, without waiting for a recompute.
+- **An empty shelf moves the baseline** (`lastAutoDecrementAt = now`, carry 0), so a restock is never charged for the empty days. Clamping at zero drops the carry.
+- **Re-enabling auto-decrement resets the baseline,** so the disabled period is never subtracted.
+- **A stock count resets carry and `lastAutoDecrementAt`** in the same transaction (§7.5). A count-down depletes holdings earliest-expiry-first. A count-up leaves holdings alone, so the invariant is **ledger == cache and 0 ≤ Σ holdings ≤ cache** (`expectClientShelfConsistent`). Phase 3 suites keep the strict equality helper.
+- **Lock order on a clinic's shelf:** holdings (by batchId), then item rows (by itemId), everywhere (`lockShelf`).
+- **The status is computed at read time with Decimal comparisons,** never stored. Precedence: RED, YELLOW, GREEN, UNKNOWN. A rate of 0 means infinite cover.
+- **The per-clinic minimum is entered in whole boxes,** like the item minimum.
+
+### Phase 4 audience-driven choices (see "Who uses this" below)
+
+- **Home:** a full-width «مخزوني» button, and the red items as at most 2 rows with a 56 dp **+**, plus «عرض الكل» (not a sideways strip).
+- **Badges:** always a word and an icon as well as a colour.
+- **The count screen:** nothing pre-filled, a pinned «حفظ الجرد» button, and a confirmation first.
+- **Large text:** every new client screen is tested at 390 px with 1.5× text.
 
 ### Phase status
 
@@ -83,12 +71,12 @@ The typecheck, `flutter analyze`, `check_colors` and no-email gates are clean; `
 | 1 — Auth & accounts | ✅ complete |
 | 2 — Catalog & warehouse | ✅ complete |
 | 3 — Ordering & FEFO | ✅ complete |
-| **4 — Inventory & estimation** | **⬜ next — give the effort reminder first** |
-| 5 — Automation & notifications | ⬜ |
+| 4 — Inventory & estimation | ✅ complete (on its branch) |
+| **5 — Automation & notifications** | **⬜ next** |
 | 6 — Admin dashboard | ⬜ |
 | 7 — Hardening | ⬜ |
 
-Plans written so far: phases 0, 1, 2 and 3 (`docs/superpowers/plans/2026-09-27-phase-*.md`).
+Plans written so far: phases 0–3 (`docs/superpowers/plans/2026-09-27-phase-*.md`) and phase 4 (`docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`).
 Phase 3's planning working files are in `docs/superpowers/plans/phase-3-work/` (untracked, safe to delete).
 
 ### Phase 3 decisions worth not relitigating

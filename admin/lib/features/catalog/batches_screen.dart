@@ -116,10 +116,22 @@ class _BatchCard extends StatelessWidget {
 
 Future<void> _openIntake(BuildContext context, WidgetRef ref) async {
   final l10n = AppLocalizations.of(context)!;
-  final items = ref.read(itemsProvider).value ?? const <Item>[];
+  final messenger = ScaffoldMessenger.of(context);
+
+  // Fetched when the form opens, and never filtered. Reading the items tab's
+  // list said «لا توجد أصناف بعد» whenever that tab had not been opened, and
+  // offered only the category it was last filtered to.
+  final List<Item> items;
+  try {
+    items = (await ref.read(itemsApiProvider).list()).items;
+  } on ApiException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    return;
+  }
+  if (!context.mounted) return;
 
   if (items.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noItems)));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.noItems)));
     return;
   }
 
@@ -228,7 +240,6 @@ Future<void> _openIntake(BuildContext context, WidgetRef ref) async {
 
   if (saved != true || chosenExpiry == null || !context.mounted) return;
 
-  final messenger = ScaffoldMessenger.of(context);
   try {
     await ref.read(catalogActionsProvider).receiveBatch(
       itemId: itemId,

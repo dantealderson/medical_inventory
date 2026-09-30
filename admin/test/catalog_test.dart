@@ -187,6 +187,33 @@ void main() {
   });
 
   group('Items screen', () {
+    // The form used only a category list already in memory, so going straight
+    // to the items tab said «لا توجد أقسام بعد» although there were some.
+    testWidgets('the add-item form lists the categories without visiting their tab first', (
+      tester,
+    ) async {
+      await openCatalog(tester, 'الأصناف', routes(categories: [category('c1', 'مستهلكات', 1)]));
+
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'إضافة صنف'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('لا توجد أقسام بعد'), findsNothing);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text('مستهلكات'), findsWidgets);
+    });
+
+    testWidgets('the receive-batch form lists the items without visiting their tab first', (
+      tester,
+    ) async {
+      await openCatalog(tester, 'التشغيلات', routes(items: [item('i1', 'سرنجة 5 مل')]));
+
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'استلام تشغيلة'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('لا توجد أصناف بعد'), findsNothing);
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
     testWidgets('shows the box size and price — the two numbers scanned for', (tester) async {
       await openCatalog(tester, 'الأصناف', routes(items: [item('i1', 'سرنجة 5 مل')]));
       expect(find.text('سرنجة 5 مل'), findsOneWidget);

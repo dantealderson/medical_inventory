@@ -112,7 +112,18 @@ class _ItemCard extends ConsumerWidget {
 
 Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
   final l10n = AppLocalizations.of(context)!;
-  final tree = ref.read(categoryTreeProvider).value ?? const <Category>[];
+  final messenger = ScaffoldMessenger.of(context);
+
+  // Fetched when the form opens. Reading a list that happened to be in memory
+  // said «لا توجد أقسام بعد» whenever the categories tab had not been opened.
+  final List<Category> tree;
+  try {
+    tree = await ref.read(categoriesApiProvider).tree();
+  } on ApiException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    return;
+  }
+  if (!context.mounted) return;
 
   // Flatten to the leaf-most options; an item belongs to a category at any
   // level, so all of them are offered.
@@ -126,7 +137,7 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
 
   walk(tree);
   if (options.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCategories)));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.noCategories)));
     return;
   }
 
@@ -249,7 +260,6 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
 
   if (saved != true || !context.mounted) return;
 
-  final messenger = ScaffoldMessenger.of(context);
   try {
     await ref.read(catalogActionsProvider).createItem(
       categoryId: categoryId,

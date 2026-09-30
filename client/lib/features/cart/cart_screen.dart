@@ -9,6 +9,7 @@ import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
+import '../catalog/item_picture.dart';
 
 /// The clinic's cart: its lines at live prices, steppers, the total, and
 /// placing the order.
@@ -111,7 +112,19 @@ class _CartLineCardState extends ConsumerState<_CartLineCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(line.item.displayName, style: text.titleMedium, overflow: TextOverflow.ellipsis),
+            Row(
+              children: [
+                ItemPicture.thumb(line.item.imageUrl, size: 48),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    line.item.displayName,
+                    style: text.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
             if (!line.isAvailable) ...[
               const SizedBox(height: 4),
               Text(l10n.itemUnavailable, style: text.bodySmall?.copyWith(color: colors.danger)),

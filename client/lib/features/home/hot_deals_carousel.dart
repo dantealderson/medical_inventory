@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../core/api_config.dart';
 import '../../core/orders_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
+import '../catalog/item_picture.dart';
 
 /// The rotating hot-deals strip on the home screen (§7.7).
 ///
@@ -120,7 +120,7 @@ class _DealCard extends StatelessWidget {
           padding: const EdgeInsetsDirectional.all(12),
           child: Row(
             children: [
-              _DealImage(imageUrl: item.imageUrl),
+              ItemPicture.thumb(item.imageUrl),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -145,46 +145,6 @@ class _DealCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// The item's picture, or a placeholder. The server stores upload paths
-/// relative to its origin (`/uploads/…`), while the API base URL ends in
-/// `/api/v1`, so the path is resolved against the origin. The placeholder
-/// covers a missing image and a failed load.
-class _DealImage extends StatelessWidget {
-  const _DealImage({required this.imageUrl});
-
-  final String? imageUrl;
-
-  static const _size = 64.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final placeholder = SizedBox.square(
-      dimension: _size,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceMuted,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(Icons.medical_services_outlined, color: colors.border),
-      ),
-    );
-    final url = imageUrl;
-    if (url == null) return placeholder;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.network(
-        Uri.parse(apiBaseUrl).resolve(url).toString(),
-        width: _size,
-        height: _size,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => placeholder,
       ),
     );
   }

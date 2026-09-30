@@ -7,6 +7,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
+import 'item_picture.dart';
 
 /// One item in a list.
 ///
@@ -33,6 +34,8 @@ class ItemCard extends StatelessWidget {
           padding: const EdgeInsetsDirectional.all(16),
           child: Row(
             children: [
+              ItemPicture.thumb(item.imageUrl),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

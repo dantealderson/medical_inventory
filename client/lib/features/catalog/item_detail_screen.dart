@@ -10,6 +10,7 @@ import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
+import 'item_picture.dart';
 
 /// Full detail for one item.
 ///
@@ -49,6 +50,10 @@ class ItemDetailScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (data.imageUrl != null) ...[
+                ItemPicture.full(data.imageUrl),
+                const SizedBox(height: 16),
+              ],
               Text(data.displayName, style: text.headlineSmall),
               // Both names when both exist — a supplier catalogue and a
               // clinic's shelf label are often in different languages.

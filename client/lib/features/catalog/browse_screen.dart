@@ -13,6 +13,7 @@ import '../home/hot_deals_carousel.dart';
 import '../inventory/low_stock_strip.dart';
 import '../notifications/notification_bell.dart';
 import 'item_card.dart';
+import 'item_picture.dart';
 import 'search_results_view.dart';
 
 enum _HomeMenu { logout }
@@ -229,6 +230,7 @@ class CategoryTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsetsDirectional.only(bottom: 12),
       child: ListTile(
+        leading: category.imageUrl == null ? null : ItemPicture.thumb(category.imageUrl, size: 48),
         title: Text(category.displayName),
         // A level-1 category with children drills into them; a leaf goes
         // straight to its items. Either way the destination is the same

@@ -75,3 +75,22 @@ final inventoryMovementsProvider =
     AsyncNotifierProvider.autoDispose.family<InventoryMovements, MovementsState, String>(
       InventoryMovements.new,
     );
+
+/// Actions that change the clinic's shelf.
+class InventoryActions {
+  InventoryActions(this._ref);
+
+  final Ref _ref;
+
+  /// A stock count. The shelf is read again afterwards whether it succeeded
+  /// or not: a refusal can still mean the shelf changed underneath.
+  Future<StockCountResult> submitCount(List<StockCountLineInput> lines) async {
+    try {
+      return await _ref.read(inventoryApiProvider).submitCount(lines);
+    } finally {
+      _ref.invalidate(inventoryProvider);
+    }
+  }
+}
+
+final inventoryActionsProvider = Provider<InventoryActions>(InventoryActions.new);

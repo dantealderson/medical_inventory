@@ -729,6 +729,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'حركة'**
   String get reasonOther;
+
+  /// Phase 4: the stock count, as a button and a screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'جرد المخزون'**
+  String get stockCount;
+
+  /// Phase 4 count: field label for whole boxes
+  ///
+  /// In ar, this message translates to:
+  /// **'علب'**
+  String get countBoxes;
+
+  /// Phase 4 count: field label for loose units outside whole boxes
+  ///
+  /// In ar, this message translates to:
+  /// **'{unit} مفردة'**
+  String countLooseUnits(String unit);
+
+  /// Phase 4 count: instruction at the top of the count
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب ما تجده فعلاً على الرف. اترك الصنف فارغاً إذا لم تعدّه.'**
+  String get countHint;
+
+  /// Phase 4 count: save button
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ الجرد'**
+  String get saveCount;
+
+  /// Phase 4 count: confirmation before saving
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{سيتم تحديث صنف واحد حسب الجرد. هل تريد المتابعة؟} =2{سيتم تحديث صنفين حسب الجرد. هل تريد المتابعة؟} few{سيتم تحديث {count} أصناف حسب الجرد. هل تريد المتابعة؟} many{سيتم تحديث {count} صنفاً حسب الجرد. هل تريد المتابعة؟} other{سيتم تحديث {count} صنف حسب الجرد. هل تريد المتابعة؟}}'**
+  String confirmCount(int count);
+
+  /// Phase 4 count: confirm in the dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get confirm;
+
+  /// Phase 4 count: cancel in the dialog
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get cancel;
+
+  /// Phase 4 count: result title
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الجرد'**
+  String get countSaved;
+
+  /// Phase 4 count: one item before and after
+  ///
+  /// In ar, this message translates to:
+  /// **'كان {before}، الآن {after}'**
+  String countWasNow(String before, String after);
+
+  /// Phase 4 count: less than the system believed
+  ///
+  /// In ar, this message translates to:
+  /// **'نقص {qty}'**
+  String countLess(String qty);
+
+  /// Phase 4 count: more than the system believed
+  ///
+  /// In ar, this message translates to:
+  /// **'زيادة {qty}'**
+  String countMore(String qty);
+
+  /// Phase 4 count: as the system believed
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون تغيير'**
+  String get countSame;
+
+  /// Phase 4 count: leaves the result
+  ///
+  /// In ar, this message translates to:
+  /// **'العودة إلى مخزوني'**
+  String get backToInventory;
 }
 
 class _AppLocalizationsDelegate

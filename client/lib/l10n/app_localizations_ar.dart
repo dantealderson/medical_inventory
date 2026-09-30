@@ -363,4 +363,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reasonOther => 'حركة';
+
+  @override
+  String get stockCount => 'جرد المخزون';
+
+  @override
+  String get countBoxes => 'علب';
+
+  @override
+  String countLooseUnits(String unit) {
+    return '$unit مفردة';
+  }
+
+  @override
+  String get countHint =>
+      'اكتب ما تجده فعلاً على الرف. اترك الصنف فارغاً إذا لم تعدّه.';
+
+  @override
+  String get saveCount => 'حفظ الجرد';
+
+  @override
+  String confirmCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'سيتم تحديث $count صنف حسب الجرد. هل تريد المتابعة؟',
+      many: 'سيتم تحديث $count صنفاً حسب الجرد. هل تريد المتابعة؟',
+      few: 'سيتم تحديث $count أصناف حسب الجرد. هل تريد المتابعة؟',
+      two: 'سيتم تحديث صنفين حسب الجرد. هل تريد المتابعة؟',
+      one: 'سيتم تحديث صنف واحد حسب الجرد. هل تريد المتابعة؟',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirm => 'متابعة';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get countSaved => 'تم حفظ الجرد';
+
+  @override
+  String countWasNow(String before, String after) {
+    return 'كان $before، الآن $after';
+  }
+
+  @override
+  String countLess(String qty) {
+    return 'نقص $qty';
+  }
+
+  @override
+  String countMore(String qty) {
+    return 'زيادة $qty';
+  }
+
+  @override
+  String get countSame => 'بدون تغيير';
+
+  @override
+  String get backToInventory => 'العودة إلى مخزوني';
 }

@@ -37,6 +37,13 @@ class InventoryScreen extends ConsumerWidget {
           builder: (data) => ListView(
             padding: const EdgeInsetsDirectional.all(16),
             children: [
+              FilledButton.icon(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                onPressed: () => context.go(Routes.stockCount),
+                icon: const Icon(Icons.fact_check_outlined),
+                label: Text(l10n.stockCount),
+              ),
+              const SizedBox(height: 16),
               for (final entry in data.items)
                 InventoryEntryCard(
                   key: ValueKey(entry.item.id),

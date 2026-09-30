@@ -484,5 +484,89 @@
   "reasonOther": "حركة",
   "@reasonOther": {
     "description": "Phase 4: history reason not otherwise named"
+  },
+  "stockCount": "جرد المخزون",
+  "@stockCount": {
+    "description": "Phase 4: the stock count, as a button and a screen title"
+  },
+  "countBoxes": "علب",
+  "@countBoxes": {
+    "description": "Phase 4 count: field label for whole boxes"
+  },
+  "countLooseUnits": "{unit} مفردة",
+  "@countLooseUnits": {
+    "description": "Phase 4 count: field label for loose units outside whole boxes",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "countHint": "اكتب ما تجده فعلاً على الرف. اترك الصنف فارغاً إذا لم تعدّه.",
+  "@countHint": {
+    "description": "Phase 4 count: instruction at the top of the count"
+  },
+  "saveCount": "حفظ الجرد",
+  "@saveCount": {
+    "description": "Phase 4 count: save button"
+  },
+  "confirmCount": "{count, plural, =1{سيتم تحديث صنف واحد حسب الجرد. هل تريد المتابعة؟} =2{سيتم تحديث صنفين حسب الجرد. هل تريد المتابعة؟} few{سيتم تحديث {count} أصناف حسب الجرد. هل تريد المتابعة؟} many{سيتم تحديث {count} صنفاً حسب الجرد. هل تريد المتابعة؟} other{سيتم تحديث {count} صنف حسب الجرد. هل تريد المتابعة؟}}",
+  "@confirmCount": {
+    "description": "Phase 4 count: confirmation before saving",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirm": "متابعة",
+  "@confirm": {
+    "description": "Phase 4 count: confirm in the dialog"
+  },
+  "cancel": "إلغاء",
+  "@cancel": {
+    "description": "Phase 4 count: cancel in the dialog"
+  },
+  "countSaved": "تم حفظ الجرد",
+  "@countSaved": {
+    "description": "Phase 4 count: result title"
+  },
+  "countWasNow": "كان {before}، الآن {after}",
+  "@countWasNow": {
+    "description": "Phase 4 count: one item before and after",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "countLess": "نقص {qty}",
+  "@countLess": {
+    "description": "Phase 4 count: less than the system believed",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "countMore": "زيادة {qty}",
+  "@countMore": {
+    "description": "Phase 4 count: more than the system believed",
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "countSame": "بدون تغيير",
+  "@countSame": {
+    "description": "Phase 4 count: as the system believed"
+  },
+  "backToInventory": "العودة إلى مخزوني",
+  "@backToInventory": {
+    "description": "Phase 4 count: leaves the result"
   }
 }

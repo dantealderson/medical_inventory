@@ -1,5 +1,6 @@
 library;
 
+export 'src/admin/admin_dashboard_api.dart';
 export 'src/admin/admin_users_api.dart';
 export 'src/api_client_base.dart';
 export 'src/api_exception.dart';
@@ -10,6 +11,7 @@ export 'src/catalog/catalog_api.dart';
 export 'src/hot_deals/hot_deals_api.dart';
 export 'src/inventory/admin_client_inventory_api.dart';
 export 'src/inventory/inventory_api.dart';
+export 'src/models/admin_dashboard.dart';
 export 'src/models/auth_tokens.dart';
 export 'src/models/cart.dart';
 export 'src/models/category.dart';

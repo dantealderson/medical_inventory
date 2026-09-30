@@ -11,13 +11,15 @@ class AdminOrdersApi {
   final Dio _dio;
 
   /// Filtered to a work-queue status, the server returns oldest first.
-  Future<OrderPage> list({OrderStatus? status, String? cursor, int? limit}) => guardedCall(
+  /// [clientId] narrows the list to one clinic (its account page).
+  Future<OrderPage> list({OrderStatus? status, String? clientId, String? cursor, int? limit}) => guardedCall(
     () => _dio.get<dynamic>(
       '/admin/orders',
       queryParameters: {
         // `unknown` is not a status the server knows. It would answer 400, so
         // it is treated as "no filter".
         if (status != null && status != OrderStatus.unknown) 'status': status.wire,
+        if (clientId != null) 'clientId': clientId,
         if (cursor != null) 'cursor': cursor,
         if (limit != null) 'limit': limit,
       },

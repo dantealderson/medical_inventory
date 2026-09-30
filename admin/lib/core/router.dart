@@ -8,6 +8,7 @@ import '../features/notifications/compose_broadcast_screen.dart';
 import '../features/notifications/notifications_screen.dart';
 import '../features/accounts/pending_accounts_screen.dart';
 import '../features/auth/login_screen.dart';
+import '../features/dashboard/dashboard_screen.dart';
 import '../features/catalog/batches_screen.dart';
 import '../features/catalog/categories_screen.dart';
 import '../features/catalog/items_screen.dart';
@@ -19,7 +20,8 @@ import 'auth_controller.dart';
 abstract final class Routes {
   static const splash = '/splash';
   static const login = '/login';
-  static const accounts = '/';
+  static const dashboard = '/';
+  static const accounts = '/accounts';
   static String account(String id) => '/accounts/$id';
   static String clientInventory(String id) => '/accounts/$id/inventory';
   static const categories = '/catalog/categories';
@@ -53,13 +55,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         case AuthLoggedOut():
           return location == Routes.login ? null : Routes.login;
         case AuthAuthenticated():
-          return location == Routes.login || location == Routes.splash ? Routes.accounts : null;
+          return location == Routes.login || location == Routes.splash ? Routes.dashboard : null;
       }
     },
 
     routes: [
       GoRoute(path: Routes.splash, builder: (_, _) => const _SplashScreen()),
       GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
+      GoRoute(path: Routes.dashboard, builder: (_, _) => const DashboardScreen()),
       GoRoute(path: Routes.accounts, builder: (_, _) => const PendingAccountsScreen()),
       GoRoute(
         path: '/accounts/:id',

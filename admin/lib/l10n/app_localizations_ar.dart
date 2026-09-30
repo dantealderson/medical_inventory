@@ -592,4 +592,78 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trackingStoppedByClinic => 'أوقف العميل متابعته';
+
+  @override
+  String get dashboard => 'الرئيسية';
+
+  @override
+  String get pendingApprovalsCard => 'حسابات بانتظار الموافقة';
+
+  @override
+  String get ordersAwaitingCard => 'طلبات بانتظار التأكيد';
+
+  @override
+  String get outOfStockClinicsTitle => 'عملاء نفد مخزونهم';
+
+  @override
+  String clinicOutLine(String clinic, String items) {
+    return '$clinic: $items';
+  }
+
+  @override
+  String get warehouseAlertsTitle => 'المستودع: أصناف ناقصة أو نافدة';
+
+  @override
+  String warehouseOut(String item) {
+    return '$item — نفد';
+  }
+
+  @override
+  String warehouseLow(String item, String qty) {
+    return '$item — ناقص: $qty';
+  }
+
+  @override
+  String get expiringBatchesTitle => 'دفعات قاربت على الانتهاء';
+
+  @override
+  String batchExpiresLine(String batch, String item, String date) {
+    return '$batch — $item: تنتهي في $date';
+  }
+
+  @override
+  String batchExpiredLine(String batch, String item, String date) {
+    return '$batch — $item: منتهية منذ $date';
+  }
+
+  @override
+  String get nothingToShow => 'لا يوجد';
+
+  @override
+  String get nightlyTitle => 'التحديث الليلي';
+
+  @override
+  String lastRunAt(String when) {
+    return 'آخر تشغيل: $when';
+  }
+
+  @override
+  String get runSucceeded => 'تم بنجاح';
+
+  @override
+  String runFailed(String jobs) {
+    return 'فشل: $jobs';
+  }
+
+  @override
+  String get runStillGoing => 'قيد التشغيل';
+
+  @override
+  String get neverRun => 'لم يعمل بعد';
+
+  @override
+  String get runNow => 'تشغيل الآن';
+
+  @override
+  String get close => 'إغلاق';
 }

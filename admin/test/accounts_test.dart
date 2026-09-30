@@ -42,7 +42,7 @@ void main() {
       expect(find.text('اسم المستخدم أو كلمة المرور غير صحيحة'), findsOneWidget);
     });
 
-    testWidgets('a successful login lands on the approvals queue', (tester) async {
+    testWidgets('a successful login lands on the dashboard, and the queue is one tab away', (tester) async {
       await pumpAdmin(tester, (req) {
         if (req.path == '/auth/login') return [200, {'user': adminUser, ...tokens}];
         if (req.path == '/auth/me') return [200, adminUser];
@@ -57,6 +57,9 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
       await tester.pumpAndSettle();
 
+      // Since Phase 6 the admin lands on the dashboard (title and tab).
+      expect(find.text('الرئيسية'), findsWidgets);
+      await openAccountsTab(tester);
       // Appears twice now: as the screen title and as its nav tab in
       // AdminShell, which every admin screen shares.
       expect(find.text('طلبات الحسابات'), findsWidgets);
@@ -79,6 +82,7 @@ void main() {
         }
         return [404, null];
       });
+      await openAccountsTab(tester);
 
       expect(find.text('مختبر النور'), findsOneWidget);
       expect(find.text('مختبر الشفاء'), findsOneWidget);
@@ -92,6 +96,7 @@ void main() {
         if (req.path == '/admin/users') return [200, page([])];
         return [404, null];
       });
+      await openAccountsTab(tester);
 
       expect(find.text('لا توجد طلبات جديدة'), findsOneWidget);
     });
@@ -115,6 +120,7 @@ void main() {
         }
         return [404, null];
       });
+      await openAccountsTab(tester);
 
       await tester.tap(find.widgetWithText(FilledButton, 'موافقة'));
       await tester.pumpAndSettle();
@@ -134,6 +140,7 @@ void main() {
         }
         return [404, null];
       });
+      await openAccountsTab(tester);
 
       expect(find.text('ليس لديك صلاحية لهذا الإجراء'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'إعادة المحاولة'), findsOneWidget);
@@ -147,6 +154,7 @@ void main() {
         }
         return [404, null];
       });
+      await openAccountsTab(tester);
 
       expect(find.widgetWithText(OutlinedButton, 'إيقاف'), findsOneWidget);
       expect(find.widgetWithText(FilledButton, 'موافقة'), findsNothing);
@@ -170,6 +178,7 @@ void main() {
         }
         return [404, null];
       });
+      await openAccountsTab(tester);
     }
 
     /// Asserts nothing rendered extends past the viewport horizontally.

@@ -1191,6 +1191,126 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أوقف العميل متابعته'**
   String get trackingStoppedByClinic;
+
+  /// Phase 6: the dashboard tab
+  ///
+  /// In ar, this message translates to:
+  /// **'الرئيسية'**
+  String get dashboard;
+
+  /// Phase 6: dashboard count
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابات بانتظار الموافقة'**
+  String get pendingApprovalsCard;
+
+  /// Phase 6: dashboard count
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات بانتظار التأكيد'**
+  String get ordersAwaitingCard;
+
+  /// Phase 6: clinics that ran out (card and popup)
+  ///
+  /// In ar, this message translates to:
+  /// **'عملاء نفد مخزونهم'**
+  String get outOfStockClinicsTitle;
+
+  /// Phase 6: one clinic and the items it ran out of
+  ///
+  /// In ar, this message translates to:
+  /// **'{clinic}: {items}'**
+  String clinicOutLine(String clinic, String items);
+
+  /// Phase 6: warehouse items out or low
+  ///
+  /// In ar, this message translates to:
+  /// **'المستودع: أصناف ناقصة أو نافدة'**
+  String get warehouseAlertsTitle;
+
+  /// Phase 6: a warehouse item with no usable stock
+  ///
+  /// In ar, this message translates to:
+  /// **'{item} — نفد'**
+  String warehouseOut(String item);
+
+  /// Phase 6: a warehouse item below its minimum
+  ///
+  /// In ar, this message translates to:
+  /// **'{item} — ناقص: {qty}'**
+  String warehouseLow(String item, String qty);
+
+  /// Phase 6: batches expiring soon
+  ///
+  /// In ar, this message translates to:
+  /// **'دفعات قاربت على الانتهاء'**
+  String get expiringBatchesTitle;
+
+  /// Phase 6: a batch expiring soon
+  ///
+  /// In ar, this message translates to:
+  /// **'{batch} — {item}: تنتهي في {date}'**
+  String batchExpiresLine(String batch, String item, String date);
+
+  /// Phase 6: an expired batch still in stock
+  ///
+  /// In ar, this message translates to:
+  /// **'{batch} — {item}: منتهية منذ {date}'**
+  String batchExpiredLine(String batch, String item, String date);
+
+  /// Phase 6: an empty dashboard list
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد'**
+  String get nothingToShow;
+
+  /// Phase 6: the nightly jobs card
+  ///
+  /// In ar, this message translates to:
+  /// **'التحديث الليلي'**
+  String get nightlyTitle;
+
+  /// Phase 6: when the nightly jobs last ran
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر تشغيل: {when}'**
+  String lastRunAt(String when);
+
+  /// Phase 6: every nightly job succeeded
+  ///
+  /// In ar, this message translates to:
+  /// **'تم بنجاح'**
+  String get runSucceeded;
+
+  /// Phase 6: the nightly jobs that failed
+  ///
+  /// In ar, this message translates to:
+  /// **'فشل: {jobs}'**
+  String runFailed(String jobs);
+
+  /// Phase 6: the nightly run has not finished
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التشغيل'**
+  String get runStillGoing;
+
+  /// Phase 6: the nightly jobs never ran
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يعمل بعد'**
+  String get neverRun;
+
+  /// Phase 6: run the nightly jobs now
+  ///
+  /// In ar, this message translates to:
+  /// **'تشغيل الآن'**
+  String get runNow;
+
+  /// Phase 6: closes the popup
+  ///
+  /// In ar, this message translates to:
+  /// **'إغلاق'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

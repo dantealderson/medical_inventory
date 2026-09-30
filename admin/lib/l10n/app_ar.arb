@@ -741,5 +741,138 @@
   "trackingStoppedByClinic": "أوقف العميل متابعته",
   "@trackingStoppedByClinic": {
     "description": "Stop tracking: the clinic hid this item from its own inventory"
+  },
+  "dashboard": "الرئيسية",
+  "@dashboard": {
+    "description": "Phase 6: the dashboard tab"
+  },
+  "pendingApprovalsCard": "حسابات بانتظار الموافقة",
+  "@pendingApprovalsCard": {
+    "description": "Phase 6: dashboard count"
+  },
+  "ordersAwaitingCard": "طلبات بانتظار التأكيد",
+  "@ordersAwaitingCard": {
+    "description": "Phase 6: dashboard count"
+  },
+  "outOfStockClinicsTitle": "عملاء نفد مخزونهم",
+  "@outOfStockClinicsTitle": {
+    "description": "Phase 6: clinics that ran out (card and popup)"
+  },
+  "clinicOutLine": "{clinic}: {items}",
+  "@clinicOutLine": {
+    "description": "Phase 6: one clinic and the items it ran out of",
+    "placeholders": {
+      "clinic": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "warehouseAlertsTitle": "المستودع: أصناف ناقصة أو نافدة",
+  "@warehouseAlertsTitle": {
+    "description": "Phase 6: warehouse items out or low"
+  },
+  "warehouseOut": "{item} — نفد",
+  "@warehouseOut": {
+    "description": "Phase 6: a warehouse item with no usable stock",
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "warehouseLow": "{item} — ناقص: {qty}",
+  "@warehouseLow": {
+    "description": "Phase 6: a warehouse item below its minimum",
+    "placeholders": {
+      "item": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "expiringBatchesTitle": "دفعات قاربت على الانتهاء",
+  "@expiringBatchesTitle": {
+    "description": "Phase 6: batches expiring soon"
+  },
+  "batchExpiresLine": "{batch} — {item}: تنتهي في {date}",
+  "@batchExpiresLine": {
+    "description": "Phase 6: a batch expiring soon",
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "item": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "batchExpiredLine": "{batch} — {item}: منتهية منذ {date}",
+  "@batchExpiredLine": {
+    "description": "Phase 6: an expired batch still in stock",
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "item": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingToShow": "لا يوجد",
+  "@nothingToShow": {
+    "description": "Phase 6: an empty dashboard list"
+  },
+  "nightlyTitle": "التحديث الليلي",
+  "@nightlyTitle": {
+    "description": "Phase 6: the nightly jobs card"
+  },
+  "lastRunAt": "آخر تشغيل: {when}",
+  "@lastRunAt": {
+    "description": "Phase 6: when the nightly jobs last ran",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "runSucceeded": "تم بنجاح",
+  "@runSucceeded": {
+    "description": "Phase 6: every nightly job succeeded"
+  },
+  "runFailed": "فشل: {jobs}",
+  "@runFailed": {
+    "description": "Phase 6: the nightly jobs that failed",
+    "placeholders": {
+      "jobs": {
+        "type": "String"
+      }
+    }
+  },
+  "runStillGoing": "قيد التشغيل",
+  "@runStillGoing": {
+    "description": "Phase 6: the nightly run has not finished"
+  },
+  "neverRun": "لم يعمل بعد",
+  "@neverRun": {
+    "description": "Phase 6: the nightly jobs never ran"
+  },
+  "runNow": "تشغيل الآن",
+  "@runNow": {
+    "description": "Phase 6: run the nightly jobs now"
+  },
+  "close": "إغلاق",
+  "@close": {
+    "description": "Phase 6: closes the popup"
   }
 }

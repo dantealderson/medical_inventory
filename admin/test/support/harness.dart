@@ -80,3 +80,13 @@ void useScreenSize(WidgetTester tester, Size logical, {double dpr = 3.0}) {
 
 Finder fieldWithLabel(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(TextFormField));
+
+/// The accounts queue, reached through its tab: since Phase 6 the admin lands
+/// on the dashboard.
+Future<void> openAccountsTab(WidgetTester tester) async {
+  final tab = find.text('طلبات الحسابات');
+  await tester.ensureVisible(tab);
+  await tester.pumpAndSettle();
+  await tester.tap(tab);
+  await tester.pumpAndSettle();
+}

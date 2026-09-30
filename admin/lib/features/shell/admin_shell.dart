@@ -75,6 +75,7 @@ class _AdminTabs extends StatelessWidget implements PreferredSizeWidget {
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
       child: Row(
         children: [
+          _Tab(label: l10n.dashboard, route: Routes.dashboard, current: location),
           _Tab(label: l10n.pendingAccounts, route: Routes.accounts, current: location),
           _Tab(label: l10n.categories, route: Routes.categories, current: location),
           _Tab(label: l10n.items, route: Routes.items, current: location),

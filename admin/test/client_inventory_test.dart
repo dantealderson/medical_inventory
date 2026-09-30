@@ -75,6 +75,7 @@ List<Object?> Function(SeenRequest) clinicShelf({List<Object?>? patch}) {
 
 Future<FakeApiBackend> openClientInventory(WidgetTester tester, {List<Object?>? patch}) async {
   final backend = await pumpSignedIn(tester, clinicShelf(patch: patch));
+  await openAccountsTab(tester);
   await tester.tap(find.text('عيادة النور'));
   await tester.pumpAndSettle();
   await tester.tap(find.text('مخزون العميل'));
@@ -216,6 +217,7 @@ void main() {
       }
       return clinicShelf()(req);
     });
+    await openAccountsTab(tester);
     await tester.tap(find.text('عيادة النور'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('مخزون العميل'));

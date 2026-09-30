@@ -103,9 +103,9 @@ Until then, every notification still reaches the in-app centre.
 | backend e2e + integration | 530 |
 | `packages/api_client` | 135 |
 | `packages/ui_kit` | 44 |
-| `admin` | 100 |
+| `admin` | 102 |
 | `client` | 128 |
-| **total** | **1216** |
+| **total** | **1218** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 

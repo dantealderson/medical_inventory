@@ -315,10 +315,10 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 
 ### 3.2 Quality
 
-- **1,216 automated tests, all passing:**
+- **1,218 automated tests, all passing:**
   - backend: 279 unit, 530 database and API;
   - shared packages: 135 and 44;
-  - admin app: 100;
+  - admin app: 102;
   - client app: 128.
 - **Clean on every check:** type checks, the Flutter analyzer, the colour check (no hard-coded colours), the admin web build, and the "no email anywhere" check.
 - **Stock is always traceable.** Every stock change, in the warehouse and on every clinic's shelf, is written to a history that the nightly check compares with the current quantities.

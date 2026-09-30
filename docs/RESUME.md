@@ -1,6 +1,13 @@
 # Resume Point
 
-## >>> PHASE 5 COMPLETE (2026-09-30). Phase 6 (admin dashboard) is next
+## >>> PHASE 5 COMPLETE (2026-09-30), plus "stop tracking an item". Phase 6 (admin dashboard) is next
+
+**For the user:** `docs/SETUP-AND-TESTING.md` covers what to set up, how to test by hand, and current progress.
+
+**Stop tracking (done after Phase 5).**
+- A clinic can hide an item it no longer uses: it leaves My Inventory, alerts, expiry warnings and auto-decrement. The column is `trackingStoppedAt`.
+- The clinic resumes it from a list at the bottom of My Inventory; a new delivery resumes it by itself, with the baseline reset to that delivery.
+- The admin still sees the item, marked.
 
 Phase 5 (automation and notifications) is built on `phase-5-automation-notifications`, branched from `main` (which holds Phases 0–4). The plan is `docs/superpowers/plans/2026-09-30-phase-5-automation-notifications.md`.
 
@@ -38,12 +45,12 @@ Until then, every notification still reaches the in-app centre.
 | Suite | Tests |
 |---|---|
 | backend unit | 275 |
-| backend e2e + integration | 498 |
-| `packages/api_client` | 123 |
+| backend e2e + integration | 507 |
+| `packages/api_client` | 127 |
 | `packages/ui_kit` | 44 |
-| `admin` | 79 |
-| `client` | 99 |
-| **total** | **1118** |
+| `admin` | 80 |
+| `client` | 102 |
+| **total** | **1135** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 
@@ -79,7 +86,7 @@ The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no
 ### Phase 4: open items
 
 - **Needs your decision — the day-30 "نفد".** A purchase-based estimate first appears 30 days after a clinic's first delivery of an item. The spec's catch-up then subtracts exactly what was delivered in that window, so an item bought once reads «نفد» on day 30, by construction. This is kept as the spec says, because it errs toward warning. The alternative is to start subtracting only from the day the estimate appears, which risks under-warning.
-- **Needs your decision — items the clinic no longer uses** stay «نفد» forever, on home and (from Phase 5) in alerts. They need a "stop tracking" option.
+- **Done — items the clinic no longer uses:** the "stop tracking" option, see the top section.
 - **Fixed in Phase 5:** one row's failure no longer stops that night's auto-decrement for the rest. Rows are isolated and counted as `failed`.
 - **Minor:** item history shows nothing until the item's card loads. The home red-items strip refreshes per visit, not live.
 - **The final review was a self-review.** The fresh reviewer was stopped before it reported.

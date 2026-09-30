@@ -124,7 +124,8 @@ Without this, every notification still appears inside both apps (the bell and th
 |---|---|---|
 | **The app's id**: currently the placeholder `com.example.client`, e.g. `iq.yourcompany.medinventory` | Google Play rejects `com.example…`; Firebase is tied to the id | Before Firebase, and before publishing |
 | **The app's display name and icon** | What clinics see on their phones | Before publishing |
-| **Hosting**: a cloud server (VPS) with Docker and a domain name, plus HTTPS | Phones need to reach the backend over the internet | Phase 7 (deployment) |
+| **Temporary hosting**: a free account on a host (for example Render) and a free Postgres (for example Neon) | To test from anywhere, without your PC on | Phase 9 |
+| **Real hosting**: a cloud server (VPS) with Docker and a domain name, plus HTTPS | Clinics' phones need a server that is always on | Before real use |
 | **Google Play developer account** (one-time $25) | To publish the Android app | Publishing |
 | **iPhone app**: needs a Mac and an Apple developer account ($99/year) | Only if clinics use iPhones | Optional |
 | **The "day-30 «نفد»" behaviour** (see 3.4) | Whether a once-bought item shows «نفد» on day 30 | Any time |
@@ -248,6 +249,37 @@ The jobs run by themselves at 00:30 Baghdad time. To run them now:
 31. Put the phone in airplane mode and open a screen.
     → A plain Arabic error with «إعادة المحاولة», not a crash.
 
+### J. Re-test what was fixed after your first run (Phase 7)
+
+32. Admin: add a category, an item and a batch.
+    → No red error screen after saving.
+33. Admin: click through the tabs.
+    → Each page appears at once, with no zoom animation.
+34. Admin: stop the backend, then reload the admin page.
+    → «تعذر الاتصال بالخادم، تحقق من الإنترنت» with «إعادة المحاولة».
+    Start the backend again, then tap «إعادة المحاولة».
+    → You are still signed in.
+35. Client: type a whole word in the home search box.
+    → The results appear under the box as you type.
+    Then tap ✕, or press the phone's back button.
+    → The categories come back.
+36. Client: open the cart, an order, an item and My Inventory, and press the phone's back button on each.
+    → It goes to the previous screen. Only on home does it leave the app.
+37. Client: start a stock count, type a number, then press back.
+    → It asks «تجاهل الجرد؟». «متابعة الجرد» keeps your numbers.
+38. Client: log out.
+    → Log out is in the «⋮» menu at the top of home, and it asks first.
+    Then sign in with «إبقني مسجّلاً الدخول» unticked, close the app completely and reopen it.
+    → The login screen.
+    Sign in with it ticked, close the app and reopen it.
+    → Still signed in.
+39. Admin: reset a clinic's password («إعادة تعيين كلمة المرور»).
+    → Within 15 minutes, the next time the clinic's phone loads something, it returns to the login screen with «انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى».
+40. Client: put the app in the background. In the admin, confirm and deliver one of its orders, then come back to the app.
+    → The order's status and My Inventory are already up to date, without pulling down to refresh.
+41. Admin: open the accounts tab, then register a new clinic on the phone. Switch to another admin tab and back (or to another browser tab and back).
+    → The new clinic is listed.
+
 Anything that looks wrong: note the step number and what you saw, and send it to me.
 
 ---
@@ -266,19 +298,28 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 | 5 — Automation & notifications | Six nightly jobs, deduplicated alerts, expiry warnings, notification centre, admin messages | ✅ Done (push needs Firebase, 1.6) |
 | — Extra | Stop tracking an item | ✅ Done |
 | 6 — Admin dashboard | Dashboard (approvals, orders waiting, clinics out of stock with a popup, warehouse low/out, expiring batches, nightly run with «تشغيل الآن»), settings, audit log, a clinic's orders | ✅ Done |
-| 7 — Hardening & release | RTL, theme and phone-width audits, Arabic-Indic digits, performance, full end-to-end test, deployment, backups, store release | ⬜ Next (last) |
+| 7 — Everything works | Fixes from your test run: admin red screen, instant tabs, in-place search, phone back button, staying signed in, fresh data | ✅ Done |
+| 8 — Firebase push | Notifications that pop up on a locked phone | ⬜ Next (needs your Firebase project, 1.6) |
+| 9 — Temporary hosting | Backend and admin online on a free host, demo data, so you can test from anywhere | ⬜ |
+| 10 — Item pictures | Upload in the admin, shown in the clinics' app | ⬜ |
+| 11 — Looks | Your UI comments, plus the RTL, theme, phone-width and large-text checks and Arabic-Indic digits | ⬜ |
 
-**Overall: about 87% of the building work is done.** This is weighted by effort per phase; phases 3 and 4 were the biggest and riskiest.
-- **Left:** Phase 7, about 1–1.5 working days.
-- **Outside the code, on your side:** hosting, Firebase, a Google Play account, and the Play review (usually a few days).
+**Overall: about 70% of the work is done.** This is weighted by effort per phase, and it is a rough estimate.
+- **Why it is lower than the 87% given before:** your roadmap added item pictures, temporary hosting and a full look-and-feel pass, which were not in the original plan.
+- **Left:** roughly 4–4.5 working days of building.
+  - Firebase: about half a day.
+  - Hosting: about 1 day.
+  - Pictures: about 1 day.
+  - Looks: 1.5–2 days, depending on your comments.
+- **Outside the code, on your side:** Firebase, a hosting account, a Google Play account, and the Play review (usually a few days).
 
 ### 3.2 Quality
 
-- **1,183 automated tests, all passing:**
+- **1,216 automated tests, all passing:**
   - backend: 279 unit, 530 database and API;
   - shared packages: 135 and 44;
-  - admin app: 93;
-  - client app: 102.
+  - admin app: 100;
+  - client app: 128.
 - **Clean on every check:** type checks, the Flutter analyzer, the colour check (no hard-coded colours), the admin web build, and the "no email anywhere" check.
 - **Stock is always traceable.** Every stock change, in the warehouse and on every clinic's shelf, is written to a history that the nightly check compares with the current quantities.
 

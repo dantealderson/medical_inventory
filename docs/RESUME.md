@@ -1,8 +1,48 @@
 # Resume Point
 
-## >>> PHASE 6 COMPLETE (2026-09-30). Phase 7 (hardening and release) is next
+## >>> PHASE 7 COMPLETE (2026-09-30). Phase 8 (Firebase push) is next, and needs the user first
 
 **For the user:** `docs/SETUP-AND-TESTING.md` covers what to set up, how to test by hand, and current progress.
+
+**The roadmap, in the user's order (2026-09-30):**
+1. Everything works. This is Phase 7, done.
+2. **Phase 8: Firebase push.**
+   - Needs the user to create a Firebase project and choose the real app id; `com.example.client` is a placeholder.
+   - See the FCM hand-off below.
+3. **Phase 9: temporary free hosting**, to test from anywhere.
+   - A backend Docker image on a free host plus free Postgres (for example Render with Neon).
+   - Postgres kept on UTC.
+   - A demo-data seed for the fresh database.
+   - The admin web hosted as static files; the client built with the hosted `API_BASE_URL`.
+4. **Phase 10: item pictures**, per spec §10.6.
+   - Upload with checks: 5 MB max, jpg/png/webp, magic bytes.
+   - A `sharp` thumbnail and a full-size variant.
+   - An admin upload screen; the client shows the pictures.
+   - Storage must suit the chosen host.
+5. **Phase 11: UI and looks.**
+   - The user has many UI comments, deliberately held until here.
+   - This phase also takes the spec's RTL, theme and responsive audits, the large-text check, and Arabic-Indic digits.
+
+**Phase 7 (everything works).** The plan is `docs/superpowers/plans/2026-09-30-phase-7-functional-hardening.md`. It was re-scoped from "hardening" after the user's own test run, and fixed:
+- **Admin:**
+  - A red `_dependents.isEmpty` screen after every save. Four dialogs disposed their text controllers while still closing, and a browser leaves the last word "composing".
+  - Tabs switch instantly (a `PageTransitionsBuilder` with zero duration).
+  - A page loaded while the server is down keeps the session and offers a retry.
+- **Client, sign-in:**
+  - Log out is in a «⋮» menu and asks first. It used to be an icon right beside the cart.
+  - No signal at startup keeps the session.
+  - «إبقني مسجّلاً الدخول» (`SessionTokenStore`: tokens in memory only when unticked).
+  - A session the server ended (suspend, password reset) returns to login and says so.
+- **Client, navigation:**
+  - Search happens in place on home; the first letter used to jump to a screen with no search box.
+  - Pages fade in 200 ms.
+  - The phone's back button goes to the page's parent. `BackArrow` handles both the app-bar arrow and the phone's button; it used to close the app from any page.
+  - A stock count with numbers typed asks before being thrown away.
+  - A category whose tree failed to load offers a retry instead of spinning forever.
+- **Both apps: fresh data.**
+  - Lists are `autoDispose`, so each visit fetches again.
+  - Everything others change reloads when the app, or the admin's browser tab, comes back to the foreground (`refreshServerData`).
+- **Tooling:** `client/run-on-phone.cmd` runs the client over USB on any network and keeps `adb reverse` alive.
 
 **Phase 6 (admin dashboard).** The plan is `docs/superpowers/plans/2026-09-30-phase-6-admin-dashboard.md`. It added:
 - **The dashboard as the admin's home (`/`):**
@@ -41,7 +81,7 @@ What exists now:
 
 **Last updated:** 2026-09-30
 **Branch:** `main`, pushed to `origin` = https://github.com/dantealderson/medical_inventory (**public**, by the user's choice, 2026-09-30).
-**Blocked on:** nothing for Phase 7's code. Deployment needs the user's hosting and app-id decisions (`docs/SETUP-AND-TESTING.md` 1.7), and push needs the Firebase hand-off below.
+**Blocked on:** Phase 8 needs the user's Firebase project and app id (the hand-off below). Phase 9 needs a hosting account (`docs/SETUP-AND-TESTING.md` 1.7).
 
 ### Push notifications: what only you can do (FCM hand-off)
 
@@ -55,7 +95,7 @@ Until then, every notification still reaches the in-app centre.
 
 ## Where we are
 
-**Phases 0–6 are complete and verified.** Phase 7 (hardening and release) is next.
+**Phases 0–7 are complete and verified.** Phase 8 (Firebase push) is next.
 
 | Suite | Tests |
 |---|---|
@@ -63,9 +103,9 @@ Until then, every notification still reaches the in-app centre.
 | backend e2e + integration | 530 |
 | `packages/api_client` | 135 |
 | `packages/ui_kit` | 44 |
-| `admin` | 93 |
-| `client` | 102 |
-| **total** | **1183** |
+| `admin` | 100 |
+| `client` | 128 |
+| **total** | **1216** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 

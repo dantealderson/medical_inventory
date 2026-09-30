@@ -280,6 +280,12 @@ abstract class AppLocalizations {
   /// **'سيتم إنهاء جميع جلسات هذا الحساب فوراً. هل تريد المتابعة؟'**
   String get confirmSuspend;
 
+  /// Startup: the server cannot be reached; the session is kept and a retry is offered
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر الاتصال بالخادم، تحقق من الإنترنت'**
+  String get serverUnreachable;
+
   /// Retry action on an error state
   ///
   /// In ar, this message translates to:

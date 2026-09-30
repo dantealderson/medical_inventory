@@ -124,6 +124,10 @@
   "@confirmSuspend": {
     "description": "Suspend confirmation, warns sessions end"
   },
+  "serverUnreachable": "تعذر الاتصال بالخادم، تحقق من الإنترنت",
+  "@serverUnreachable": {
+    "description": "Startup: the server cannot be reached; the session is kept and a retry is offered"
+  },
   "retry": "إعادة المحاولة",
   "@retry": {
     "description": "Retry action on an error state"

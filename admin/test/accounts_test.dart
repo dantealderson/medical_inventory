@@ -1,3 +1,5 @@
+import 'package:admin/features/dashboard/dashboard_screen.dart';
+import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_kit/ui_kit.dart';
@@ -6,6 +8,40 @@ import 'support/harness.dart';
 
 void main() {
   group('Auth gate', () {
+    // A page loaded while the server is down (it restarts often in testing)
+    // used to throw the saved session away.
+    testWidgets('a server it cannot reach keeps the session, and retry signs in', (tester) async {
+      final store = InMemoryTokenStore();
+      await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+      var up = false;
+
+      await pumpAdmin(tester, (req) {
+        if (!up) throw StateError('the server cannot be reached');
+        if (req.path == '/auth/me') return [200, adminUser];
+        return [404, null];
+      }, store: store);
+
+      expect(find.text('تعذر الاتصال بالخادم، تحقق من الإنترنت'), findsOneWidget);
+      expect(find.text('اسم المستخدم'), findsNothing);
+      await expectLater(store.readAccess(), completion('a'));
+
+      up = true;
+      await tester.tap(find.widgetWithText(FilledButton, 'إعادة المحاولة'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DashboardScreen), findsOneWidget);
+    });
+
+    testWidgets('a saved session the server rejects falls back to login', (tester) async {
+      final store = InMemoryTokenStore();
+      await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+
+      await pumpAdmin(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')], store: store);
+
+      expect(find.text('اسم المستخدم'), findsOneWidget);
+      await expectLater(store.readAccess(), completion(isNull));
+    });
+
     testWidgets('an unauthenticated launch lands on the login screen', (tester) async {
       await pumpAdmin(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
 

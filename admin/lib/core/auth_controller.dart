@@ -11,6 +11,12 @@ class AuthUnknown extends AuthState {
   const AuthUnknown();
 }
 
+/// Startup found a saved session but could not reach the server. The session
+/// is kept, and the splash offers a retry.
+class AuthUnreachable extends AuthState {
+  const AuthUnreachable();
+}
+
 class AuthLoggedOut extends AuthState {
   const AuthLoggedOut();
 }
@@ -61,10 +67,22 @@ class AuthController extends Notifier<AuthState> {
     }
     try {
       state = AuthAuthenticated(await _api.me());
-    } on ApiException {
-      await _store.clear();
-      state = const AuthLoggedOut();
+    } on ApiException catch (e) {
+      // Only the server refusing the session ends it. A server that is down
+      // (it restarts often while testing) keeps the session, with a retry.
+      if (e.statusCode == 401 || e.statusCode == 403) {
+        await _store.clear();
+        state = const AuthLoggedOut();
+      } else {
+        state = const AuthUnreachable();
+      }
     }
+  }
+
+  /// The splash's retry button, after [AuthUnreachable].
+  Future<void> retry() async {
+    state = const AuthUnknown();
+    await restore();
   }
 
   Future<SessionUser> login({required String username, required String password}) async {

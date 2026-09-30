@@ -105,6 +105,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم إنهاء جميع جلسات هذا الحساب فوراً. هل تريد المتابعة؟';
 
   @override
+  String get serverUnreachable => 'تعذر الاتصال بالخادم، تحقق من الإنترنت';
+
+  @override
   String get retry => 'إعادة المحاولة';
 
   @override

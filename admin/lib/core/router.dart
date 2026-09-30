@@ -10,6 +10,7 @@ import '../features/settings/settings_screen.dart';
 import '../features/accounts/pending_accounts_screen.dart';
 import '../features/audit/audit_screen.dart';
 import '../features/auth/login_screen.dart';
+import '../features/auth/splash_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/catalog/batches_screen.dart';
 import '../features/catalog/categories_screen.dart';
@@ -54,7 +55,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final location = state.matchedLocation;
 
       switch (auth) {
-        case AuthUnknown():
+        case AuthUnknown() || AuthUnreachable():
           return location == Routes.splash ? null : Routes.splash;
         case AuthLoggedOut():
           return location == Routes.login ? null : Routes.login;
@@ -64,7 +65,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
 
     routes: [
-      GoRoute(path: Routes.splash, builder: (_, _) => const _SplashScreen()),
+      GoRoute(path: Routes.splash, builder: (_, _) => const SplashScreen()),
       GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
       GoRoute(path: Routes.dashboard, builder: (_, _) => const DashboardScreen()),
       GoRoute(path: Routes.accounts, builder: (_, _) => const PendingAccountsScreen()),
@@ -92,11 +93,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
-
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: CircularProgressIndicator()));
-}

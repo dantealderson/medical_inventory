@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/catalog_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
+import 'catalog_picture.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -66,6 +67,8 @@ class _CategoryTile extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
+                      CatalogPicture(imageUrl: category.imageUrl, size: 48),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           category.displayName,
@@ -82,6 +85,16 @@ class _CategoryTile extends ConsumerWidget {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
+                      ...pictureButtons(
+                        context,
+                        ref,
+                        imageUrl: category.imageUrl,
+                        save: (bytes, name) => ref
+                            .read(catalogActionsProvider)
+                            .setCategoryPicture(category.id, bytes, name),
+                        remove: () =>
+                            ref.read(catalogActionsProvider).removeCategoryPicture(category.id),
+                      ),
                       // A level-3 category cannot have children, so the action
                       // is hidden rather than offered and then rejected.
                       if (category.canHaveChildren)

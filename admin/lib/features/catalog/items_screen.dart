@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/catalog_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
+import 'catalog_picture.dart';
 
 /// Mirrors the server's Decimal(12,2): at most two decimals, so a third is
 /// caught before a round trip rather than coming back as a 400.
@@ -64,6 +65,8 @@ class _ItemCard extends ConsumerWidget {
           children: [
             Row(
               children: [
+                CatalogPicture(imageUrl: item.imageUrl),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     item.displayName,
@@ -89,6 +92,14 @@ class _ItemCard extends ConsumerWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
+                ...pictureButtons(
+                  context,
+                  ref,
+                  imageUrl: item.imageUrl,
+                  save: (bytes, name) =>
+                      ref.read(catalogActionsProvider).setItemPicture(item.id, bytes, name),
+                  remove: () => ref.read(catalogActionsProvider).removeItemPicture(item.id),
+                ),
                 if (item.isActive)
                   OutlinedButton(
                     onPressed: () async {

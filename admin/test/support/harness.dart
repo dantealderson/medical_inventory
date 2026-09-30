@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:api_client/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:admin/core/auth_controller.dart';
@@ -43,17 +44,19 @@ Map<String, dynamic> envelope(int status, String code, String messageAr) =>
 /// Pumps the real admin app against a fake backend, already signed in.
 Future<FakeApiBackend> pumpSignedIn(
   WidgetTester tester,
-  List<Object?> Function(SeenRequest req) handler,
-) async {
+  List<Object?> Function(SeenRequest req) handler, {
+  List<Override> overrides = const [],
+}) async {
   final store = InMemoryTokenStore();
   await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
-  return pumpAdmin(tester, handler, store: store);
+  return pumpAdmin(tester, handler, store: store, overrides: overrides);
 }
 
 Future<FakeApiBackend> pumpAdmin(
   WidgetTester tester,
   List<Object?> Function(SeenRequest req) handler, {
   TokenStore? store,
+  List<Override> overrides = const [],
 }) async {
   final client = ApiClient(baseUrl: 'http://test.local/api/v1');
   final backend = FakeApiBackend((req, _) => handler(req))..attachTo(client);
@@ -63,6 +66,7 @@ Future<FakeApiBackend> pumpAdmin(
       overrides: [
         apiClientProvider.overrideWithValue(client),
         tokenStoreProvider.overrideWithValue(store ?? InMemoryTokenStore()),
+        ...overrides,
       ],
       child: const AdminApp(),
     ),

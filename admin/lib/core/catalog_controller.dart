@@ -104,6 +104,26 @@ class CatalogActions {
     _ref.invalidate(itemsProvider);
   }
 
+  Future<void> setItemPicture(String id, List<int> bytes, String name) async {
+    await _ref.read(itemsApiProvider).setImage(id, bytes, name);
+    _ref.invalidate(itemsProvider);
+  }
+
+  Future<void> removeItemPicture(String id) async {
+    await _ref.read(itemsApiProvider).removeImage(id);
+    _ref.invalidate(itemsProvider);
+  }
+
+  Future<void> setCategoryPicture(String id, List<int> bytes, String name) async {
+    await _ref.read(categoriesApiProvider).setImage(id, bytes, name);
+    _ref.invalidate(categoryTreeProvider);
+  }
+
+  Future<void> removeCategoryPicture(String id) async {
+    await _ref.read(categoriesApiProvider).removeImage(id);
+    _ref.invalidate(categoryTreeProvider);
+  }
+
   Future<void> receiveBatch({
     required String itemId,
     required String batchNumber,

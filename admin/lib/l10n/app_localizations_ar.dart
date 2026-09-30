@@ -108,6 +108,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get serverUnreachable => 'تعذر الاتصال بالخادم، تحقق من الإنترنت';
 
   @override
+  String get addPicture => 'إضافة صورة';
+
+  @override
+  String get changePicture => 'تغيير الصورة';
+
+  @override
+  String get removePicture => 'حذف الصورة';
+
+  @override
+  String get removePictureQuestion => 'حذف الصورة؟';
+
+  @override
+  String get pictureSaved => 'تم حفظ الصورة';
+
+  @override
+  String get pictureRemoved => 'تم حذف الصورة';
+
+  @override
   String get retry => 'إعادة المحاولة';
 
   @override

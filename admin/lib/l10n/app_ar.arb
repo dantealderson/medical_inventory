@@ -128,6 +128,30 @@
   "@serverUnreachable": {
     "description": "Startup: the server cannot be reached; the session is kept and a retry is offered"
   },
+  "addPicture": "إضافة صورة",
+  "@addPicture": {
+    "description": "Catalog: button that uploads a picture for an item or category"
+  },
+  "changePicture": "تغيير الصورة",
+  "@changePicture": {
+    "description": "Catalog: button that replaces the picture"
+  },
+  "removePicture": "حذف الصورة",
+  "@removePicture": {
+    "description": "Catalog: button that removes the picture"
+  },
+  "removePictureQuestion": "حذف الصورة؟",
+  "@removePictureQuestion": {
+    "description": "Catalog: confirmation before removing a picture"
+  },
+  "pictureSaved": "تم حفظ الصورة",
+  "@pictureSaved": {
+    "description": "Catalog: after a picture upload"
+  },
+  "pictureRemoved": "تم حذف الصورة",
+  "@pictureRemoved": {
+    "description": "Catalog: after a picture was removed"
+  },
   "retry": "إعادة المحاولة",
   "@retry": {
     "description": "Retry action on an error state"

@@ -286,6 +286,42 @@ abstract class AppLocalizations {
   /// **'تعذر الاتصال بالخادم، تحقق من الإنترنت'**
   String get serverUnreachable;
 
+  /// Catalog: button that uploads a picture for an item or category
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة صورة'**
+  String get addPicture;
+
+  /// Catalog: button that replaces the picture
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الصورة'**
+  String get changePicture;
+
+  /// Catalog: button that removes the picture
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الصورة'**
+  String get removePicture;
+
+  /// Catalog: confirmation before removing a picture
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الصورة؟'**
+  String get removePictureQuestion;
+
+  /// Catalog: after a picture upload
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الصورة'**
+  String get pictureSaved;
+
+  /// Catalog: after a picture was removed
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف الصورة'**
+  String get pictureRemoved;
+
   /// Retry action on an error state
   ///
   /// In ar, this message translates to:

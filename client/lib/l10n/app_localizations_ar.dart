@@ -481,6 +481,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get keepMeSignedIn => 'إبقني مسجّلاً الدخول على هذا الهاتف';
 
   @override
+  String get categoryUnavailable => 'هذا القسم لم يعد متوفراً';
+
+  @override
   String get clearSearch => 'مسح البحث';
 
   @override

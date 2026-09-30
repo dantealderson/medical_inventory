@@ -1,12 +1,12 @@
 import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/catalog_controller.dart';
 import '../../core/formatting.dart';
 import '../../core/orders_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
@@ -30,10 +30,7 @@ class ItemDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.items),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.home),
-        ),
+        leading: const BackArrow(Routes.home),
       ),
       body: item.when(
         loading: () => const Center(child: CircularProgressIndicator()),

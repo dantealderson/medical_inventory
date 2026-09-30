@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
 import '../../core/inventory_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import 'inventory_entry_card.dart';
@@ -34,10 +35,7 @@ class InventoryItemScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.movementHistory),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.inventory),
-        ),
+        leading: const BackArrow(Routes.inventory),
       ),
       body: RefreshIndicator(
         onRefresh: () async {

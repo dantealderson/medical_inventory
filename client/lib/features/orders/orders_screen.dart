@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/formatting.dart';
 import '../../core/orders_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
@@ -22,10 +23,7 @@ class OrdersScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myOrders),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.home),
-        ),
+        leading: const BackArrow(Routes.home),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(orderHistoryProvider),

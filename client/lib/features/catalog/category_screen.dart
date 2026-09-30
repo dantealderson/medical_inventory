@@ -1,9 +1,9 @@
 import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/catalog_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import 'browse_screen.dart';
@@ -37,20 +37,26 @@ class CategoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(category?.displayName ?? l10n.categories),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.home),
-        ),
+        leading: const BackArrow(Routes.home),
       ),
-      body: category == null
-          ? const Center(child: CircularProgressIndicator())
-          : category.hasChildren
-          ? ListView.builder(
-              padding: const EdgeInsetsDirectional.all(16),
-              itemCount: category.children.length,
-              itemBuilder: (context, i) => CategoryTile(category: category.children[i]),
-            )
-          : _CategoryItems(categoryId: categoryId),
+      // A tree that failed to load offers a retry, and a category that is no
+      // longer in it says so. Both used to spin forever.
+      body: AsyncSection<List<Category>>(
+        value: tree,
+        onRetry: () => ref.invalidate(categoryTreeProvider),
+        emptyMessage: l10n.categoryUnavailable,
+        isEmpty: (roots) => _find(roots) == null,
+        builder: (roots) {
+          final found = _find(roots)!;
+          return found.hasChildren
+              ? ListView.builder(
+                  padding: const EdgeInsetsDirectional.all(16),
+                  itemCount: found.children.length,
+                  itemBuilder: (context, i) => CategoryTile(category: found.children[i]),
+                )
+              : _CategoryItems(categoryId: categoryId);
+        },
+      ),
     );
   }
 }

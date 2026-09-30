@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
 import '../../core/notifications_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
@@ -25,10 +26,7 @@ class NotificationsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.notifications),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.home),
-        ),
+        leading: const BackArrow(Routes.home),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(notificationsFeedProvider),

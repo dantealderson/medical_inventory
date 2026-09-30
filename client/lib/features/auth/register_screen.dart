@@ -83,6 +83,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return AuthScaffold(
+      backTo: Routes.login,
       title: l10n.register,
       children: [
         if (_errorAr != null) AuthErrorBanner(messageAr: _errorAr!),

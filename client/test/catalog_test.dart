@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:client/features/catalog/browse_screen.dart';
+import 'package:client/features/catalog/category_screen.dart';
+import 'package:go_router/go_router.dart';
 
 import 'support/harness.dart';
 
@@ -91,6 +93,34 @@ void main() {
       // A parent shows its children, not items.
       expect(find.text('سرنجات'), findsOneWidget);
       expect(find.text('لا توجد أصناف في هذا القسم'), findsNothing);
+    });
+
+    testWidgets('a category that cannot be loaded offers a retry, not an endless spinner', (
+      tester,
+    ) async {
+      var up = false;
+      final store = InMemoryTokenStore();
+      await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+      await pumpApp(tester, (req) {
+        if (req.path == '/categories' && !up) {
+          return [503, envelope(503, 'UNAVAILABLE', 'الخدمة غير متاحة')];
+        }
+        return routes(categories: [
+          category('c1', 'مستهلكات', 1, children: [category('c2', 'سرنجات', 2)]),
+        ])(req);
+      }, store: store, retry: (_, _) => null);
+
+      GoRouter.of(tester.element(find.byType(BrowseScreen))).go('/category/c1');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CategoryScreen), findsOneWidget);
+      expect(find.text('الخدمة غير متاحة'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      up = true;
+      await tester.tap(find.widgetWithText(OutlinedButton, 'إعادة المحاولة'));
+      await tester.pumpAndSettle();
+      expect(find.text('سرنجات'), findsOneWidget);
     });
 
     testWidgets('a leaf category lists its items', (tester) async {

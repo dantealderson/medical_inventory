@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import '../../core/back_to.dart';
+
 /// Shared chrome for the login and register screens.
 ///
 /// Centred and width-capped so the form stays readable on a tablet or a wide
 /// browser instead of stretching a text field across 1400px.
 class AuthScaffold extends StatelessWidget {
-  const AuthScaffold({required this.title, required this.children, super.key});
+  const AuthScaffold({required this.title, required this.children, this.backTo, super.key});
 
   final String title;
   final List<Widget> children;
 
+  /// Where the back arrow and the phone's back button go. Null on the login
+  /// screen, where back leaves the app.
+  final String? backTo;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        leading: backTo == null ? null : BackArrow(backTo!),
+        title: Text(title),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

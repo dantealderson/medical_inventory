@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -19,7 +20,7 @@ class PendingApprovalScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
+      appBar: AppBar(leading: const BackArrow(Routes.login), title: Text(l10n.appTitle)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

@@ -910,6 +910,12 @@ abstract class AppLocalizations {
   /// **'إبقني مسجّلاً الدخول على هذا الهاتف'**
   String get keepMeSignedIn;
 
+  /// Category screen: the category is no longer in the catalog
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا القسم لم يعد متوفراً'**
+  String get categoryUnavailable;
+
   /// Home search box: the clear button, which brings the categories back
   ///
   /// In ar, this message translates to:

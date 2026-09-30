@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/inventory_controller.dart';
+import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
@@ -120,10 +121,7 @@ class _StockCountScreenState extends ConsumerState<StockCountScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.stockCount),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.inventory),
-        ),
+        leading: const BackArrow(Routes.inventory),
       ),
       body: result != null
           ? _CountResult(result: result, entries: _counted)

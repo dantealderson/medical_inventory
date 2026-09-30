@@ -12,6 +12,6 @@ import { StockCountService } from './stock-count.service';
   imports: [EstimationModule],
   controllers: [InventoryController, AdminClientInventoryController],
   providers: [ClientInventoryService, StockCountService, InventoryReadService, AdminInventoryService],
-  exports: [ClientInventoryService],
+  exports: [ClientInventoryService, InventoryReadService],
 })
 export class ClientInventoryModule {}

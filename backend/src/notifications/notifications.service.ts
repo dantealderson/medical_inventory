@@ -14,6 +14,8 @@ export interface NewNotification {
   /** A deep link: {orderId} or {itemId}. */
   payload?: Record<string, string> | null;
   dedupeKey?: string | null;
+  /** The jobs pass their own `now`, so a dedupe window is measured in their time. */
+  createdAt?: Date;
 }
 
 export interface NotificationView {
@@ -60,6 +62,7 @@ export class NotificationsService {
         bodyAr: input.bodyAr,
         payload: input.payload ?? undefined,
         dedupeKey: input.dedupeKey ?? null,
+        ...(input.createdAt ? { createdAt: input.createdAt } : {}),
       },
     });
   }

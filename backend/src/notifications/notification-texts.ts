@@ -40,6 +40,32 @@ export const texts = {
     bodyAr: 'لم يعد الطلب بحاجة إلى تجهيز.',
   }),
 
+  lowStock: (item: string, remaining: string): NotificationText => ({
+    titleAr: `${item}: الكمية قليلة`,
+    bodyAr: `المتبقي ${remaining}. اطلب الآن حتى لا ينفد.`,
+  }),
+
+  outOfStock: (item: string): NotificationText => ({
+    titleAr: `نفد ${item}`,
+    bodyAr: 'اطلب الآن من التطبيق.',
+  }),
+
+  clientOutOfStock: (item: string, clinic: string): NotificationText => ({
+    titleAr: `نفد ${item} لدى ${clinic}`,
+    bodyAr: 'قد يحتاج العميل إلى طلب جديد.',
+  }),
+
+  /** `date` as the apps show it: yyyy/MM/dd. */
+  expiryForClinic: (batch: string, item: string, date: string): NotificationText => ({
+    titleAr: `دفعة ${batch} من ${item} تنتهي في ${date}`,
+    bodyAr: 'استخدمها قبل غيرها.',
+  }),
+
+  expiryForAdmin: (batch: string, item: string, date: string, remaining: string): NotificationText => ({
+    titleAr: `دفعة ${batch} من ${item} في المستودع تنتهي في ${date}`,
+    bodyAr: `المتبقي ${remaining}.`,
+  }),
+
   accountApproved: (): NotificationText => ({
     titleAr: 'تمت الموافقة على حسابك',
     bodyAr: 'يمكنك الآن تسجيل الدخول والطلب.',

@@ -1,47 +1,60 @@
 # Resume Point
 
-## >>> PHASE 4 COMPLETE (2026-09-30). Phase 5 is next
+## >>> PHASE 5 COMPLETE (2026-09-30). Phase 6 (admin dashboard) is next
 
-Phase 4 (inventory and estimation) is built on `phase-4-inventory-estimation`, branched from `main` (which holds Phases 0–3). The plan is `docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`.
+Phase 5 (automation and notifications) is built on `phase-5-automation-notifications`, branched from `main` (which holds Phases 0–4). The plan is `docs/superpowers/plans/2026-09-30-phase-5-automation-notifications.md`.
 
-How it was done:
-- **Inline at the user's chosen effort** (xhigh, no ultracode).
-- **The plan carries decisions, interfaces and exact test cases.** Code was written once, test-first, in the repo.
-- **Each task's tests were watched failing.** Two "remove it and watch it fail" proofs were run:
-  - Holdings depletion: 9 of 10 property seeds fail without it.
-  - The count dialog's double-answer guard: its test still passed without it, so the guard was removed as unproven code.
-- **A real-JSON wire check** had the Dart models parse actual backend responses.
-- **One fresh final reviewer** checks the whole branch (see the ledger for its findings and the fix pass).
+What exists now:
+- **Every notification is a row first.**
+  - Order and account notifications are written in the same transaction as the event they announce.
+  - Push happens after the commit, best-effort, and never fails a request or a job.
+- **The six nightly jobs run at 00:30 Baghdad (§8),** in order: auto-decrement, recompute estimates, stock alerts, expiry warnings, hot-deals rebuild, ledger check.
+  - Each job is logged in `job_runs`, and a failing job never stops the next one.
+  - A Postgres advisory lock means two runs never overlap.
+  - The admin can trigger a run with `POST /admin/jobs/nightly`.
+- **Stock alerts are deduplicated per (type, clinic, item) over `alerts.repeatAfterDays`.** Running out fires at once even inside a low-stock window. Clinics that run out also alert the admins.
+- **The admin can broadcast** to all active clinics or chosen ones.
+- **The client app has a bell with an unread count and a notification centre.** An unread notification says «جديد»; tapping one marks it read and opens the order or the item.
+- **The admin app has a notifications tab** (inbox plus composer).
 
 **Last updated:** 2026-09-30
-**Branch:** merged into `main` locally (fast-forward); Phase 5 on `phase-5-automation-notifications`
-**Blocked on:** nothing
+**Branch:** `phase-5-automation-notifications` (merge locally into `main` when wrapping up, as for Phases 3–4)
+**Blocked on:** nothing for Phase 6. Push to phones is blocked on the Firebase hand-off below.
+
+### Push notifications: what only you can do (FCM hand-off)
+
+1. Create a Firebase project and add an Android app (and iOS later), with package id as in `client/android/app/build.gradle*`.
+2. On the server, put the service-account JSON (Project settings → Service accounts → Generate key) on one line in `FIREBASE_SERVICE_ACCOUNT_JSON`. The backend switches from "no push" to FCM automatically.
+3. In `client`, run `flutterfire configure`. Then a short task adds `firebase_messaging` and registers the token through the existing `POST /devices`.
+
+Until then, every notification still reaches the in-app centre.
 
 ---
 
 ## Where we are
 
-**Phases 0–4 are complete and verified.** Phase 5 (automation and notifications) is next.
+**Phases 0–5 are complete and verified.** Phase 6 (the admin dashboard) is next.
 
 | Suite | Tests |
 |---|---|
-| backend unit | 258 |
-| backend e2e + integration | 449 |
-| `packages/api_client` | 113 |
+| backend unit | 275 |
+| backend e2e + integration | 498 |
+| `packages/api_client` | 123 |
 | `packages/ui_kit` | 44 |
-| `admin` | 72 |
-| `client` | 92 |
-| **total** | **1028** |
+| `admin` | 79 |
+| `client` | 99 |
+| **total** | **1118** |
 
-The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433).
+The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 
-### What Phase 5 must schedule (spec §8), in this order, nightly (Baghdad)
+### Phase 5 decisions worth not relitigating
 
-1. `AutoDecrementService.run(now)` (`src/estimation/auto-decrement.service.ts`)
-2. `EstimationService.recomputeAll(now)` (`src/estimation/estimation.service.ts`)
-3. Then the alert, expiry, hot-deals and ledger-assert jobs.
-
-Both services are idempotent and take `now`, so there is no need to fake time. Add the run log in Phase 5.
+- **Notification rows join the event's transaction; push runs after the commit.** A rolled-back confirm never announces itself, and an FCM outage never fails an order.
+- **Alert levels.** qty 0 → `OUT_OF_STOCK`, plus `CLIENT_OUT_OF_STOCK` to the admins. RED → `LOW_STOCK`. YELLOW, GREEN and UNKNOWN → nothing. One dedupe key per level, so "worsening" fires at once. Only ACTIVE clinics and active items.
+- **Expiry warnings go out once per recipient and batch,** only for batches not yet expired and inside `expiry.warnDaysAhead`.
+- **The nightly lock** is `pg_try_advisory_xact_lock(5000001)`, held by one long transaction for the whole run. A session lock through a pool could be released on another connection.
+- **Jobs create notifications with `createdAt = now`,** so dedupe windows are measured in the job's own time.
+- **Firebase is imported only when configured.** No credentials means `NoopPushSender`.
 
 ### Phase 4 decisions worth not relitigating
 
@@ -67,7 +80,7 @@ Both services are idempotent and take `now`, so there is no need to fake time. A
 
 - **Needs your decision — the day-30 "نفد".** A purchase-based estimate first appears 30 days after a clinic's first delivery of an item. The spec's catch-up then subtracts exactly what was delivered in that window, so an item bought once reads «نفد» on day 30, by construction. This is kept as the spec says, because it errs toward warning. The alternative is to start subtracting only from the day the estimate appears, which risks under-warning.
 - **Needs your decision — items the clinic no longer uses** stay «نفد» forever, on home and (from Phase 5) in alerts. They need a "stop tracking" option.
-- **Phase 5 fix:** one row's failure stops that night's auto-decrement for the rest. It heals itself the next night, but the job runner must isolate rows.
+- **Fixed in Phase 5:** one row's failure no longer stops that night's auto-decrement for the rest. Rows are isolated and counted as `failed`.
 - **Minor:** item history shows nothing until the item's card loads. The home red-items strip refreshes per visit, not live.
 - **The final review was a self-review.** The fresh reviewer was stopped before it reported.
 
@@ -80,11 +93,11 @@ Both services are idempotent and take `now`, so there is no need to fake time. A
 | 2 — Catalog & warehouse | ✅ complete |
 | 3 — Ordering & FEFO | ✅ complete |
 | 4 — Inventory & estimation | ✅ complete |
-| **5 — Automation & notifications** | **⬜ next** |
-| 6 — Admin dashboard | ⬜ |
+| 5 — Automation & notifications | ✅ complete |
+| **6 — Admin dashboard** | **⬜ next** |
 | 7 — Hardening | ⬜ |
 
-Plans written so far: phases 0–3 (`docs/superpowers/plans/2026-09-27-phase-*.md`) and phase 4 (`docs/superpowers/plans/2026-09-30-phase-4-inventory-estimation.md`).
+Plans written so far: phases 0–3 (`docs/superpowers/plans/2026-09-27-phase-*.md`) phase 4 and phase 5 (`docs/superpowers/plans/2026-09-30-phase-*.md`).
 Phase 3's planning working files are in `docs/superpowers/plans/phase-3-work/` (untracked, safe to delete).
 
 ### Phase 3 decisions worth not relitigating

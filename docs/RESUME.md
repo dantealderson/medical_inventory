@@ -14,7 +14,7 @@ How it was done:
 - **One fresh final reviewer** checks the whole branch (see the ledger for its findings and the fix pass).
 
 **Last updated:** 2026-09-30
-**Branch:** `phase-4-inventory-estimation` (not merged; `main` = Phases 0–3)
+**Branch:** merged into `main` locally (fast-forward); Phase 5 on `phase-5-automation-notifications`
 **Blocked on:** nothing
 
 ---
@@ -63,6 +63,14 @@ Both services are idempotent and take `now`, so there is no need to fake time. A
 - **The count screen:** nothing pre-filled, a pinned «حفظ الجرد» button, and a confirmation first.
 - **Large text:** every new client screen is tested at 390 px with 1.5× text.
 
+### Phase 4: open items
+
+- **Needs your decision — the day-30 "نفد".** A purchase-based estimate first appears 30 days after a clinic's first delivery of an item. The spec's catch-up then subtracts exactly what was delivered in that window, so an item bought once reads «نفد» on day 30, by construction. This is kept as the spec says, because it errs toward warning. The alternative is to start subtracting only from the day the estimate appears, which risks under-warning.
+- **Needs your decision — items the clinic no longer uses** stay «نفد» forever, on home and (from Phase 5) in alerts. They need a "stop tracking" option.
+- **Phase 5 fix:** one row's failure stops that night's auto-decrement for the rest. It heals itself the next night, but the job runner must isolate rows.
+- **Minor:** item history shows nothing until the item's card loads. The home red-items strip refreshes per visit, not live.
+- **The final review was a self-review.** The fresh reviewer was stopped before it reported.
+
 ### Phase status
 
 | Phase | State |
@@ -71,7 +79,7 @@ Both services are idempotent and take `now`, so there is no need to fake time. A
 | 1 — Auth & accounts | ✅ complete |
 | 2 — Catalog & warehouse | ✅ complete |
 | 3 — Ordering & FEFO | ✅ complete |
-| 4 — Inventory & estimation | ✅ complete (on its branch) |
+| 4 — Inventory & estimation | ✅ complete |
 | **5 — Automation & notifications** | **⬜ next** |
 | 6 — Admin dashboard | ⬜ |
 | 7 — Hardening | ⬜ |

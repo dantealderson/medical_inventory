@@ -77,3 +77,20 @@ describe('envSchema JWT secrets', () => {
     ).toThrow();
   });
 });
+
+describe('envSchema: Phase 5 jobs and push', () => {
+  it('arms the nightly jobs unless told not to', () => {
+    expect(envSchema.parse(valid).JOBS_ENABLED).toBe(true);
+    expect(envSchema.parse({ ...valid, JOBS_ENABLED: 'false' }).JOBS_ENABLED).toBe(false);
+    expect(envSchema.parse({ ...valid, JOBS_ENABLED: 'true' }).JOBS_ENABLED).toBe(true);
+  });
+
+  it('rejects a JOBS_ENABLED that is not true or false', () => {
+    expect(() => envSchema.parse({ ...valid, JOBS_ENABLED: 'yes' })).toThrow();
+  });
+
+  it('leaves Firebase credentials optional: no credentials means no push', () => {
+    expect(envSchema.parse(valid).FIREBASE_SERVICE_ACCOUNT_JSON).toBeUndefined();
+    expect(envSchema.parse({ ...valid, FIREBASE_SERVICE_ACCOUNT_JSON: '{"project_id":"x"}' }).FIREBASE_SERVICE_ACCOUNT_JSON).toBe('{"project_id":"x"}');
+  });
+});

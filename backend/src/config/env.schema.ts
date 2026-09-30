@@ -58,6 +58,18 @@ export const envSchema = z.object({
   // Image uploads (§10.6). Served statically from /uploads.
   UPLOAD_DIR: z.string().default('./uploads'),
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(5_242_880), // 5 MiB
+
+  // The nightly jobs (spec §8). Off in tests: a test process must never arm
+  // a real scheduler; tests call the runner directly with their own `now`.
+  // A string enum, not z.coerce.boolean(), which reads "false" as true.
+  JOBS_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+
+  // A Firebase service-account JSON. Without it the system runs with no push
+  // at all — every notification is still stored and shown in the app (§7.8).
+  FIREBASE_SERVICE_ACCOUNT_JSON: z.string().min(1).optional(),
 })
   .refine((env) => env.JWT_ACCESS_SECRET !== env.JWT_REFRESH_SECRET, {
     message: 'JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must differ — reusing one secret means a leaked access secret can mint refresh tokens',

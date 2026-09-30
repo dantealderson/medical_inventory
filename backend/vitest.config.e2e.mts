@@ -24,6 +24,8 @@ export default defineConfig({
       // reason. auth-throttle.e2e-spec.ts overrides this downward so the
       // throttle is still genuinely exercised.
       AUTH_THROTTLE_LIMIT: '10000',
+      // Tests call the nightly runner directly; nothing may be scheduled.
+      JOBS_ENABLED: 'false',
     },
     // Suites share one database; running them in parallel would have them
     // truncating each other's tables mid-assertion.

@@ -59,6 +59,8 @@ model User {
   batchHoldings  ClientBatchHolding[]
   stockCounts    StockCount[]
   usageEstimates UsageEstimate[]
+  notifications  Notification[]
+  deviceTokens   DeviceToken[]
 
   @@index([status])
   @@map("users")
@@ -544,4 +546,78 @@ model UsageEstimate {
 
   @@id([clientId, itemId])
   @@map("usage_estimates")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 5 — Automation & notifications
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum NotificationType {
+  ACCOUNT_APPROVED
+  ACCOUNT_REJECTED
+  ORDER_PLACED
+  ORDER_CONFIRMED
+  ORDER_OUT_FOR_DELIVERY
+  ORDER_DELIVERED
+  ORDER_CANCELLED
+  LOW_STOCK
+  OUT_OF_STOCK
+  CLIENT_OUT_OF_STOCK
+  EXPIRY_WARNING
+  ADMIN_BROADCAST
+}
+
+/// Every notification is a row first; push is a best-effort layer on top
+/// (§7.8). A failed push never loses one: it waits in the in-app centre.
+model Notification {
+  id              String           @id @default(uuid())
+  recipientUserId String
+  recipient       User             @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+  type            NotificationType
+  titleAr         String
+  bodyAr          String
+  /// A deep link: {"orderId": …} or {"itemId": …}, or null.
+  payload         Json?
+  /// "{type}:{clientId}:{itemId}" for automatic alerts (§7.8 dedupe).
+  dedupeKey       String?
+  readAt          DateTime?
+  createdAt       DateTime         @default(now())
+
+  @@index([recipientUserId, readAt, createdAt])
+  @@index([dedupeKey, createdAt])
+  @@map("notifications")
+}
+
+/// A phone that can receive push for a user. A token belongs to whoever
+/// registered it last: a shared clinic phone moves between accounts.
+model DeviceToken {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fcmToken   String   @unique
+  platform   String
+  lastSeenAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("device_tokens")
+}
+
+enum JobRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+/// The nightly run log (§8): one row per job per run.
+model JobRun {
+  id         String       @id @default(uuid())
+  job        String
+  status     JobRunStatus
+  startedAt  DateTime
+  finishedAt DateTime?
+  summary    Json?
+  error      String?
+
+  @@index([startedAt])
+  @@map("job_runs")
 }

@@ -1,6 +1,6 @@
 # Medical Inventory: setup, testing and progress
 
-*As of 30 September 2026. Phases 0–5 are done, plus "stop tracking an item".*
+*As of 30 September 2026. Phases 0–6 are done, plus "stop tracking an item".*
 
 This file has three parts:
 1. **What you need to do yourself** before you can try the system.
@@ -59,7 +59,7 @@ npm run start:dev                    # the API on http://localhost:3000
 
 Checks:
 - http://localhost:3000/api/v1/health answers.
-- http://localhost:3000/api/docs opens the API documentation (Swagger). You will use it in part 2 to run the nightly jobs by hand.
+- http://localhost:3000/api/docs opens the API documentation (Swagger). You won't need it for testing: the admin dashboard runs the nightly jobs for you.
 
 Postgres is on port **5433** on purpose. A separate Windows PostgreSQL service uses 5432, and this project must never touch it.
 
@@ -71,7 +71,7 @@ flutter pub get
 flutter run -d chrome
 ```
 
-Sign in with the admin username and password from `backend/.env` (`SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD`).
+Sign in with the admin username and password from `backend/.env` (`SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD`). You land on «الرئيسية», the dashboard.
 
 ### 1.5 Run the client app (the clinics' app)
 
@@ -136,7 +136,7 @@ Do these in order. Each step says what you should see. Keep the admin app (Chrom
 
 1. **Client app:** tap «إنشاء حساب». Enter a username, a password (8+ characters), a clinic name, a phone and an address, then send.
    → The app shows that the account is waiting for approval.
-2. **Admin app:** open the accounts tab (the first tab). The new clinic is listed as pending. Open it and tap «موافقة».
+2. **Admin app:** on «الرئيسية», «حسابات بانتظار الموافقة» shows **1**. Tap it (or the «طلبات الحسابات» tab). The new clinic is listed as pending. Open it and tap «موافقة».
 3. **Client app:** sign in.
    → The home screen: search bar, «مخزوني», categories. The bell shows **1**: «تمت الموافقة على حسابك».
 
@@ -187,12 +187,8 @@ Do these in order. Each step says what you should see. Keep the admin app (Chrom
 
 The jobs run by themselves at 00:30 Baghdad time. To run them now:
 
-19. Open http://localhost:3000/api/docs:
-    - Use `POST /api/v1/auth/login` with the admin username and password, and copy the `accessToken`.
-    - Click **Authorize** and paste it.
-    - Run `POST /api/v1/admin/jobs/nightly`.
-
-    → Six jobs come back, all `SUCCEEDED`. `ledger-assert` reports `warehouseDrift: 0, shelfDrift: 0` (every quantity matches its history).
+19. **Admin app, «الرئيسية»:** in the «التحديث الليلي» card, tap «تشغيل الآن».
+    → It shows «تم بنجاح» and the time. This includes the check that every quantity still matches its history.
 20. **Client app:** the bell shows «…: الكمية قليلة» for the red item. The 40-day batch you hold shows «دفعة … تنتهي في …».
 21. Run the jobs again.
     → No duplicate notifications. A red item is re-announced only once a week.
@@ -205,7 +201,7 @@ The jobs run by themselves at 00:30 Baghdad time. To run them now:
   npx prisma studio
   ```
   Open `client_inventory_items`, find the row, and set `lastAutoDecrementAt` to **3 days ago**.
-- Run the nightly jobs again (step 19).
+- Tap «تشغيل الآن» again (step 19).
   → The quantity drops by 60 units, and the history shows «استهلاك تقديري».
 
 ### G. Out of stock, stop tracking, and messages
@@ -219,11 +215,25 @@ The jobs run by themselves at 00:30 Baghdad time. To run them now:
 25. **Admin app, notifications tab:** tap «رسالة جديدة». Write a title and a message, and choose «جميع العملاء» or «عملاء محددون», then «إرسال».
     → «تم الإرسال إلى … عميل». The clinic's bell shows it.
 
-### H. Things worth checking for older users
+### H. The admin's own screens
 
-26. On the phone, set **Settings → Display → Font size** to the largest, and repeat steps 7, 13 and 15.
+26. **«الرئيسية»** (dashboard):
+    - Clinics that ran out (step 22) pop up once, the first time you open the dashboard in a session.
+    - They also stay in the red «عملاء نفد مخزونهم» card, and tapping a clinic opens its inventory.
+    - «المستودع: أصناف ناقصة أو نافدة» lists items with no usable stock, or below their minimum.
+    - «دفعات قاربت على الانتهاء» lists the 40-day batch.
+    - There are no money figures anywhere, by design.
+27. **«الإعدادات»:** change «أحمر إذا كان المخزون يكفي أقل من (يوم)» to 5 and save.
+    → «تم حفظ الإعدادات». Try setting the yellow value **below** the red one.
+    → «القيمة غير مقبولة» under that field, and nothing is saved.
+28. **«سجل التدقيق»:** your settings change is there as «تغيير الإعدادات», with before and after. Filter by type «الإعدادات», or by dates written as 2027-01-31.
+29. **Accounts → a clinic:** its latest orders are listed under «طلبات العميل».
+
+### I. Things worth checking for older users
+
+30. On the phone, set **Settings → Display → Font size** to the largest, and repeat steps 7, 13 and 15.
     → Nothing is cut off. Every button is still easy to tap.
-27. Put the phone in airplane mode and open a screen.
+31. Put the phone in airplane mode and open a screen.
     → A plain Arabic error with «إعادة المحاولة», not a crash.
 
 Anything that looks wrong: note the step number and what you saw, and send it to me.
@@ -243,19 +253,19 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 | 4 — Inventory & estimation | My Inventory, red/yellow/green, usage estimates, auto-subtraction, stock count, admin controls | ✅ Done |
 | 5 — Automation & notifications | Six nightly jobs, deduplicated alerts, expiry warnings, notification centre, admin messages | ✅ Done (push needs Firebase, 1.6) |
 | — Extra | Stop tracking an item | ✅ Done |
-| 6 — Admin dashboard | One screen: pending approvals, orders waiting, clinics out of stock, low warehouse stock, expiring batches, nightly-run status | ⬜ Next |
-| 7 — Hardening & release | RTL, theme and phone-width audits, Arabic-Indic digits, performance, full end-to-end test, deployment, backups, store release | ⬜ Last |
+| 6 — Admin dashboard | Dashboard (approvals, orders waiting, clinics out of stock with a popup, warehouse low/out, expiring batches, nightly run with «تشغيل الآن»), settings, audit log, a clinic's orders | ✅ Done |
+| 7 — Hardening & release | RTL, theme and phone-width audits, Arabic-Indic digits, performance, full end-to-end test, deployment, backups, store release | ⬜ Next (last) |
 
-**Overall: about 80% of the building work is done.** This is weighted by effort per phase; phases 3 and 4 were the biggest and riskiest.
-- **Left:** Phase 6, about 0.5–1 working day, and Phase 7, about 1–1.5 working days.
+**Overall: about 87% of the building work is done.** This is weighted by effort per phase; phases 3 and 4 were the biggest and riskiest.
+- **Left:** Phase 7, about 1–1.5 working days.
 - **Outside the code, on your side:** hosting, Firebase, a Google Play account, and the Play review (usually a few days).
 
 ### 3.2 Quality
 
-- **1,135 automated tests, all passing:**
-  - backend: 275 unit, 507 database and API;
-  - shared packages: 127 and 44;
-  - admin app: 80;
+- **1,183 automated tests, all passing:**
+  - backend: 279 unit, 530 database and API;
+  - shared packages: 135 and 44;
+  - admin app: 93;
   - client app: 102.
 - **Clean on every check:** type checks, the Flutter analyzer, the colour check (no hard-coded colours), the admin web build, and the "no email anywhere" check.
 - **Stock is always traceable.** Every stock change, in the warehouse and on every clinic's shelf, is written to a history that the nightly check compares with the current quantities.

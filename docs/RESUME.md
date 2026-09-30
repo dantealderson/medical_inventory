@@ -1,8 +1,23 @@
 # Resume Point
 
-## >>> PHASE 5 COMPLETE (2026-09-30), plus "stop tracking an item". Phase 6 (admin dashboard) is next
+## >>> PHASE 6 COMPLETE (2026-09-30). Phase 7 (hardening and release) is next
 
 **For the user:** `docs/SETUP-AND-TESTING.md` covers what to set up, how to test by hand, and current progress.
+
+**Phase 6 (admin dashboard).** The plan is `docs/superpowers/plans/2026-09-30-phase-6-admin-dashboard.md`. It added:
+- **The dashboard as the admin's home (`/`):**
+  - pending approvals, and orders awaiting confirmation;
+  - clinics out of stock, as a red card plus a popup once per session;
+  - warehouse items OUT (no unexpired stock) or LOW (below the item minimum);
+  - expiring batches, and expired ones still in stock;
+  - the last nightly run, with «تشغيل الآن».
+- **Settings:**
+  - validated per key, plus cross-field rules (yellow > red; min purchase ≤ window; shelf life ≥ 0);
+  - audited as `SETTINGS_CHANGED`;
+  - the time zone is read-only.
+- **The audit log:** filters by entity, actor and whole Baghdad days (`startOfBusinessDay`).
+- **The account page** lists the clinic's latest orders.
+- **Moved:** accounts now live at `/accounts`; admin tests reach them with `openAccountsTab`.
 
 **Stop tracking (done after Phase 5).**
 - A clinic can hide an item it no longer uses: it leaves My Inventory, alerts, expiry warnings and auto-decrement. The column is `trackingStoppedAt`.
@@ -25,8 +40,8 @@ What exists now:
 - **The admin app has a notifications tab** (inbox plus composer).
 
 **Last updated:** 2026-09-30
-**Branch:** `main` — Phases 0–5 merged locally (fast-forward). No remote is configured yet.
-**Blocked on:** nothing for Phase 6. Push to phones is blocked on the Firebase hand-off below.
+**Branch:** `main` — Phases 0–6 merged locally (fast-forward). No remote is configured yet.
+**Blocked on:** nothing for Phase 7's code. Deployment needs the user's hosting and app-id decisions (`docs/SETUP-AND-TESTING.md` 1.7), and push needs the Firebase hand-off below.
 
 ### Push notifications: what only you can do (FCM hand-off)
 
@@ -40,17 +55,17 @@ Until then, every notification still reaches the in-app centre.
 
 ## Where we are
 
-**Phases 0–5 are complete and verified.** Phase 6 (the admin dashboard) is next.
+**Phases 0–6 are complete and verified.** Phase 7 (hardening and release) is next.
 
 | Suite | Tests |
 |---|---|
-| backend unit | 275 |
-| backend e2e + integration | 507 |
-| `packages/api_client` | 127 |
+| backend unit | 279 |
+| backend e2e + integration | 530 |
+| `packages/api_client` | 135 |
 | `packages/ui_kit` | 44 |
-| `admin` | 80 |
+| `admin` | 93 |
 | `client` | 102 |
-| **total** | **1135** |
+| **total** | **1183** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 
@@ -101,8 +116,8 @@ The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no
 | 3 — Ordering & FEFO | ✅ complete |
 | 4 — Inventory & estimation | ✅ complete |
 | 5 — Automation & notifications | ✅ complete |
-| **6 — Admin dashboard** | **⬜ next** |
-| 7 — Hardening | ⬜ |
+| 6 — Admin dashboard | ✅ complete |
+| **7 — Hardening** | **⬜ next** |
 
 Plans written so far: phases 0–3 (`docs/superpowers/plans/2026-09-27-phase-*.md`) phase 4 and phase 5 (`docs/superpowers/plans/2026-09-30-phase-*.md`).
 Phase 3's planning working files are in `docs/superpowers/plans/phase-3-work/` (untracked, safe to delete).

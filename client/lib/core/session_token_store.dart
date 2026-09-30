@@ -17,6 +17,10 @@ class SessionTokenStore implements TokenStore {
 
   AuthTokens? _memory;
 
+  /// Called after every [clear]. The auth interceptor clears the tokens when
+  /// the server refuses to renew a session, and the app has to notice.
+  void Function()? onCleared;
+
   @override
   Future<String?> readAccess() async => _memory?.accessToken ?? await _phone.readAccess();
 
@@ -37,5 +41,6 @@ class SessionTokenStore implements TokenStore {
   Future<void> clear() async {
     _memory = null;
     await _phone.clear();
+    onCleared?.call();
   }
 }

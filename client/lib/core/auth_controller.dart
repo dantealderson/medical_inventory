@@ -21,7 +21,11 @@ class AuthUnreachable extends AuthState {
 }
 
 class AuthLoggedOut extends AuthState {
-  const AuthLoggedOut();
+  const AuthLoggedOut({this.sessionEnded = false});
+
+  /// The server ended the session: the account was suspended, its password
+  /// was reset, or it went unused too long. The login screen says so.
+  final bool sessionEnded;
 }
 
 class AuthAuthenticated extends AuthState {
@@ -52,7 +56,18 @@ final authControllerProvider = NotifierProvider<AuthController, AuthState>(AuthC
 
 class AuthController extends Notifier<AuthState> {
   @override
-  AuthState build() => const AuthUnknown();
+  AuthState build() {
+    ref.read(sessionStoreProvider).onCleared = _onTokensCleared;
+    return const AuthUnknown();
+  }
+
+  /// The tokens were thrown away while signed in: the server refused to renew
+  /// the session. Every request would fail from here, so go to the login
+  /// screen and say why. Log out and a refused startup are not signed in when
+  /// they clear, so they do not come through here.
+  void _onTokensCleared() {
+    if (state is AuthAuthenticated) state = const AuthLoggedOut(sessionEnded: true);
+  }
 
   AuthApi get _api => ref.read(authApiProvider);
   SessionTokenStore get _store => ref.read(sessionStoreProvider);
@@ -124,7 +139,9 @@ class AuthController extends Notifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await _api.logout();
+    // Signed out first, so clearing the tokens is not taken for the server
+    // ending the session.
     state = const AuthLoggedOut();
+    await _api.logout();
   }
 }

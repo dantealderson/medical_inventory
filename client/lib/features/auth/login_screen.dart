@@ -67,11 +67,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final auth = ref.watch(authControllerProvider);
+    final sessionEnded = auth is AuthLoggedOut && auth.sessionEnded;
 
     return AuthScaffold(
       title: l10n.login,
       children: [
-        if (_errorAr != null) AuthErrorBanner(messageAr: _errorAr!),
+        if (_errorAr != null)
+          AuthErrorBanner(messageAr: _errorAr!)
+        else if (sessionEnded)
+          AuthErrorBanner(messageAr: l10n.sessionEnded),
         Form(
           key: _formKey,
           child: Column(

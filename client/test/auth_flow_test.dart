@@ -277,6 +277,33 @@ void main() {
     });
   });
 
+  // The server ends a clinic's sessions when the admin suspends the account or
+  // resets its password. The app used to stay "signed in" with every request
+  // failing, and no way out but the menu.
+  testWidgets('a session the server ended returns to login, saying so', (tester) async {
+    final store = InMemoryTokenStore();
+    await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+    var ended = false;
+
+    await pumpApp(tester, (req) {
+      if (req.path == '/auth/me') return [200, activeUser];
+      if (req.path == '/categories') return [200, <dynamic>[]];
+      if (req.path == '/orders' && ended) {
+        return [401, envelope(401, 'TOKEN_EXPIRED', 'انتهت')];
+      }
+      if (req.path == '/auth/refresh') return [401, envelope(401, 'TOKEN_INVALID', 'مرفوض')];
+      return [404, null];
+    }, store: store, retry: (_, _) => null);
+    ended = true;
+
+    await tester.tap(find.byTooltip('طلباتي'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('اسم المستخدم'), findsOneWidget);
+    expect(find.text('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى'), findsOneWidget);
+    await expectLater(store.readAccess(), completion(isNull));
+  });
+
   group('Logout', () {
     late InMemoryTokenStore store;
 
@@ -318,6 +345,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('اسم المستخدم'), findsOneWidget);
+      expect(find.text('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى'), findsNothing);
       await expectLater(store.readAccess(), completion(isNull));
     });
 

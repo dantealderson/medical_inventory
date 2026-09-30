@@ -916,6 +916,12 @@ abstract class AppLocalizations {
   /// **'هذا القسم لم يعد متوفراً'**
   String get categoryUnavailable;
 
+  /// Login: the server ended the session (account suspended, password reset, or unused too long)
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى'**
+  String get sessionEnded;
+
   /// Home search box: the clear button, which brings the categories back
   ///
   /// In ar, this message translates to:

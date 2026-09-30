@@ -647,6 +647,10 @@
   "@categoryUnavailable": {
     "description": "Category screen: the category is no longer in the catalog"
   },
+  "sessionEnded": "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
+  "@sessionEnded": {
+    "description": "Login: the server ended the session (account suspended, password reset, or unused too long)"
+  },
   "clearSearch": "مسح البحث",
   "@clearSearch": {
     "description": "Home search box: the clear button, which brings the categories back"

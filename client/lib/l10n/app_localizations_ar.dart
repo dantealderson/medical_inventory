@@ -484,6 +484,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get categoryUnavailable => 'هذا القسم لم يعد متوفراً';
 
   @override
+  String get sessionEnded => 'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى';
+
+  @override
   String get clearSearch => 'مسح البحث';
 
   @override

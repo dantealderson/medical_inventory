@@ -50,6 +50,9 @@ export const ERROR_CODES = Object.freeze({
   // --- Inventory (Phase 4) ---
   INVENTORY_ITEM_NOT_FOUND: 'الصنف غير موجود في المخزون',
   CLIENT_NOT_FOUND: 'العميل غير موجود',
+  // --- Notifications and jobs (Phase 5) ---
+  NOTIFICATION_NOT_FOUND: 'الإشعار غير موجود',
+  DEVICE_NOT_FOUND: 'الجهاز غير مسجل',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { EstimationModule } from '../estimation/estimation.module';
+import { AdminClientInventoryController } from './admin-client-inventory.controller';
+import { AdminInventoryService } from './admin-inventory.service';
 import { ClientInventoryService } from './client-inventory.service';
 import { InventoryReadService } from './inventory-read.service';
 import { InventoryController } from './inventory.controller';
@@ -8,8 +10,8 @@ import { StockCountService } from './stock-count.service';
 
 @Module({
   imports: [EstimationModule],
-  controllers: [InventoryController],
-  providers: [ClientInventoryService, StockCountService, InventoryReadService],
+  controllers: [InventoryController, AdminClientInventoryController],
+  providers: [ClientInventoryService, StockCountService, InventoryReadService, AdminInventoryService],
   exports: [ClientInventoryService],
 })
 export class ClientInventoryModule {}

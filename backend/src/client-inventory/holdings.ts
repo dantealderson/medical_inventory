@@ -68,6 +68,7 @@ export interface LockedInventoryRow {
   fractionalCarry: Prisma.Decimal;
   autoDecrementEnabled: boolean;
   usageRateOverride: Prisma.Decimal | null;
+  minQtyUnits: number | null;
   lastAutoDecrementAt: Date | null;
   lastCountedAt: Date | null;
   unitsPerBox: number;
@@ -123,6 +124,7 @@ export async function lockShelf(
       fractionalCarry: r.fractionalCarry,
       autoDecrementEnabled: r.autoDecrementEnabled,
       usageRateOverride: r.usageRateOverride,
+      minQtyUnits: r.minQtyUnits,
       lastAutoDecrementAt: r.lastAutoDecrementAt,
       lastCountedAt: r.lastCountedAt,
       unitsPerBox: r.item.unitsPerBox,

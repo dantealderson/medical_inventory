@@ -320,6 +320,30 @@ describe('Dispatch and delivery (e2e)', () => {
     });
   });
 
+  describe('estimation', () => {
+    it('re-estimates the clinic’s usage of what it received', async () => {
+      await stock(syringe, 'S-1', 300, 10);
+      const first = await confirmedOrder([{ item: syringe, boxes: 3 }]);
+      await dispatch(first).expect(200);
+      await deliver(first).expect(200);
+      // As far as the ledger knows, that delivery was 40 days ago.
+      await prisma.stockMovement.updateMany({
+        where: { clientId: client.id, reason: MovementReason.DELIVERY_IN },
+        data: { createdAt: new Date(Date.now() - 40 * 86_400_000) },
+      });
+
+      const second = await confirmedOrder([{ item: syringe, boxes: 1 }]);
+      await dispatch(second).expect(200);
+      await deliver(second).expect(200);
+
+      const estimate = await prisma.usageEstimate.findUniqueOrThrow({
+        where: { clientId_itemId: { clientId: client.id, itemId: syringe.itemId } },
+      });
+      expect(estimate.source).toBe('PURCHASE');
+      expect(estimate.ratePerDay?.toFixed(4)).toBe('10.0000'); // 400 units over 40 days
+    });
+  });
+
   describe('access', () => {
     it('is admin-only, and 404s an unknown order', async () => {
       await stock(syringe, 'S-1', 300, 5);

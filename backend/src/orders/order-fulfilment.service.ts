@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 
 import { ClientInventoryService } from '../client-inventory/client-inventory.service';
+import { EstimationService } from '../estimation/estimation.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ORDER_TX_OPTIONS } from '../prisma/transaction';
 import { lockOrder } from './order-lock';
@@ -10,9 +11,12 @@ import { loadOrderView, type OrderView } from './order-views';
 
 @Injectable()
 export class OrderFulfilmentService {
+  private readonly logger = new Logger(OrderFulfilmentService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly clientInventory: ClientInventoryService,
+    private readonly estimation: EstimationService,
   ) {}
 
   /**
@@ -40,7 +44,7 @@ export class OrderFulfilmentService {
 
   /** OUT_FOR_DELIVERY → DELIVERED: the clinic is credited with exactly what was allocated. */
   async deliver(adminId: string, orderId: string): Promise<OrderView> {
-    return this.prisma.$transaction(async (tx) => {
+    const delivered = await this.prisma.$transaction(async (tx) => {
       // D1: without this, a double-clicked deliver credits the clinic twice,
       // with its ledger and cache in agreement.
       const order = await lockOrder(tx, orderId);
@@ -74,7 +78,21 @@ export class OrderFulfilmentService {
         where: { id: orderId },
         data: { status: OrderStatus.DELIVERED, deliveredAt: new Date() },
       });
-      return loadOrderView(tx, orderId);
+      return {
+        view: await loadOrderView(tx, orderId),
+        clientId: order.clientId,
+        itemIds: [...new Set(allocations.map((a) => a.orderLine.itemId))],
+      };
     }, ORDER_TX_OPTIONS);
+
+    // After the commit: new purchases change a PURCHASE estimate. The delivery
+    // already happened, so a failure here is logged, never reported as a
+    // failed delivery; the nightly recompute catches up.
+    try {
+      await this.estimation.recomputeFor(delivered.clientId, delivered.itemIds);
+    } catch (error) {
+      this.logger.warn(`estimate recompute after delivering ${orderId} failed: ${String(error)}`);
+    }
+    return delivered.view;
   }
 }

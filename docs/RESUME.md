@@ -40,7 +40,7 @@ What exists now:
 - **The admin app has a notifications tab** (inbox plus composer).
 
 **Last updated:** 2026-09-30
-**Branch:** `main` — Phases 0–6 merged locally (fast-forward). No remote is configured yet.
+**Branch:** `main`, pushed to `origin` = https://github.com/dantealderson/medical_inventory (**public**, by the user's choice, 2026-09-30).
 **Blocked on:** nothing for Phase 7's code. Deployment needs the user's hosting and app-id decisions (`docs/SETUP-AND-TESTING.md` 1.7), and push needs the Firebase hand-off below.
 
 ### Push notifications: what only you can do (FCM hand-off)

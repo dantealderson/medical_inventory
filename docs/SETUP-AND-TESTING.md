@@ -272,7 +272,7 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 
 ### 3.3 Where things are
 
-- **Code:** `D:\PROJECTS\medical_inventory`, branch `main`. Everything is merged locally. **Nothing is backed up online yet.** Creating a private GitHub repository and pushing to it is strongly recommended.
+- **Code:** `D:\PROJECTS\medical_inventory`, branch `main`, backed up to https://github.com/dantealderson/medical_inventory (public).
 - **Working notes:** `docs/RESUME.md` has the full technical status and the decisions not to reopen.
 - **Plans:** `docs/superpowers/plans/` (one per phase).
 

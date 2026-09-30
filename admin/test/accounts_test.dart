@@ -53,7 +53,7 @@ void main() {
       });
 
       await tester.enterText(fieldWithLabel('اسم المستخدم'), 'admin');
-      await tester.enterText(fieldWithLabel('كلمة المرور'), 'devadminpassword1');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'any-admin-password');
       await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
       await tester.pumpAndSettle();
 

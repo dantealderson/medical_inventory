@@ -183,7 +183,7 @@ cd admin  && flutter run -d chrome     # admin is web-only
 cd client && flutter run -d chrome     # or an android device/emulator
 ```
 
-Dev admin: `admin` / `devadminpassword1` (from `.env`, local only).
+Dev admin: the username and password are `SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD` in `backend/.env` (local only, never committed).
 
 Docker Desktop is installed **per-user**, so its binary is missing from a shell
 whose PATH was captured before installation:

@@ -1,6 +1,11 @@
 # Medical Inventory
 
+Application written with Flutter, with Firebase and a REST API (Node.js) backend, to manage a medical supplier's inventory, and an app for its clinics to see their estimated inventory and order items with a shopping experience.
+
 Monorepo: NestJS + Prisma backend, Flutter admin and client apps, shared Dart packages.
+
+- **Setting it up and testing it by hand:** `docs/SETUP-AND-TESTING.md`
+- **Current status and decisions:** `docs/RESUME.md`
 
 - Design spec: `docs/superpowers/specs/2026-09-27-medical-inventory-design.md`
 - Plans: `docs/superpowers/plans/`

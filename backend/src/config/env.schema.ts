@@ -55,8 +55,7 @@ export const envSchema = z.object({
   // In production an empty value means no cross-origin access at all.
   CORS_ORIGINS: z.string().default(''),
 
-  // Image uploads (§10.6). Served statically from /uploads.
-  UPLOAD_DIR: z.string().default('./uploads'),
+  // Image uploads (§10.6). Stored in the database (media_files), not on disk.
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(5_242_880), // 5 MiB
 
   // The nightly jobs (spec §8). Off in tests: a test process must never arm

@@ -1,42 +1,31 @@
-import {
-  Controller, HttpStatus, Post, UploadedFile, UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Controller, Get, Header, HttpStatus, Param, StreamableFile } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
-import { MediaService, type StoredImage } from './media.service';
+import { MediaService } from './media.service';
 
 /**
- * The only part of Multer's upload shape this endpoint touches.
+ * Serves item and category pictures.
  *
- * Declared locally rather than widening tsconfig's `types` array to pull in
- * @types/multer's global Express augmentation — one field does not justify
- * changing what every file in the project sees.
+ * Public: catalogue photos are not sensitive, the id is an unguessable uuid,
+ * and the apps' image widgets send no token. A new upload always gets a new
+ * id, so a served file never changes and can be cached for a year.
  */
-interface UploadedImage {
-  buffer?: Buffer;
-  originalname?: string;
-  mimetype?: string;
-}
-
-@ApiTags('admin/media')
-@ApiBearerAuth()
-@Roles(Role.ADMIN)
-@Controller('admin/media')
+@ApiTags('media')
+@Controller('media')
 export class MediaController {
   constructor(private readonly media: MediaService) {}
 
-  @Post()
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
-  upload(@UploadedFile() file?: UploadedImage): Promise<StoredImage> {
-    if (!file?.buffer) {
-      throw new AppException(HttpStatus.BAD_REQUEST, 'INVALID_IMAGE', ERROR_CODES.INVALID_IMAGE);
+  @Public()
+  @Get(':file')
+  @Header('Cache-Control', 'public, max-age=31536000, immutable')
+  async serve(@Param('file') file: string): Promise<StreamableFile> {
+    const bytes = await this.media.read(file);
+    if (!bytes) {
+      throw new AppException(HttpStatus.NOT_FOUND, 'NOT_FOUND', ERROR_CODES.NOT_FOUND);
     }
-    return this.media.store(file.buffer);
+    return new StreamableFile(bytes, { type: 'image/webp' });
   }
 }

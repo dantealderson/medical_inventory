@@ -1,5 +1,3 @@
-import { join } from 'node:path';
-
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -14,11 +12,6 @@ async function bootstrap() {
 
   applyAppConfig(app);
 
-  // Uploaded images are served from disk. Relative URLs are stored, so the
-  // host can change without invalidating every path in the database.
-  app.useStaticAssets(join(process.cwd(), config.get('UPLOAD_DIR', { infer: true })), {
-    prefix: '/uploads/',
-  });
   if (config.get('NODE_ENV', { infer: true }) !== 'production') {
     applySwagger(app);
   }

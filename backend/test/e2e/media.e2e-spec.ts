@@ -1,55 +1,39 @@
-import { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { Role, UserStatus } from '@prisma/client';
+import type { INestApplication } from '@nestjs/common';
+import sharp from 'sharp';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { AppModule } from '../../src/app.module';
-import { applyAppConfig } from '../../src/app.setup';
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { MediaService } from '../../src/media/media.service';
+import type { PrismaService } from '../../src/prisma/prisma.service';
+import { bootApp } from '../helpers/http';
 import { resetDb } from '../helpers/reset-db';
 
-/** A genuinely valid 1x1 PNG. */
-const PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-  'base64',
-);
+const colour = { r: 51, g: 102, b: 204 };
+const png = (width: number, height: number) =>
+  sharp({ create: { width, height, channels: 3, background: colour } }).png().toBuffer();
 
-describe('Media upload (e2e)', () => {
+/** How a phone saves a portrait photo: landscape pixels plus "turn it" in EXIF. */
+const sidewaysJpeg = () =>
+  sharp({ create: { width: 20, height: 10, channels: 3, background: colour } })
+    .jpeg()
+    .withMetadata({ orientation: 6 })
+    .toBuffer();
+
+/** Pictures live in the database (media_files), so a host that wipes its disk keeps them. */
+describe('Media storage and serving (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let adminToken: string;
-  let clientToken: string;
+  let media: MediaService;
 
-  const http = () => request(app.getHttpServer());
-  const asAdmin = (r: request.Test) => r.set('Authorization', `Bearer ${adminToken}`);
-  const asClient = (r: request.Test) => r.set('Authorization', `Bearer ${clientToken}`);
-
-  async function makeUser(username: string, role: Role): Promise<string> {
-    await http()
-      .post('/api/v1/auth/register')
-      .send({ username, password: 'goodpassword1' })
-      .expect(201);
-    await prisma.user.update({ where: { username }, data: { role, status: UserStatus.ACTIVE } });
-    const res = await http()
-      .post('/api/v1/auth/login')
-      .send({ username, password: 'goodpassword1' })
-      .expect(200);
-    return res.body.accessToken as string;
-  }
+  const get = (url: string) => request(app.getHttpServer()).get(url);
 
   beforeAll(async () => {
-    const ref = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = ref.createNestApplication();
-    applyAppConfig(app);
-    await app.init();
-    prisma = app.get(PrismaService);
+    ({ app, prisma } = await bootApp());
+    media = app.get(MediaService);
   });
 
   beforeEach(async () => {
     await resetDb(prisma);
-    adminToken = await makeUser('the_admin', Role.ADMIN);
-    clientToken = await makeUser('lab_one', Role.CLIENT);
   });
 
   afterAll(async () => {
@@ -57,45 +41,68 @@ describe('Media upload (e2e)', () => {
     await app.close();
   });
 
-  it('accepts a PNG from an admin and returns both urls', async () => {
-    const res = await asAdmin(http().post('/api/v1/admin/media'))
-      .attach('file', PNG, 'item.png')
-      .expect(201);
+  it('serves a full size and a thumbnail, both webp, both shrunk to fit', async () => {
+    const stored = await media.store(await png(3000, 2000));
 
-    expect(res.body.url).toMatch(/^\/uploads\/.+\.webp$/);
-    expect(res.body.thumbnailUrl).toMatch(/^\/uploads\/.+\.thumb\.webp$/);
+    expect(stored.url).toMatch(/^\/api\/v1\/media\/[0-9a-f-]{36}\.webp$/);
+    expect(stored.thumbnailUrl).toBe(stored.url.replace(/\.webp$/, '.thumb.webp'));
+
+    const full = await get(stored.url).expect(200);
+    expect(full.headers['content-type']).toBe('image/webp');
+    expect(full.headers['cache-control']).toBe('public, max-age=31536000, immutable');
+    expect(await sharp(full.body as Buffer).metadata()).toMatchObject({
+      format: 'webp',
+      width: 1200,
+      height: 800,
+    });
+
+    const thumb = await get(stored.thumbnailUrl).expect(200);
+    expect(await sharp(thumb.body as Buffer).metadata()).toMatchObject({
+      format: 'webp',
+      width: 300,
+      height: 200,
+    });
   });
 
-  it('generates its own filename rather than using the client’s', async () => {
-    // An uploaded "../../.env" is a path traversal, and a repeated name
-    // silently overwrites someone else's image.
-    const res = await asAdmin(http().post('/api/v1/admin/media'))
-      .attach('file', PNG, '../../evil.png')
-      .expect(201);
-    expect(res.body.url).not.toContain('evil');
-    expect(res.body.url).not.toContain('..');
+  it('never enlarges a small picture', async () => {
+    const stored = await media.store(await png(40, 30));
+
+    const full = await get(stored.url).expect(200);
+    expect(await sharp(full.body as Buffer).metadata()).toMatchObject({ width: 40, height: 30 });
   });
 
-  it('rejects a file whose bytes are not an image, whatever the extension', async () => {
-    // Extension checks are bypassed by renaming; this is the one that matters.
-    const res = await asAdmin(http().post('/api/v1/admin/media'))
-      .attach('file', Buffer.from('#!/bin/sh\nrm -rf /'), 'innocent.png')
-      .expect(400);
-    expect(res.body.code).toBe('INVALID_IMAGE');
+  it('turns a sideways phone photo upright', async () => {
+    const stored = await media.store(await sidewaysJpeg());
+
+    const full = await get(stored.url).expect(200);
+    expect(await sharp(full.body as Buffer).metadata()).toMatchObject({ width: 10, height: 20 });
   });
 
-  it('rejects a request with no file at all', async () => {
-    const res = await asAdmin(http().post('/api/v1/admin/media')).expect(400);
-    expect(res.body.code).toBe('INVALID_IMAGE');
+  it('answers 404 for a picture that does not exist, or a name that is not ours', async () => {
+    await get('/api/v1/media/00000000-0000-0000-0000-000000000000.webp').expect(404);
+    const res = await get('/api/v1/media/..%2F..%2F.env').expect(404);
+    expect(res.body.code).toBe('NOT_FOUND');
   });
 
-  it('refuses a CLIENT', async () => {
-    await asClient(http().post('/api/v1/admin/media'))
-      .attach('file', PNG, 'item.png')
-      .expect(403);
+  it('refuses bytes that are not an image, whatever the name', async () => {
+    await expect(media.store(Buffer.from('#!/bin/sh\necho hi'))).rejects.toMatchObject({
+      code: 'INVALID_IMAGE',
+    });
   });
 
-  it('refuses an unauthenticated caller', async () => {
-    await http().post('/api/v1/admin/media').attach('file', PNG, 'item.png').expect(401);
+  it('refuses a file over 5 MB before trying to decode it', async () => {
+    await expect(media.store(Buffer.alloc(5 * 1024 * 1024 + 1))).rejects.toMatchObject({
+      code: 'IMAGE_TOO_LARGE',
+    });
+  });
+
+  it('removes a picture by its url, and ignores urls that are not ours', async () => {
+    const stored = await media.store(await png(10, 10));
+
+    await media.removeByUrl(stored.url);
+    await media.removeByUrl('https://example.com/elsewhere.webp');
+
+    await get(stored.url).expect(404);
+    await get(stored.thumbnailUrl).expect(404);
   });
 });

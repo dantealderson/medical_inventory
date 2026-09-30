@@ -624,3 +624,17 @@ model JobRun {
   @@index([startedAt])
   @@map("job_runs")
 }
+
+/// Uploaded pictures (§10.6), both variants as webp. Kept in the database, not
+/// on disk: free hosts wipe their disk on every restart, and a table is in
+/// every backup. Items and categories point at one through `imageUrl`
+/// (`/api/v1/media/<id>.webp`); a new upload always gets a new id, so the
+/// served files can be cached forever.
+model MediaFile {
+  id        String   @id @default(uuid())
+  full      Bytes
+  thumb     Bytes
+  createdAt DateTime @default(now())
+
+  @@map("media_files")
+}

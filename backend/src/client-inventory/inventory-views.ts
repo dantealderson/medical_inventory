@@ -40,8 +40,15 @@ export interface ExpiringBatchView {
   expired: boolean;
 }
 
+/** An item the clinic stopped tracking: out of sight, but restorable. */
+export interface StoppedItemView {
+  item: ItemView;
+  qtyUnits: number;
+}
+
 export interface InventoryView {
   items: InventoryEntryView[];
+  stopped: StoppedItemView[];
 }
 
 export interface MovementView {

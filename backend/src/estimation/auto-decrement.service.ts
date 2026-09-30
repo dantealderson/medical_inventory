@@ -46,7 +46,9 @@ export class AutoDecrementService {
     const timeZone = String(tz);
 
     const enabled = await this.prisma.clientInventoryItem.findMany({
-      where: { autoDecrementEnabled: true },
+      // A stopped item is not being used: nothing to subtract (it resumes
+      // with a fresh baseline).
+      where: { autoDecrementEnabled: true, trackingStoppedAt: null },
       select: { clientId: true, itemId: true, usageRateOverride: true },
       orderBy: [{ clientId: 'asc' }, { itemId: 'asc' }],
     });
@@ -98,7 +100,7 @@ export class AutoDecrementService {
   ): Promise<number> {
     const shelf = await lockShelf(tx, clientId, [itemId]);
     const row = shelf.rows.get(itemId);
-    if (!row || !row.autoDecrementEnabled) return 0;
+    if (!row || !row.autoDecrementEnabled || row.trackingStoppedAt !== null) return 0;
 
     // The override wins at once, without waiting for a recompute (decision 6).
     const rate =

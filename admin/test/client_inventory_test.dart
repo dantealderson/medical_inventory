@@ -206,4 +206,28 @@ void main() {
       expect(rect.left, greaterThanOrEqualTo(-0.5));
     }
   });
+
+  testWidgets('an item the clinic stopped tracking is marked as such', (tester) async {
+    useScreenSize(tester, const Size(1280, 900), dpr: 1);
+    final stoppedGloves = {...gloves, 'trackingStopped': true};
+    await pumpSignedIn(tester, (req) {
+      if (req.path == '/admin/clients/u1/inventory') {
+        return [200, {'items': [syringe, stoppedGloves]}];
+      }
+      return clinicShelf()(req);
+    });
+    await tester.tap(find.text('عيادة النور'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('مخزون العميل'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('أوقف العميل متابعته'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.ancestor(of: find.text('قفازات'), matching: find.byType(Card)),
+        matching: find.text('أوقف العميل متابعته'),
+      ),
+      findsOneWidget,
+    );
+  });
 }

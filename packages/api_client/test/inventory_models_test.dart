@@ -228,4 +228,45 @@ void main() {
       );
     },
   );
+
+  group('stopped items', () {
+    test('Inventory lists the items the clinic stopped tracking', () {
+      final inventory = Inventory.fromJson({
+        'items': [fullEntry],
+        'stopped': [
+          {'item': item, 'qtyUnits': 0},
+        ],
+      });
+
+      expect(inventory.stopped.single.item.id, 'i1');
+      expect(inventory.stopped.single.qtyUnits, 0);
+    });
+
+    test('an older server that sends no stopped list means none', () {
+      expect(
+        Inventory.fromJson({
+          'items': [fullEntry],
+        }).stopped,
+        isEmpty,
+      );
+    });
+
+    test('the admin sees whether the clinic stopped tracking an item', () {
+      final base = {
+        ...fullEntry,
+        'autoDecrementEnabled': true,
+        'usageRateOverride': null,
+        'clientMinQtyBoxes': null,
+        'itemMinQtyBoxes': null,
+      };
+      expect(
+        AdminInventoryEntry.fromJson({
+          ...base,
+          'trackingStopped': true,
+        }).trackingStopped,
+        isTrue,
+      );
+      expect(AdminInventoryEntry.fromJson(base).trackingStopped, isFalse);
+    });
+  });
 }

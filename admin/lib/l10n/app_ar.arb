@@ -737,5 +737,9 @@
         "type": "int"
       }
     }
+  },
+  "trackingStoppedByClinic": "أوقف العميل متابعته",
+  "@trackingStoppedByClinic": {
+    "description": "Stop tracking: the clinic hid this item from its own inventory"
   }
 }

@@ -437,4 +437,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unreadLabel => 'جديد';
+
+  @override
+  String get stopTracking => 'إيقاف متابعة هذا الصنف';
+
+  @override
+  String stopTrackingQuestion(String item) {
+    return 'إيقاف متابعة $item؟';
+  }
+
+  @override
+  String get stopTrackingExplained =>
+      'لن يظهر هذا الصنف في مخزونك ولن تصلك تنبيهات عنه. سيعود تلقائياً عند استلام طلب جديد منه، ويمكنك إعادته في أي وقت.';
+
+  @override
+  String get confirmStopTracking => 'إيقاف المتابعة';
+
+  @override
+  String trackingStopped(String item) {
+    return 'تم إيقاف متابعة $item';
+  }
+
+  @override
+  String get stoppedItemsTitle => 'أصناف أوقفت متابعتها';
+
+  @override
+  String get resumeTracking => 'استئناف المتابعة';
 }

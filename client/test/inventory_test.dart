@@ -263,4 +263,95 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('Stop tracking', () {
+    /// The shelf, with a server that remembers which items were stopped.
+    List<Object?> Function(SeenRequest) trackable(Set<String> stopped) {
+      final base = shelf(movements: (_) => {'items': <Object>[], 'nextCursor': null});
+      Map<String, dynamic> byId(String id) =>
+          shelfEntries.firstWhere((e) => (e['item'] as Map)['id'] == id);
+      final action = RegExp(r'^/inventory/(\w+)/(stop|resume)-tracking$');
+      return (req) {
+        if (req.path == '/inventory') {
+          return [
+            200,
+            {
+              'items': [
+                for (final e in shelfEntries)
+                  if (!stopped.contains((e['item'] as Map)['id'])) e,
+              ],
+              'stopped': [
+                for (final id in stopped) {'item': byId(id)['item'], 'qtyUnits': byId(id)['qtyUnits']},
+              ],
+            },
+          ];
+        }
+        final m = action.firstMatch(req.path);
+        if (m != null) {
+          if (m.group(2) == 'stop') {
+            stopped.add(m.group(1)!);
+          } else {
+            stopped.remove(m.group(1)!);
+          }
+          return [204, null];
+        }
+        return base(req);
+      };
+    }
+
+    Future<void> openItem(WidgetTester tester, String name) async {
+      await tester.tap(find.text(name));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('from an item’s page: asks first, then takes it off My Inventory', (tester) async {
+      tallScreen(tester);
+      final stopped = <String>{};
+      final backend = await pumpSignedIn(tester, trackable(stopped));
+      await openInventory(tester);
+      await openItem(tester, 'شاش');
+
+      await tester.tap(find.text('إيقاف متابعة هذا الصنف'));
+      await tester.pumpAndSettle();
+      expect(find.text('إيقاف متابعة شاش؟'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'إيقاف المتابعة'));
+      await tester.pumpAndSettle();
+
+      expect(backend.lastTo('/inventory/i2/stop-tracking').method, 'POST');
+      expect(find.widgetWithText(AppBar, 'مخزوني'), findsOneWidget);
+      expect(find.text('تم إيقاف متابعة شاش'), findsOneWidget);
+      // It is only in the stopped list now, with a way back.
+      expect(find.text('أصناف أوقفت متابعتها'), findsOneWidget);
+      expect(inCard('شاش', find.byType(StockBadge)), findsNothing);
+      expect(inCard('شاش', find.text('استئناف المتابعة')), findsOneWidget);
+    });
+
+    testWidgets('cancelling the question changes nothing', (tester) async {
+      tallScreen(tester);
+      final backend = await pumpSignedIn(tester, trackable(<String>{}));
+      await openInventory(tester);
+      await openItem(tester, 'شاش');
+
+      await tester.tap(find.text('إيقاف متابعة هذا الصنف'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'إلغاء'));
+      await tester.pumpAndSettle();
+
+      expect(backend.seen.where((r) => r.path.endsWith('/stop-tracking')), isEmpty);
+    });
+
+    testWidgets('resuming from the stopped list brings the item back', (tester) async {
+      tallScreen(tester);
+      final backend = await pumpSignedIn(tester, trackable({'i5'}));
+      await openInventory(tester);
+
+      expect(inCard('قطن', find.byType(StockBadge)), findsNothing);
+      await tester.tap(inCard('قطن', find.text('استئناف المتابعة')));
+      await tester.pumpAndSettle();
+
+      expect(backend.lastTo('/inventory/i5/resume-tracking').method, 'POST');
+      expect(inCard('قطن', find.byType(StockBadge)), findsOneWidget);
+      expect(find.text('أصناف أوقفت متابعتها'), findsNothing);
+    });
+  });
 }

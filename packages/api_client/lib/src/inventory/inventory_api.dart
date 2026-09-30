@@ -28,6 +28,17 @@ class InventoryApi {
         (data) => MovementPage.fromJson(asJsonMap(data)),
       );
 
+  /// Hides an item the clinic no longer uses; a new delivery brings it back.
+  Future<void> stopTracking(String itemId) => guardedCall(
+    () => _dio.post<dynamic>('/inventory/$itemId/stop-tracking'),
+    (_) {},
+  );
+
+  Future<void> resumeTracking(String itemId) => guardedCall(
+    () => _dio.post<dynamic>('/inventory/$itemId/resume-tracking'),
+    (_) {},
+  );
+
   /// A stock count (جرد). What the clinic found replaces what the system
   /// believed, for every item in [lines].
   Future<StockCountResult> submitCount(

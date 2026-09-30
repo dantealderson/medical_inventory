@@ -19,6 +19,8 @@ export interface AdminInventoryEntryView extends InventoryEntryView {
   usageRateOverride: string | null;
   clientMinQtyBoxes: number | null;
   itemMinQtyBoxes: number | null;
+  /** The clinic stopped tracking it; the admin still sees it. */
+  trackingStopped: boolean;
 }
 
 interface AuditChange {
@@ -47,7 +49,7 @@ export class AdminInventoryService {
 
   async list(clientId: string, now = new Date()): Promise<{ items: AdminInventoryEntryView[] }> {
     await this.assertClient(clientId);
-    const entries = await this.read.entries(clientId, now);
+    const entries = await this.read.entries(clientId, now, { includeStopped: true });
     const controls = await this.prisma.clientInventoryItem.findMany({
       where: { clientId },
       select: {
@@ -55,6 +57,7 @@ export class AdminInventoryService {
         autoDecrementEnabled: true,
         usageRateOverride: true,
         minQtyUnits: true,
+        trackingStoppedAt: true,
         item: { select: { unitsPerBox: true, minQtyUnits: true } },
       },
     });
@@ -68,6 +71,7 @@ export class AdminInventoryService {
           usageRateOverride: c.usageRateOverride?.toFixed(4) ?? null,
           clientMinQtyBoxes: toBoxes(c.minQtyUnits, c.item.unitsPerBox),
           itemMinQtyBoxes: toBoxes(c.item.minQtyUnits, c.item.unitsPerBox),
+          trackingStopped: c.trackingStoppedAt !== null,
         };
       }),
     };

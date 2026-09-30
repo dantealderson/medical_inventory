@@ -126,6 +126,10 @@ class _EntryCard extends StatelessWidget {
                   StockBadge(level: _level(entry.status), label: _statusWord(l10n, entry)),
                 ],
               ),
+              if (admin.trackingStopped) ...[
+                const SizedBox(height: 4),
+                Text(l10n.trackingStoppedByClinic, style: text.bodyMedium?.copyWith(fontStyle: FontStyle.italic)),
+              ],
               const SizedBox(height: 4),
               Text(
                 formatQuantity(

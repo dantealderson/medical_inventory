@@ -69,7 +69,17 @@ export class ExpiryWarningsService {
       include: { batch: { include: { item: true } } },
       orderBy: [{ clientId: 'asc' }, { batchId: 'asc' }],
     });
+    // A clinic that stopped tracking an item is not warned about it either.
+    const stopped = new Set(
+      (
+        await this.prisma.clientInventoryItem.findMany({
+          where: { trackingStoppedAt: { not: null } },
+          select: { clientId: true, itemId: true },
+        })
+      ).map((r) => `${r.clientId}:${r.itemId}`),
+    );
     for (const holding of held) {
+      if (stopped.has(`${holding.clientId}:${holding.batch.itemId}`)) continue;
       const key = `${NotificationType.EXPIRY_WARNING}:${holding.clientId}:${holding.batchId}`;
       if (await this.sent(key)) continue;
       const { batch } = holding;

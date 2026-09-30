@@ -584,5 +584,43 @@
   "unreadLabel": "جديد",
   "@unreadLabel": {
     "description": "Phase 5: an unread notification, said in words and not only in weight"
+  },
+  "stopTracking": "إيقاف متابعة هذا الصنف",
+  "@stopTracking": {
+    "description": "Stop tracking: the button on an item page"
+  },
+  "stopTrackingQuestion": "إيقاف متابعة {item}؟",
+  "@stopTrackingQuestion": {
+    "description": "Stop tracking: the confirmation title",
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTrackingExplained": "لن يظهر هذا الصنف في مخزونك ولن تصلك تنبيهات عنه. سيعود تلقائياً عند استلام طلب جديد منه، ويمكنك إعادته في أي وقت.",
+  "@stopTrackingExplained": {
+    "description": "Stop tracking: what it does, in plain words"
+  },
+  "confirmStopTracking": "إيقاف المتابعة",
+  "@confirmStopTracking": {
+    "description": "Stop tracking: confirm"
+  },
+  "trackingStopped": "تم إيقاف متابعة {item}",
+  "@trackingStopped": {
+    "description": "Stop tracking: done",
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "stoppedItemsTitle": "أصناف أوقفت متابعتها",
+  "@stoppedItemsTitle": {
+    "description": "Stop tracking: the list at the bottom of My Inventory"
+  },
+  "resumeTracking": "استئناف المتابعة",
+  "@resumeTracking": {
+    "description": "Stop tracking: brings an item back"
   }
 }

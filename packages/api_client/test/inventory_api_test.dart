@@ -133,4 +133,14 @@ void main() {
       expect(backend.lastTo(path).body, {'minQtyBoxes': null});
     });
   });
+
+  test('stop and resume tracking an item', () async {
+    final (:client, :backend) = _build((_) => [204, null]);
+    final api = InventoryApi(client);
+
+    await api.stopTracking('i1');
+    expect(backend.lastTo('/inventory/i1/stop-tracking').method, 'POST');
+    await api.resumeTracking('i1');
+    expect(backend.lastTo('/inventory/i1/resume-tracking').method, 'POST');
+  });
 }

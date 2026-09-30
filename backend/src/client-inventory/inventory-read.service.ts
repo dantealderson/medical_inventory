@@ -4,6 +4,7 @@ import { OwnerType } from '@prisma/client';
 import { addDaysIso, businessDateOf } from '../common/business-date';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
+import { itemToView } from '../items/items.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SettingsService } from '../settings/settings.service';
 import type { ListMovementsDto } from './dto/list-movements.dto';
@@ -28,8 +29,18 @@ export class InventoryReadService {
     private readonly settings: SettingsService,
   ) {}
 
+  /** The tracked items, and the ones the clinic stopped tracking, apart. */
   async list(clientId: string, now = new Date()): Promise<InventoryView> {
-    return { items: await this.entries(clientId, now) };
+    const stopped = await this.prisma.clientInventoryItem.findMany({
+      where: { clientId, trackingStoppedAt: { not: null } },
+      include: { item: true },
+    });
+    return {
+      items: await this.entries(clientId, now),
+      stopped: stopped
+        .map((row) => ({ item: itemToView(row.item), qtyUnits: row.qtyUnits }))
+        .sort((a, b) => compare(a.item.nameAr ?? a.item.nameEn ?? '', b.item.nameAr ?? b.item.nameEn ?? '')),
+    };
   }
 
   /**
@@ -37,13 +48,19 @@ export class InventoryReadService {
    * RED, YELLOW, UNKNOWN, GREEN, then by name — so the one red item is at the
    * top of the screen rather than somewhere below it.
    */
-  async entries(clientId: string, now = new Date()): Promise<InventoryEntryView[]> {
+  async entries(
+    clientId: string,
+    now = new Date(),
+    options: { includeStopped?: boolean } = {},
+  ): Promise<InventoryEntryView[]> {
     const { thresholds, warnDaysAhead, timeZone } = await this.readSettings();
     const today = businessDateOf(now, timeZone);
     const warnUntil = addDaysIso(today, warnDaysAhead);
 
+    // A stopped item is out of the clinic's sight and out of the alerts,
+    // which read this same list. Only the admin's view includes it.
     const rows = await this.prisma.clientInventoryItem.findMany({
-      where: { clientId },
+      where: { clientId, ...(options.includeStopped ? {} : { trackingStoppedAt: null }) },
       include: { item: true },
     });
     const estimates = await this.prisma.usageEstimate.findMany({

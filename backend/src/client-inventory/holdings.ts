@@ -71,6 +71,7 @@ export interface LockedInventoryRow {
   minQtyUnits: number | null;
   lastAutoDecrementAt: Date | null;
   lastCountedAt: Date | null;
+  trackingStoppedAt: Date | null;
   unitsPerBox: number;
 }
 
@@ -127,6 +128,7 @@ export async function lockShelf(
       minQtyUnits: r.minQtyUnits,
       lastAutoDecrementAt: r.lastAutoDecrementAt,
       lastCountedAt: r.lastCountedAt,
+      trackingStoppedAt: r.trackingStoppedAt,
       unitsPerBox: r.item.unitsPerBox,
     });
   }

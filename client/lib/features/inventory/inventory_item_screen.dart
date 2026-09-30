@@ -47,7 +47,10 @@ class InventoryItemScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsetsDirectional.all(16),
           children: [
-            if (entry != null) InventoryEntryCard(entry: entry),
+            if (entry != null) ...[
+              InventoryEntryCard(entry: entry),
+              _StopTrackingButton(item: entry.item),
+            ],
             const SizedBox(height: 8),
             Text(l10n.movementHistory, style: text.titleMedium),
             const SizedBox(height: 8),
@@ -71,6 +74,71 @@ class InventoryItemScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// For an item the clinic no longer uses, so it stops showing as «نفد» on
+/// every screen. Asks first, in plain words, and says how to undo it.
+class _StopTrackingButton extends ConsumerStatefulWidget {
+  const _StopTrackingButton({required this.item});
+
+  final Item item;
+
+  @override
+  ConsumerState<_StopTrackingButton> createState() => _StopTrackingButtonState();
+}
+
+class _StopTrackingButtonState extends ConsumerState<_StopTrackingButton> {
+  bool _busy = false;
+
+  Future<void> _stop() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final router = GoRouter.of(context);
+    final name = widget.item.displayName;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.stopTrackingQuestion(name)),
+        content: Text(l10n.stopTrackingExplained),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.confirmStopTracking),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      await ref.read(inventoryActionsProvider).stopTracking(widget.item.id);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.trackingStopped(name))));
+      router.go(Routes.inventory);
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: 8),
+      child: OutlinedButton.icon(
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        onPressed: _busy ? null : _stop,
+        icon: const Icon(Icons.visibility_off_outlined),
+        label: Text(l10n.stopTracking),
       ),
     );
   }

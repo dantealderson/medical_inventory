@@ -84,6 +84,21 @@ class InventoryActions {
 
   /// A stock count. The shelf is read again afterwards whether it succeeded
   /// or not: a refusal can still mean the shelf changed underneath.
+  /// Hides an item the clinic no longer uses; a new delivery brings it back.
+  Future<void> stopTracking(String itemId) =>
+      _thenRefresh(() => _ref.read(inventoryApiProvider).stopTracking(itemId));
+
+  Future<void> resumeTracking(String itemId) =>
+      _thenRefresh(() => _ref.read(inventoryApiProvider).resumeTracking(itemId));
+
+  Future<void> _thenRefresh(Future<void> Function() call) async {
+    try {
+      await call();
+    } finally {
+      _ref.invalidate(inventoryProvider);
+    }
+  }
+
   Future<StockCountResult> submitCount(List<StockCountLineInput> lines) async {
     try {
       return await _ref.read(inventoryApiProvider).submitCount(lines);

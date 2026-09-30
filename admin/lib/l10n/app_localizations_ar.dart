@@ -589,4 +589,7 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trackingStoppedByClinic => 'أوقف العميل متابعته';
 }

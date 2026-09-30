@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
@@ -8,6 +8,7 @@ import type { AccessTokenPayload } from '../auth/token.service';
 import { ListMovementsDto } from './dto/list-movements.dto';
 import { StockCountDto } from './dto/stock-count.dto';
 import { InventoryReadService } from './inventory-read.service';
+import { InventoryTrackingService } from './inventory-tracking.service';
 import type { InventoryView, MovementPage } from './inventory-views';
 import { StockCountService, type StockCountView } from './stock-count.service';
 
@@ -24,6 +25,7 @@ export class InventoryController {
   constructor(
     private readonly read: InventoryReadService,
     private readonly counts: StockCountService,
+    private readonly tracking: InventoryTrackingService,
   ) {}
 
   @Get()
@@ -38,6 +40,19 @@ export class InventoryController {
     @Query() query: ListMovementsDto,
   ): Promise<MovementPage> {
     return this.read.movements(user.sub, itemId, query);
+  }
+
+  /** Hides an item the clinic no longer uses; a new delivery brings it back. */
+  @Post(':itemId/stop-tracking')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  stopTracking(@CurrentUser() user: AccessTokenPayload, @Param('itemId') itemId: string): Promise<void> {
+    return this.tracking.stop(user.sub, itemId);
+  }
+
+  @Post(':itemId/resume-tracking')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  resumeTracking(@CurrentUser() user: AccessTokenPayload, @Param('itemId') itemId: string): Promise<void> {
+    return this.tracking.resume(user.sub, itemId);
   }
 
   @Post('counts')

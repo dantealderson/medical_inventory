@@ -1185,6 +1185,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'{count, plural, =0{لم يتم الإرسال إلى أي عميل} =1{تم الإرسال إلى عميل واحد} =2{تم الإرسال إلى عميلين} few{تم الإرسال إلى {count} عملاء} many{تم الإرسال إلى {count} عميلاً} other{تم الإرسال إلى {count} عميل}}'**
   String sentTo(int count);
+
+  /// Stop tracking: the clinic hid this item from its own inventory
+  ///
+  /// In ar, this message translates to:
+  /// **'أوقف العميل متابعته'**
+  String get trackingStoppedByClinic;
 }
 
 class _AppLocalizationsDelegate

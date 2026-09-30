@@ -434,6 +434,9 @@ model ClientInventoryItem {
   minQtyUnits          Int?
   lastAutoDecrementAt  DateTime?
   lastCountedAt        DateTime?
+  /// The clinic stopped tracking this item: hidden from its inventory, no
+  /// alerts, no auto-decrement. A new delivery of the item resumes it.
+  trackingStoppedAt    DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

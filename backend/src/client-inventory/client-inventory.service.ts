@@ -72,7 +72,15 @@ export class ClientInventoryService {
         VALUES (${input.clientId}, ${itemId}, ${qtyUnits}::int, now(), now())
         ON CONFLICT ("clientId", "itemId") DO UPDATE
           SET "qtyUnits" = "client_inventory_items"."qtyUnits" + EXCLUDED."qtyUnits",
-              "updatedAt" = now()`;
+              "updatedAt" = now(),
+              -- A clinic that stopped tracking an item and orders it again is
+              -- using it again: tracking resumes, and usage is counted from
+              -- this delivery, not from before it stopped.
+              "lastAutoDecrementAt" = CASE WHEN "client_inventory_items"."trackingStoppedAt" IS NULL
+                THEN "client_inventory_items"."lastAutoDecrementAt" ELSE now() END,
+              "fractionalCarry" = CASE WHEN "client_inventory_items"."trackingStoppedAt" IS NULL
+                THEN "client_inventory_items"."fractionalCarry" ELSE 0 END,
+              "trackingStoppedAt" = NULL`;
     }
   }
 }

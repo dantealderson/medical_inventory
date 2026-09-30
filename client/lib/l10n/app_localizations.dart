@@ -837,6 +837,48 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'جديد'**
   String get unreadLabel;
+
+  /// Stop tracking: the button on an item page
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف متابعة هذا الصنف'**
+  String get stopTracking;
+
+  /// Stop tracking: the confirmation title
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف متابعة {item}؟'**
+  String stopTrackingQuestion(String item);
+
+  /// Stop tracking: what it does, in plain words
+  ///
+  /// In ar, this message translates to:
+  /// **'لن يظهر هذا الصنف في مخزونك ولن تصلك تنبيهات عنه. سيعود تلقائياً عند استلام طلب جديد منه، ويمكنك إعادته في أي وقت.'**
+  String get stopTrackingExplained;
+
+  /// Stop tracking: confirm
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف المتابعة'**
+  String get confirmStopTracking;
+
+  /// Stop tracking: done
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إيقاف متابعة {item}'**
+  String trackingStopped(String item);
+
+  /// Stop tracking: the list at the bottom of My Inventory
+  ///
+  /// In ar, this message translates to:
+  /// **'أصناف أوقفت متابعتها'**
+  String get stoppedItemsTitle;
+
+  /// Stop tracking: brings an item back
+  ///
+  /// In ar, this message translates to:
+  /// **'استئناف المتابعة'**
+  String get resumeTracking;
 }
 
 class _AppLocalizationsDelegate

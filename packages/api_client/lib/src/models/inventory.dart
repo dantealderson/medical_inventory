@@ -163,15 +163,33 @@ class InventoryEntry {
   );
 }
 
+/// An item the clinic stopped tracking: hidden from its inventory and its
+/// alerts until it resumes it, or a new delivery of the item arrives.
+class StoppedItem {
+  const StoppedItem({required this.item, required this.qtyUnits});
+
+  final Item item;
+  final int qtyUnits;
+
+  factory StoppedItem.fromJson(Map<String, dynamic> json) => StoppedItem(
+    item: Item.fromJson(_map(json['item'])),
+    qtyUnits: _int(json['qtyUnits']),
+  );
+}
+
 class Inventory {
-  const Inventory({required this.items});
+  const Inventory({required this.items, this.stopped = const []});
 
   /// Most urgent first, as the server sorts them.
   final List<InventoryEntry> items;
+  final List<StoppedItem> stopped;
 
   factory Inventory.fromJson(Map<String, dynamic> json) => Inventory(
     items: (json['items'] as List<dynamic>)
         .map((e) => InventoryEntry.fromJson(_map(e)))
+        .toList(),
+    stopped: ((json['stopped'] as List<dynamic>?) ?? const [])
+        .map((e) => StoppedItem.fromJson(_map(e)))
         .toList(),
   );
 }
@@ -305,6 +323,7 @@ class AdminInventoryEntry {
     required this.usageRateOverride,
     required this.clientMinQtyBoxes,
     required this.itemMinQtyBoxes,
+    this.trackingStopped = false,
   });
 
   final InventoryEntry entry;
@@ -315,6 +334,9 @@ class AdminInventoryEntry {
   final int? clientMinQtyBoxes;
   final int? itemMinQtyBoxes;
 
+  /// The clinic stopped tracking this item.
+  final bool trackingStopped;
+
   factory AdminInventoryEntry.fromJson(Map<String, dynamic> json) =>
       AdminInventoryEntry(
         entry: InventoryEntry.fromJson(json),
@@ -322,6 +344,7 @@ class AdminInventoryEntry {
         usageRateOverride: json['usageRateOverride'] as String?,
         clientMinQtyBoxes: (json['clientMinQtyBoxes'] as num?)?.toInt(),
         itemMinQtyBoxes: (json['itemMinQtyBoxes'] as num?)?.toInt(),
+        trackingStopped: json['trackingStopped'] as bool? ?? false,
       );
 }
 

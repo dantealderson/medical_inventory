@@ -1,0 +1,44 @@
+# Render blueprint: the backend as a Docker web service on the free plan.
+# Setup steps: docs/HOSTING.md.
+#
+# The database is not here. Render's free Postgres is deleted after 30 days,
+# so a free Neon database is used instead: its connection string is asked for
+# as DATABASE_URL when the blueprint is created.
+
+services:
+  - type: web
+    name: medinv-backend
+    runtime: docker
+    plan: free
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/v1/health
+    # Rebuild only when the backend changes.
+    buildFilter:
+      paths:
+        - backend/**
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BUSINESS_TIMEZONE
+        value: Asia/Baghdad
+      # Asked for once, when the blueprint is created.
+      - key: DATABASE_URL
+        sync: false
+      - key: SEED_ADMIN_USERNAME
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: DEMO_CLINIC_PASSWORD
+        sync: false
+      # Random, long and different from each other, as the app requires.
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      # Fill an empty database with demo data on first start (docs/HOSTING.md).
+      - key: DEMO_DATA
+        value: "true"
+      # The admin website, built by .github/workflows/apps.yml onto GitHub Pages.
+      - key: CORS_ORIGINS
+        value: https://dantealderson.github.io

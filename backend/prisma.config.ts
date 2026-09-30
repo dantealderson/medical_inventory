@@ -18,7 +18,9 @@ export default defineConfig({
     // Without it that command errors out, which is exactly the command the
     // plan tells you to run to READ a migration before applying it.
     // Same container, separate database — Prisma creates and drops it.
-    shadowDatabaseUrl: env('SHADOW_DATABASE_URL'),
+    // Development only: a host has no shadow database, and `env()` throws
+    // when a variable is missing, which would stop `migrate deploy` at start.
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
   },
   migrations: {
     path: 'prisma/migrations',

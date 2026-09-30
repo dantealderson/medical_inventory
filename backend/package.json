@@ -22,6 +22,7 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "db:seed": "ts-node prisma/seed.ts",
+    "db:seed:demo": "node dist/demo/seed-demo.js",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

@@ -1,10 +1,10 @@
 # Resume Point
 
-## >>> PHASE 10 COMPLETE (2026-10-01). Next: Phase 9 prep (hosting), then a first UI pass. Phase 8 waits for the user
+## >>> PHASE 10 AND THE PHASE 9 PREP COMPLETE (2026-10-01). Next: a first UI pass. Going online needs the user's 20 minutes (`docs/HOSTING.md`); Phase 8 waits for the user
 
 **Work order agreed with the user (2026-10-01):**
 1. Pictures (Phase 10), which is done.
-2. Hosting prep (Phase 9, up to the accounts only the user can create).
+2. Hosting prep (Phase 9, up to the accounts only the user can create), which is done.
 3. My own UI pass: the spec's audits plus a clean-up for older users.
 4. The user's UI comments.
 
@@ -26,6 +26,28 @@ Phase 8 (Firebase) and manual testing wait until the user has time.
 5. **Phase 11: UI and looks.**
    - The user has many UI comments, deliberately held until here.
    - This phase also takes the spec's RTL, theme and responsive audits, the large-text check, and Arabic-Indic digits.
+
+**Phase 9 prep (hosting).** Free test hosting, ready for the user's accounts. The steps are in `docs/HOSTING.md`.
+- **`backend/Dockerfile`:** node 24 slim with OpenSSL. It keeps the dev dependencies, because `prisma migrate deploy` and ts-node run at every start. `npm ci --foreground-scripts`.
+- **`backend/scripts/start.sh`,** every step safe to repeat:
+  1. `migrate deploy`;
+  2. `db:seed`, which creates the admin once;
+  3. with `DEMO_DATA=true`, the demo data (it only fills an empty catalogue);
+  4. `node dist/main`.
+- **`prisma.config.ts`:** the shadow database is optional, because `env()` threw at start on a host without it.
+- **Demo data:** `src/demo/demo-data.ts` (`seedDemo`) and `npm run db:seed:demo` (after `npm run build`).
+  - Everything goes through the real API; only history is backdated, as in the full-loop test.
+  - It adds 13 items in 3 sections, 14 batches, `clinic_alnoor` (red, yellow, green, and an order to confirm), `clinic_alshifa`, and `lab_alamal` (pending), then runs the nightly jobs.
+  - It refuses a database that already has a catalogue.
+- **`render.yaml`:** the backend as a free Docker web service.
+  - `DATABASE_URL` points at a free **Neon** database; Render's free Postgres expires after 30 days.
+  - The JWT secrets are generated.
+  - `CORS_ORIGINS=https://dantealderson.github.io`.
+- **`.github/workflows/apps.yml`:**
+  - builds the admin web onto **GitHub Pages** (`--base-href /medical_inventory/`);
+  - builds a release APK onto the `test-build` pre-release, at a fixed download link;
+  - both use the repository variable `API_BASE_URL`, and both are skipped until it is set.
+- **Free-tier limits:** the server sleeps after 15 minutes (the app's retry screen covers it), and the nightly jobs miss nights it is asleep (the dashboard's «تشغيل الآن» covers that).
 
 **Phase 10 (pictures).** The plan is `docs/superpowers/plans/2026-10-01-phase-10-item-pictures.md`.
 - **Stored in Postgres (`media_files`), not on disk.**
@@ -120,12 +142,12 @@ Until then, every notification still reaches the in-app centre.
 | Suite | Tests |
 |---|---|
 | backend unit | 279 |
-| backend e2e + integration | 539 |
+| backend e2e + integration | 541 |
 | `packages/api_client` | 141 |
 | `packages/ui_kit` | 44 |
 | `admin` | 107 |
 | `client` | 132 |
-| **total** | **1242** |
+| **total** | **1244** |
 
 The typecheck, `flutter analyze`, `check_colors`, the admin web build and the no-email gate are all clean, and `.env` is untracked. The backend e2e suites need Docker (Postgres on 5433). `JOBS_ENABLED=false` in tests.
 

@@ -1,0 +1,15 @@
+# Built inside the image, never copied in.
+node_modules
+dist
+*.tsbuildinfo
+
+# Secrets stay on the host: the image gets its settings as environment variables.
+.env
+.env.*
+!.env.example
+
+# Not needed to build or run.
+test
+coverage
+uploads
+logs

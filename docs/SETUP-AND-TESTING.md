@@ -124,7 +124,7 @@ Without this, every notification still appears inside both apps (the bell and th
 |---|---|---|
 | **The app's id**: currently the placeholder `com.example.client`, e.g. `iq.yourcompany.medinventory` | Google Play rejects `com.example…`; Firebase is tied to the id | Before Firebase, and before publishing |
 | **The app's display name and icon** | What clinics see on their phones | Before publishing |
-| **Temporary hosting**: a free account on a host (for example Render) and a free Postgres (for example Neon) | To test from anywhere, without your PC on | Phase 9 |
+| **Temporary hosting**: free accounts on Render and Neon. The steps are in `docs/HOSTING.md` (about 20 minutes). | To test from anywhere, without your PC on | Whenever you are ready |
 | **Real hosting**: a cloud server (VPS) with Docker and a domain name, plus HTTPS | Clinics' phones need a server that is always on | Before real use |
 | **Google Play developer account** (one-time $25) | To publish the Android app | Publishing |
 | **iPhone app**: needs a Mac and an Apple developer account ($99/year) | Only if clinics use iPhones | Optional |
@@ -313,22 +313,22 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 | 6 — Admin dashboard | Dashboard (approvals, orders waiting, clinics out of stock with a popup, warehouse low/out, expiring batches, nightly run with «تشغيل الآن»), settings, audit log, a clinic's orders | ✅ Done |
 | 7 — Everything works | Fixes from your test run: admin red screen, instant tabs, in-place search, phone back button, staying signed in, fresh data | ✅ Done |
 | 8 — Firebase push | Notifications that pop up on a locked phone | ⬜ Next (needs your Firebase project, 1.6) |
-| 9 — Temporary hosting | Backend and admin online on a free host, demo data, so you can test from anywhere | ⬜ |
+| 9 — Temporary hosting | Backend and admin online on a free host, demo data, so you can test from anywhere | 🟡 Ready: your 20 minutes in `docs/HOSTING.md` |
 | 10 — Item pictures | Upload in the admin, shown in the clinics' app | ✅ Done |
 | 11 — Looks | Your UI comments, plus the RTL, theme, phone-width and large-text checks and Arabic-Indic digits | ⬜ |
 
-**Overall: about 75% of the work is done.** This is weighted by effort per phase, and it is a rough estimate.
+**Overall: about 80% of the work is done.** This is weighted by effort per phase, and it is a rough estimate.
 - **Why it is lower than the 87% given before:** your roadmap added item pictures, temporary hosting and a full look-and-feel pass, which were not in the original plan.
-- **Left:** roughly 3–3.5 working days of building.
+- **Left:** roughly 2.5–3 working days of building.
   - Firebase: about half a day.
-  - Hosting: about 1 day.
+  - Hosting: your 20 minutes, plus fixing anything that shows up once it is online.
   - Looks: 1.5–2 days, depending on your comments.
 - **Outside the code, on your side:** Firebase, a hosting account, a Google Play account, and the Play review (usually a few days).
 
 ### 3.2 Quality
 
-- **1,242 automated tests, all passing:**
-  - backend: 279 unit, 539 database and API;
+- **1,244 automated tests, all passing:**
+  - backend: 279 unit, 541 database and API;
   - shared packages: 141 and 44;
   - admin app: 107;
   - client app: 132.

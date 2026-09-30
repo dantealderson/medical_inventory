@@ -1,0 +1,93 @@
+name: Build the apps
+
+# Builds the admin website (published on GitHub Pages) and the clinics'
+# Android app (an APK on the "test-build" release), both pointing at the
+# hosted backend. Setup steps: docs/HOSTING.md.
+#
+# Needs the repository variable API_BASE_URL: the hosted backend's address,
+# ending in /api/v1. Until it is set, both jobs are skipped.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - admin/**
+      - client/**
+      - packages/**
+      - .github/workflows/apps.yml
+  workflow_dispatch:
+
+concurrency:
+  group: apps
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.32.8
+
+jobs:
+  admin:
+    name: Admin website
+    if: vars.API_BASE_URL != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build
+        working-directory: admin
+        # The site lives under /<repository name>/ on GitHub Pages.
+        run: >
+          flutter build web --release
+          --base-href /${{ github.event.repository.name }}/
+          --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: admin/build/web
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  client:
+    name: Clinics' Android app
+    if: vars.API_BASE_URL != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build
+        working-directory: client
+        run: flutter build apk --release --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
+      - name: Name the APK
+        run: cp client/build/app/outputs/flutter-apk/app-release.apk medical-inventory.apk
+      # One fixed link to the newest build, easy to open on a phone:
+      # releases/download/test-build/medical-inventory.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: test-build
+          name: Test build (latest)
+          prerelease: true
+          make_latest: false
+          body: >
+            The newest build of the clinics' app, for testing. It talks to the
+            hosted test backend. Built from ${{ github.sha }}.
+          files: medical-inventory.apk

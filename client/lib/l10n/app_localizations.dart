@@ -922,6 +922,30 @@ abstract class AppLocalizations {
   /// **'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى'**
   String get sessionEnded;
 
+  /// Stock count: leaving with numbers typed; dialog title
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل الجرد؟'**
+  String get discardCountQuestion;
+
+  /// Stock count: leaving with numbers typed; dialog body
+  ///
+  /// In ar, this message translates to:
+  /// **'الكميات التي أدخلتها لن تُحفظ.'**
+  String get discardCountExplained;
+
+  /// Stock count: dialog button that stays on the count
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة الجرد'**
+  String get keepCounting;
+
+  /// Stock count: dialog button that leaves without saving
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل'**
+  String get discardCount;
+
   /// Home search box: the clear button, which brings the categories back
   ///
   /// In ar, this message translates to:

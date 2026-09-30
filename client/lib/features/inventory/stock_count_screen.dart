@@ -66,6 +66,34 @@ class _StockCountScreenState extends ConsumerState<StockCountScreen> {
     return text.isEmpty ? null : text;
   }
 
+  bool get _typedAnything =>
+      [..._boxes.values, ..._units.values].any((c) => c.text.trim().isNotEmpty);
+
+  /// Leaving mid-count throws away what was typed, so ask first. With nothing
+  /// typed, or once the count is saved, just leave.
+  Future<bool> _confirmLeaving() async {
+    if (!_typedAnything || _result != null) return true;
+    final l10n = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.discardCountQuestion),
+        content: Text(l10n.discardCountExplained),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.keepCounting),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.discardCount),
+          ),
+        ],
+      ),
+    );
+    return discard ?? false;
+  }
+
   Future<bool> _confirm(int count) async {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
@@ -121,7 +149,7 @@ class _StockCountScreenState extends ConsumerState<StockCountScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.stockCount),
-        leading: const BackArrow(Routes.inventory),
+        leading: BackArrow(Routes.inventory, confirm: _confirmLeaving),
       ),
       body: result != null
           ? _CountResult(result: result, entries: _counted)

@@ -487,6 +487,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionEnded => 'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى';
 
   @override
+  String get discardCountQuestion => 'تجاهل الجرد؟';
+
+  @override
+  String get discardCountExplained => 'الكميات التي أدخلتها لن تُحفظ.';
+
+  @override
+  String get keepCounting => 'متابعة الجرد';
+
+  @override
+  String get discardCount => 'تجاهل';
+
+  @override
   String get clearSearch => 'مسح البحث';
 
   @override

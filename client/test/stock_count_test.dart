@@ -80,6 +80,42 @@ void main() {
     expect(field('جهاز ضغط', 'جهاز مفردة'), findsNothing);
   });
 
+  // The phone's back button now leaves the count. With numbers typed, one slip
+  // would throw them all away, so it asks first.
+  testWidgets('back with numbers typed asks before throwing them away', (tester) async {
+    tallScreen(tester);
+    await openCount(tester);
+    await tester.enterText(field('سرنجة 5 مل', 'علب'), '2');
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('تجاهل الجرد؟'), findsOneWidget);
+
+    await tester.tap(find.text('متابعة الجرد'));
+    await tester.pumpAndSettle();
+    expect(find.text('حفظ الجرد'), findsOneWidget, reason: 'still counting');
+    expect(tester.widget<TextField>(field('سرنجة 5 مل', 'علب')).controller!.text, '2');
+
+    await tester.tap(find.byTooltip('رجوع'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'تجاهل'));
+    await tester.pumpAndSettle();
+    expect(find.text('حفظ الجرد'), findsNothing);
+    expect(find.text('جرد المخزون'), findsOneWidget, reason: 'back on the inventory');
+  });
+
+  testWidgets('back with nothing typed leaves at once', (tester) async {
+    tallScreen(tester);
+    await openCount(tester);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text('تجاهل الجرد؟'), findsNothing);
+    expect(find.text('جرد المخزون'), findsOneWidget);
+  });
+
   testWidgets('sends only the items with a number, as boxes and loose units, after asking first', (
     tester,
   ) async {

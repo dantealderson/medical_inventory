@@ -651,6 +651,22 @@
   "@sessionEnded": {
     "description": "Login: the server ended the session (account suspended, password reset, or unused too long)"
   },
+  "discardCountQuestion": "تجاهل الجرد؟",
+  "@discardCountQuestion": {
+    "description": "Stock count: leaving with numbers typed; dialog title"
+  },
+  "discardCountExplained": "الكميات التي أدخلتها لن تُحفظ.",
+  "@discardCountExplained": {
+    "description": "Stock count: leaving with numbers typed; dialog body"
+  },
+  "keepCounting": "متابعة الجرد",
+  "@keepCounting": {
+    "description": "Stock count: dialog button that stays on the count"
+  },
+  "discardCount": "تجاهل",
+  "@discardCount": {
+    "description": "Stock count: dialog button that leaves without saving"
+  },
   "clearSearch": "مسح البحث",
   "@clearSearch": {
     "description": "Home search box: the clear button, which brings the categories back"

@@ -607,5 +607,82 @@
   "noItemsToPin": "لا توجد أصناف مفعّلة غير مثبّتة",
   "@noItemsToPin": {
     "description": "Phase 3 hot deals: every active item is already pinned"
+  },
+  "clientInventory": "مخزون العميل",
+  "@clientInventory": {
+    "description": "Phase 4: a clinic's inventory, as a button and a screen title"
+  },
+  "clientInventoryEmpty": "لا توجد أصناف في مخزون هذا العميل بعد",
+  "@clientInventoryEmpty": {
+    "description": "Phase 4: a clinic with nothing on its shelf"
+  },
+  "stockRed": "ناقص",
+  "@stockRed": {
+    "description": "Phase 4: RED stock badge"
+  },
+  "stockOut": "نفد",
+  "@stockOut": {
+    "description": "Phase 4: RED stock badge when the shelf is empty"
+  },
+  "stockYellow": "قليل",
+  "@stockYellow": {
+    "description": "Phase 4: YELLOW stock badge"
+  },
+  "stockGreen": "جيد",
+  "@stockGreen": {
+    "description": "Phase 4: GREEN stock badge"
+  },
+  "stockUnknown": "غير محدد",
+  "@stockUnknown": {
+    "description": "Phase 4: UNKNOWN stock badge"
+  },
+  "daysOfCover": "{days, plural, =0{يكفي أقل من يوم} =1{يكفي يوماً واحداً} =2{يكفي يومين} few{يكفي حوالي {days} أيام} many{يكفي حوالي {days} يوماً} other{يكفي حوالي {days} يوم}}",
+  "@daysOfCover": {
+    "description": "Phase 4: how many days the stock should last",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noEstimate": "لا توجد بيانات كافية",
+  "@noEstimate": {
+    "description": "Phase 4: no usage rate yet"
+  },
+  "sourceManual": "معدل محدد من الإدارة",
+  "@sourceManual": {
+    "description": "Phase 4: the usage rate was set by the admin"
+  },
+  "sourceMeasured": "مقاس من الجرد",
+  "@sourceMeasured": {
+    "description": "Phase 4: the usage rate was measured between stock counts"
+  },
+  "sourcePurchase": "تقدير من المشتريات",
+  "@sourcePurchase": {
+    "description": "Phase 4: the usage rate was estimated from purchases"
+  },
+  "autoDecrement": "الخصم التلقائي",
+  "@autoDecrement": {
+    "description": "Phase 4: switch for auto-decrement"
+  },
+  "usageRateField": "معدل الاستهلاك (وحدة/يوم)",
+  "@usageRateField": {
+    "description": "Phase 4: usage-rate override field"
+  },
+  "minBoxesField": "الحد الأدنى (علب)",
+  "@minBoxesField": {
+    "description": "Phase 4: per-clinic minimum field, in boxes"
+  },
+  "clearValue": "مسح",
+  "@clearValue": {
+    "description": "Phase 4: clears a field"
+  },
+  "invalidRate": "أدخل رقماً بأربع منازل عشرية على الأكثر",
+  "@invalidRate": {
+    "description": "Phase 4: the usage rate is not a valid decimal"
+  },
+  "changesSaved": "تم حفظ التغييرات",
+  "@changesSaved": {
+    "description": "Phase 4: the controls were saved"
   }
 }

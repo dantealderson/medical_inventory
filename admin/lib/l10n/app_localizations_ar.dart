@@ -475,4 +475,70 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noItemsToPin => 'لا توجد أصناف مفعّلة غير مثبّتة';
+
+  @override
+  String get clientInventory => 'مخزون العميل';
+
+  @override
+  String get clientInventoryEmpty => 'لا توجد أصناف في مخزون هذا العميل بعد';
+
+  @override
+  String get stockRed => 'ناقص';
+
+  @override
+  String get stockOut => 'نفد';
+
+  @override
+  String get stockYellow => 'قليل';
+
+  @override
+  String get stockGreen => 'جيد';
+
+  @override
+  String get stockUnknown => 'غير محدد';
+
+  @override
+  String daysOfCover(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'يكفي حوالي $days يوم',
+      many: 'يكفي حوالي $days يوماً',
+      few: 'يكفي حوالي $days أيام',
+      two: 'يكفي يومين',
+      one: 'يكفي يوماً واحداً',
+      zero: 'يكفي أقل من يوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noEstimate => 'لا توجد بيانات كافية';
+
+  @override
+  String get sourceManual => 'معدل محدد من الإدارة';
+
+  @override
+  String get sourceMeasured => 'مقاس من الجرد';
+
+  @override
+  String get sourcePurchase => 'تقدير من المشتريات';
+
+  @override
+  String get autoDecrement => 'الخصم التلقائي';
+
+  @override
+  String get usageRateField => 'معدل الاستهلاك (وحدة/يوم)';
+
+  @override
+  String get minBoxesField => 'الحد الأدنى (علب)';
+
+  @override
+  String get clearValue => 'مسح';
+
+  @override
+  String get invalidRate => 'أدخل رقماً بأربع منازل عشرية على الأكثر';
+
+  @override
+  String get changesSaved => 'تم حفظ التغييرات';
 }

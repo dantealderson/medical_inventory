@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/accounts/account_detail_screen.dart';
+import '../features/accounts/client_inventory_screen.dart';
 import '../features/accounts/pending_accounts_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/catalog/batches_screen.dart';
@@ -18,6 +19,7 @@ abstract final class Routes {
   static const login = '/login';
   static const accounts = '/';
   static String account(String id) => '/accounts/$id';
+  static String clientInventory(String id) => '/accounts/$id/inventory';
   static const categories = '/catalog/categories';
   static const items = '/catalog/items';
   static const batches = '/catalog/batches';
@@ -58,6 +60,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/accounts/:id',
         builder: (_, state) => AccountDetailScreen(userId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/accounts/:id/inventory',
+        builder: (_, state) => ClientInventoryScreen(clientId: state.pathParameters['id']!),
       ),
       GoRoute(path: Routes.categories, builder: (_, _) => const CategoriesScreen()),
       GoRoute(path: Routes.items, builder: (_, _) => const ItemsScreen()),

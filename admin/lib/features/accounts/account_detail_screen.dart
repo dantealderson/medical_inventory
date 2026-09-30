@@ -81,11 +81,17 @@ class _Body extends ConsumerWidget {
                           child: Text(l10n.reject),
                         ),
                       ],
-                      if (user.status == 'ACTIVE')
+                      if (user.status == 'ACTIVE') ...[
+                        // Requirement 4: the admin's controls over a clinic's shelf.
+                        FilledButton.tonal(
+                          onPressed: () => context.go(Routes.clientInventory(user.id)),
+                          child: Text(l10n.clientInventory),
+                        ),
                         OutlinedButton(
                           onPressed: () => _confirmSuspend(context, ref, user.id),
                           child: Text(l10n.suspend),
                         ),
+                      ],
                       if (user.status == 'SUSPENDED')
                         FilledButton(
                           onPressed: () => actions.reactivate(user.id),

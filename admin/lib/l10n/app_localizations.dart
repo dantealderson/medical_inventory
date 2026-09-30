@@ -1005,6 +1005,114 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لا توجد أصناف مفعّلة غير مثبّتة'**
   String get noItemsToPin;
+
+  /// Phase 4: a clinic's inventory, as a button and a screen title
+  ///
+  /// In ar, this message translates to:
+  /// **'مخزون العميل'**
+  String get clientInventory;
+
+  /// Phase 4: a clinic with nothing on its shelf
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف في مخزون هذا العميل بعد'**
+  String get clientInventoryEmpty;
+
+  /// Phase 4: RED stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'ناقص'**
+  String get stockRed;
+
+  /// Phase 4: RED stock badge when the shelf is empty
+  ///
+  /// In ar, this message translates to:
+  /// **'نفد'**
+  String get stockOut;
+
+  /// Phase 4: YELLOW stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'قليل'**
+  String get stockYellow;
+
+  /// Phase 4: GREEN stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'جيد'**
+  String get stockGreen;
+
+  /// Phase 4: UNKNOWN stock badge
+  ///
+  /// In ar, this message translates to:
+  /// **'غير محدد'**
+  String get stockUnknown;
+
+  /// Phase 4: how many days the stock should last
+  ///
+  /// In ar, this message translates to:
+  /// **'{days, plural, =0{يكفي أقل من يوم} =1{يكفي يوماً واحداً} =2{يكفي يومين} few{يكفي حوالي {days} أيام} many{يكفي حوالي {days} يوماً} other{يكفي حوالي {days} يوم}}'**
+  String daysOfCover(int days);
+
+  /// Phase 4: no usage rate yet
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بيانات كافية'**
+  String get noEstimate;
+
+  /// Phase 4: the usage rate was set by the admin
+  ///
+  /// In ar, this message translates to:
+  /// **'معدل محدد من الإدارة'**
+  String get sourceManual;
+
+  /// Phase 4: the usage rate was measured between stock counts
+  ///
+  /// In ar, this message translates to:
+  /// **'مقاس من الجرد'**
+  String get sourceMeasured;
+
+  /// Phase 4: the usage rate was estimated from purchases
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدير من المشتريات'**
+  String get sourcePurchase;
+
+  /// Phase 4: switch for auto-decrement
+  ///
+  /// In ar, this message translates to:
+  /// **'الخصم التلقائي'**
+  String get autoDecrement;
+
+  /// Phase 4: usage-rate override field
+  ///
+  /// In ar, this message translates to:
+  /// **'معدل الاستهلاك (وحدة/يوم)'**
+  String get usageRateField;
+
+  /// Phase 4: per-clinic minimum field, in boxes
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الأدنى (علب)'**
+  String get minBoxesField;
+
+  /// Phase 4: clears a field
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح'**
+  String get clearValue;
+
+  /// Phase 4: the usage rate is not a valid decimal
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل رقماً بأربع منازل عشرية على الأكثر'**
+  String get invalidRate;
+
+  /// Phase 4: the controls were saved
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ التغييرات'**
+  String get changesSaved;
 }
 
 class _AppLocalizationsDelegate

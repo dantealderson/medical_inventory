@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import 'core/auth_controller.dart';
+import 'core/refresh.dart';
 import 'core/router.dart';
 import 'core/secure_token_store.dart';
 import 'l10n/app_localizations.dart';
@@ -35,12 +36,23 @@ class AdminApp extends ConsumerStatefulWidget {
 }
 
 class _AdminAppState extends ConsumerState<AdminApp> {
+  // Coming back to the app (or the browser tab) reloads what others may have
+  // changed meanwhile, such as an order's status or the stock.
+  late final AppLifecycleListener _lifecycle;
+
   @override
   void initState() {
     super.initState();
+    _lifecycle = AppLifecycleListener(onResume: () => refreshServerData(ref));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(authControllerProvider.notifier).restore();
     });
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
   }
 
   @override

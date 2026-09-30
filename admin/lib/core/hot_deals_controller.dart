@@ -14,7 +14,7 @@ final adminHotDealsApiProvider = Provider<AdminHotDealsApi>((ref) {
 /// Every stored entry: an item listed under two kinds appears twice, and
 /// entries whose item is now inactive are included. The client read drops
 /// those at once; the admin sees them so a missing slide can be explained.
-final adminHotDealsProvider = FutureProvider<AdminHotDeals>((ref) {
+final adminHotDealsProvider = FutureProvider.autoDispose<AdminHotDeals>((ref) {
   return ref.watch(adminHotDealsApiProvider).list();
 });
 

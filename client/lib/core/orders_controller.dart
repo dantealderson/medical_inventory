@@ -41,7 +41,7 @@ const _emptyCart = Cart(lines: [], lineCount: 0, totalAmount: '0.00');
 /// The signed-in clinic's cart. Nobody signed in means an empty cart, never a
 /// request that would 401. Not retried: the app-bar badge simply shows nothing
 /// while the cart cannot be read, and the cart screen offers its own retry.
-final cartProvider = FutureProvider<Cart>((ref) async {
+final cartProvider = FutureProvider.autoDispose<Cart>((ref) async {
   if (_watchUserId(ref) == null) return _emptyCart;
   return ref.watch(cartApiProvider).get();
 }, retry: _noRetry);
@@ -152,7 +152,7 @@ final orderProvider = FutureProvider.autoDispose.family<Order, String>((ref, id)
 
 /// The home carousel. Decorative: it hides itself on any failure, so it is
 /// not retried.
-final hotDealsProvider = FutureProvider<HotDeals>((ref) async {
+final hotDealsProvider = FutureProvider.autoDispose<HotDeals>((ref) async {
   if (_watchUserId(ref) == null) return const HotDeals(rotationSeconds: 4, entries: []);
   return ref.watch(hotDealsApiProvider).get();
 }, retry: _noRetry);

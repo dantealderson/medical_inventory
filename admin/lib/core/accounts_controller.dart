@@ -20,7 +20,7 @@ final accountsFilterProvider = NotifierProvider<AccountsFilter, String?>(Account
 ///
 /// A FutureProvider rather than hand-rolled loading flags: Riverpod already
 /// models loading, data and error, and every screen here loads from the API.
-final accountsProvider = FutureProvider<List<SessionUser>>((ref) async {
+final accountsProvider = FutureProvider.autoDispose<List<SessionUser>>((ref) async {
   final api = ref.watch(adminUsersApiProvider);
   final status = ref.watch(accountsFilterProvider);
   final page = await api.list(status: status);
@@ -29,7 +29,7 @@ final accountsProvider = FutureProvider<List<SessionUser>>((ref) async {
 
 /// A single account, read from the loaded list so opening detail does not
 /// re-fetch what the queue already has.
-final accountProvider = Provider.family<SessionUser?, String>((ref, id) {
+final accountProvider = Provider.autoDispose.family<SessionUser?, String>((ref, id) {
   return ref
       .watch(accountsProvider)
       .whenOrNull(data: (users) => users.where((u) => u.id == id).firstOrNull);

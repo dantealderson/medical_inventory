@@ -23,18 +23,18 @@ final searchApiProvider = Provider<SearchApi>((ref) {
   return SearchApi(ref.watch(apiClientProvider));
 });
 
-final categoryTreeProvider = FutureProvider<List<Category>>((ref) {
+final categoryTreeProvider = FutureProvider.autoDispose<List<Category>>((ref) {
   return ref.watch(categoriesApiProvider).tree();
 });
 
 /// Items in one category. Family-keyed so drilling into a second category
 /// does not discard the first one's loaded data.
-final categoryItemsProvider = FutureProvider.family<List<Item>, String>((ref, categoryId) async {
+final categoryItemsProvider = FutureProvider.autoDispose.family<List<Item>, String>((ref, categoryId) async {
   final page = await ref.watch(itemsApiProvider).list(categoryId: categoryId);
   return page.items;
 });
 
-final itemDetailProvider = FutureProvider.family<Item, String>((ref, id) {
+final itemDetailProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) {
   return ref.watch(itemsApiProvider).byId(id);
 });
 
@@ -64,7 +64,7 @@ class SearchQuery extends Notifier<String> {
 
 final searchQueryProvider = NotifierProvider<SearchQuery, String>(SearchQuery.new);
 
-final searchResultsProvider = FutureProvider<SearchResults>((ref) async {
+final searchResultsProvider = FutureProvider.autoDispose<SearchResults>((ref) async {
   final query = ref.watch(searchQueryProvider);
   if (query.isEmpty) {
     return const SearchResults(items: [], categories: []);

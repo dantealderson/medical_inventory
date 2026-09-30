@@ -22,7 +22,7 @@ final batchesApiProvider = Provider<BatchesApi>((ref) {
 });
 
 /// The full category tree, already nested by the server.
-final categoryTreeProvider = FutureProvider<List<Category>>((ref) {
+final categoryTreeProvider = FutureProvider.autoDispose<List<Category>>((ref) {
   return ref.watch(categoriesApiProvider).tree();
 });
 
@@ -36,7 +36,7 @@ class ItemFilter extends Notifier<String?> {
 
 final itemFilterProvider = NotifierProvider<ItemFilter, String?>(ItemFilter.new);
 
-final itemsProvider = FutureProvider<List<Item>>((ref) async {
+final itemsProvider = FutureProvider.autoDispose<List<Item>>((ref) async {
   final api = ref.watch(itemsApiProvider);
   final categoryId = ref.watch(itemFilterProvider);
   // Admins see deactivated items too, so a mistakenly deactivated item can be
@@ -46,11 +46,11 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
 });
 
 /// Batches expiring within the configured warning window, earliest first.
-final batchesProvider = FutureProvider<List<WarehouseBatch>>((ref) {
+final batchesProvider = FutureProvider.autoDispose<List<WarehouseBatch>>((ref) {
   return ref.watch(batchesApiProvider).list(expiringWithinDays: 3650);
 });
 
-final itemStockProvider = FutureProvider.family<ItemStock, String>((ref, itemId) {
+final itemStockProvider = FutureProvider.autoDispose.family<ItemStock, String>((ref, itemId) {
   return ref.watch(batchesApiProvider).stockFor(itemId);
 });
 

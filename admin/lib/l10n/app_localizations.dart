@@ -1311,6 +1311,390 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إغلاق'**
   String get close;
+
+  /// Phase 6: Phase 6: the settings tab
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات'**
+  String get settings;
+
+  /// Phase 6: Phase 6: the audit log tab
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل التدقيق'**
+  String get auditLog;
+
+  /// Phase 6: Phase 6: settings saved
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الإعدادات'**
+  String get settingsSaved;
+
+  /// Phase 6: Phase 6: the server refused this setting
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة غير مقبولة'**
+  String get valueRejected;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'المخزون'**
+  String get settingsStock;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'التقدير'**
+  String get settingsEstimation;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'التنبيهات'**
+  String get settingsAlerts;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'الصلاحية'**
+  String get settingsExpiry;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض'**
+  String get settingsHotDeals;
+
+  /// Phase 6: Phase 6: settings section
+  ///
+  /// In ar, this message translates to:
+  /// **'عام'**
+  String get settingsGeneral;
+
+  /// Phase 6: Phase 6: read-only setting
+  ///
+  /// In ar, this message translates to:
+  /// **'المنطقة الزمنية'**
+  String get timezoneLabel;
+
+  /// Phase 6: stock.redDaysOfCover
+  ///
+  /// In ar, this message translates to:
+  /// **'أحمر إذا كان المخزون يكفي أقل من (يوم)'**
+  String get settingRedDays;
+
+  /// Phase 6: stock.yellowDaysOfCover
+  ///
+  /// In ar, this message translates to:
+  /// **'أصفر إذا كان المخزون يكفي أقل من (يوم)'**
+  String get settingYellowDays;
+
+  /// Phase 6: estimation.purchaseWindowDays
+  ///
+  /// In ar, this message translates to:
+  /// **'فترة حساب الاستهلاك من المشتريات (يوم)'**
+  String get settingPurchaseWindow;
+
+  /// Phase 6: estimation.minPurchaseDays
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل مدة مشتريات قبل التقدير (يوم)'**
+  String get settingMinPurchase;
+
+  /// Phase 6: estimation.minMeasureDays
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل مدة بين عمليتي جرد للقياس (يوم)'**
+  String get settingMinMeasure;
+
+  /// Phase 6: estimation.measurePairWindowDays
+  ///
+  /// In ar, this message translates to:
+  /// **'فترة الجرد المعتمدة للقياس (يوم)'**
+  String get settingMeasureWindow;
+
+  /// Phase 6: estimation.maxCatchUpDays
+  ///
+  /// In ar, this message translates to:
+  /// **'أقصى أيام خصم متأخر في مرة واحدة'**
+  String get settingMaxCatchUp;
+
+  /// Phase 6: alerts.repeatAfterDays
+  ///
+  /// In ar, this message translates to:
+  /// **'تكرار تنبيه الصنف نفسه بعد (يوم)'**
+  String get settingRepeatAlerts;
+
+  /// Phase 6: expiry.warnDaysAhead
+  ///
+  /// In ar, this message translates to:
+  /// **'التنبيه قبل انتهاء الصلاحية بـ (يوم)'**
+  String get settingWarnAhead;
+
+  /// Phase 6: expiry.minShelfLifeOnDeliveryDays
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل صلاحية متبقية عند التسليم (يوم)'**
+  String get settingMinShelfLife;
+
+  /// Phase 6: hotDeals.rotationSeconds
+  ///
+  /// In ar, this message translates to:
+  /// **'مدة عرض كل عرض (ثانية)'**
+  String get settingRotation;
+
+  /// Phase 6: hotDeals.frequentWindowDays
+  ///
+  /// In ar, this message translates to:
+  /// **'فترة حساب الأصناف الأكثر طلباً (يوم)'**
+  String get settingFrequentWindow;
+
+  /// Phase 6: hotDeals.newItemDays
+  ///
+  /// In ar, this message translates to:
+  /// **'يعتبر الصنف جديداً لمدة (يوم)'**
+  String get settingNewItemDays;
+
+  /// Phase 6: hotDeals.maxEntries
+  ///
+  /// In ar, this message translates to:
+  /// **'أقصى عدد للعروض'**
+  String get settingMaxEntries;
+
+  /// Phase 6: Phase 6: applies the audit filters
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث'**
+  String get search;
+
+  /// Phase 6: Phase 6: no entity filter
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get allEntities;
+
+  /// Phase 6: Phase 6: audit entity filter label
+  ///
+  /// In ar, this message translates to:
+  /// **'النوع'**
+  String get entityFilter;
+
+  /// Phase 6: Phase 6: audit filter start date
+  ///
+  /// In ar, this message translates to:
+  /// **'من (مثال 2027-01-31)'**
+  String get fromDate;
+
+  /// Phase 6: Phase 6: audit filter end date
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى (مثال 2027-01-31)'**
+  String get toDate;
+
+  /// Phase 6: Phase 6: bad date in the audit filter
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب التاريخ بالشكل 2027-01-31'**
+  String get invalidDate;
+
+  /// Phase 6: Phase 6: audit before
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل'**
+  String get beforeLabel;
+
+  /// Phase 6: Phase 6: audit after
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد'**
+  String get afterLabel;
+
+  /// Phase 6: Phase 6: empty audit log
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد سجلات'**
+  String get noAuditEntries;
+
+  /// Phase 6: Phase 6: the clinic account page orders
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات العميل'**
+  String get clientOrders;
+
+  /// Phase 6: audit entity user
+  ///
+  /// In ar, this message translates to:
+  /// **'الحسابات'**
+  String get entityUser;
+
+  /// Phase 6: audit entity item
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصناف'**
+  String get entityItem;
+
+  /// Phase 6: audit entity category
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقسام'**
+  String get entityCategory;
+
+  /// Phase 6: audit entity order
+  ///
+  /// In ar, this message translates to:
+  /// **'الطلبات'**
+  String get entityOrder;
+
+  /// Phase 6: audit entity client_inventory_item
+  ///
+  /// In ar, this message translates to:
+  /// **'مخزون العملاء'**
+  String get entityClientInventory;
+
+  /// Phase 6: audit entity settings
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات'**
+  String get entitySettings;
+
+  /// Phase 6: audit entity warehouse_batch
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفعات'**
+  String get entityBatch;
+
+  /// Phase 6: CLIENT_APPROVED
+  ///
+  /// In ar, this message translates to:
+  /// **'الموافقة على حساب'**
+  String get auditClientApproved;
+
+  /// Phase 6: CLIENT_REJECTED
+  ///
+  /// In ar, this message translates to:
+  /// **'رفض حساب'**
+  String get auditClientRejected;
+
+  /// Phase 6: CLIENT_SUSPENDED
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف حساب'**
+  String get auditClientSuspended;
+
+  /// Phase 6: CLIENT_REACTIVATED
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تفعيل حساب'**
+  String get auditClientReactivated;
+
+  /// Phase 6: PASSWORD_RESET
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تعيين كلمة المرور'**
+  String get auditPasswordReset;
+
+  /// Phase 6: CATEGORY_CREATED
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة قسم'**
+  String get auditCategoryCreated;
+
+  /// Phase 6: CATEGORY_UPDATED
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل قسم'**
+  String get auditCategoryUpdated;
+
+  /// Phase 6: CATEGORY_DELETED
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف قسم'**
+  String get auditCategoryDeleted;
+
+  /// Phase 6: ITEM_CREATED
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة صنف'**
+  String get auditItemCreated;
+
+  /// Phase 6: ITEM_UPDATED
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل صنف'**
+  String get auditItemUpdated;
+
+  /// Phase 6: ITEM_DEACTIVATED
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف صنف'**
+  String get auditItemDeactivated;
+
+  /// Phase 6: BATCH_RECEIVED
+  ///
+  /// In ar, this message translates to:
+  /// **'استلام دفعة'**
+  String get auditBatchReceived;
+
+  /// Phase 6: ORDER_CONFIRMED
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد طلب'**
+  String get auditOrderConfirmed;
+
+  /// Phase 6: ORDER_CANCELLED
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء طلب'**
+  String get auditOrderCancelled;
+
+  /// Phase 6: HOT_DEAL_PINNED
+  ///
+  /// In ar, this message translates to:
+  /// **'تثبيت عرض'**
+  String get auditHotDealPinned;
+
+  /// Phase 6: HOT_DEAL_UNPINNED
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء تثبيت عرض'**
+  String get auditHotDealUnpinned;
+
+  /// Phase 6: INVENTORY_AUTO_DECREMENT_ENABLED
+  ///
+  /// In ar, this message translates to:
+  /// **'تشغيل الخصم التلقائي'**
+  String get auditAutoDecrementEnabled;
+
+  /// Phase 6: INVENTORY_AUTO_DECREMENT_DISABLED
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف الخصم التلقائي'**
+  String get auditAutoDecrementDisabled;
+
+  /// Phase 6: INVENTORY_RATE_OVERRIDE_SET
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد معدل الاستهلاك'**
+  String get auditRateSet;
+
+  /// Phase 6: INVENTORY_RATE_OVERRIDE_CLEARED
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح معدل الاستهلاك'**
+  String get auditRateCleared;
+
+  /// Phase 6: INVENTORY_MIN_CHANGED
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الحد الأدنى'**
+  String get auditMinChanged;
+
+  /// Phase 6: SETTINGS_CHANGED
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الإعدادات'**
+  String get auditSettingsChanged;
 }
 
 class _AppLocalizationsDelegate

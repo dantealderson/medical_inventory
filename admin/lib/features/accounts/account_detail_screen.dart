@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/accounts_controller.dart';
+import '../../core/formatting.dart';
+import '../../core/settings_audit_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../orders/order_widgets.dart';
 import 'account_status_chip.dart';
 
 class AccountDetailScreen extends ConsumerWidget {
@@ -103,6 +106,7 @@ class _Body extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  if (user.role == 'CLIENT') _ClientOrders(clientId: user.id),
                 ],
               ),
             ),
@@ -191,6 +195,44 @@ class _Body extends ConsumerWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.resetPasswordDone)),
+    );
+  }
+}
+
+/// The clinic's latest orders (§12.1 client detail), each opening the order.
+class _ClientOrders extends ConsumerWidget {
+  const _ClientOrders({required this.clientId});
+
+  final String clientId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final text = Theme.of(context).textTheme;
+    final orders = ref.watch(clientOrdersProvider(clientId));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(l10n.clientOrders, style: text.titleMedium),
+        const SizedBox(height: 8),
+        ...orders.when(
+          loading: () => [const LinearProgressIndicator()],
+          error: (e, _) => [Text(e is ApiException ? e.messageAr : l10n.retry)],
+          data: (page) => page.items.isEmpty
+              ? [Text(l10n.noOrders)]
+              : [
+                  for (final order in page.items)
+                    ListTile(
+                      contentPadding: EdgeInsetsDirectional.zero,
+                      title: Text('${formatTimestamp(order.placedAt)} · ${order.totalAmount}'),
+                      trailing: OrderStatusChip(status: order.status),
+                      onTap: () => context.go(Routes.order(order.id)),
+                    ),
+                ],
+        ),
+      ],
     );
   }
 }

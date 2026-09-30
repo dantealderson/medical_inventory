@@ -83,6 +83,8 @@ class _AdminTabs extends StatelessWidget implements PreferredSizeWidget {
           _Tab(label: l10n.orders, route: Routes.orders, current: location),
           _Tab(label: l10n.hotDeals, route: Routes.hotDeals, current: location),
           _Tab(label: l10n.notifications, route: Routes.notifications, current: location),
+          _Tab(label: l10n.auditLog, route: Routes.audit, current: location),
+          _Tab(label: l10n.settings, route: Routes.settings, current: location),
         ],
       ),
     );

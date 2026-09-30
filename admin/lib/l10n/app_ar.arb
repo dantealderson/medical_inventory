@@ -874,5 +874,261 @@
   "close": "إغلاق",
   "@close": {
     "description": "Phase 6: closes the popup"
+  },
+  "settings": "الإعدادات",
+  "@settings": {
+    "description": "Phase 6: Phase 6: the settings tab"
+  },
+  "auditLog": "سجل التدقيق",
+  "@auditLog": {
+    "description": "Phase 6: Phase 6: the audit log tab"
+  },
+  "settingsSaved": "تم حفظ الإعدادات",
+  "@settingsSaved": {
+    "description": "Phase 6: Phase 6: settings saved"
+  },
+  "valueRejected": "القيمة غير مقبولة",
+  "@valueRejected": {
+    "description": "Phase 6: Phase 6: the server refused this setting"
+  },
+  "settingsStock": "المخزون",
+  "@settingsStock": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "settingsEstimation": "التقدير",
+  "@settingsEstimation": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "settingsAlerts": "التنبيهات",
+  "@settingsAlerts": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "settingsExpiry": "الصلاحية",
+  "@settingsExpiry": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "settingsHotDeals": "العروض",
+  "@settingsHotDeals": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "settingsGeneral": "عام",
+  "@settingsGeneral": {
+    "description": "Phase 6: Phase 6: settings section"
+  },
+  "timezoneLabel": "المنطقة الزمنية",
+  "@timezoneLabel": {
+    "description": "Phase 6: Phase 6: read-only setting"
+  },
+  "settingRedDays": "أحمر إذا كان المخزون يكفي أقل من (يوم)",
+  "@settingRedDays": {
+    "description": "Phase 6: stock.redDaysOfCover"
+  },
+  "settingYellowDays": "أصفر إذا كان المخزون يكفي أقل من (يوم)",
+  "@settingYellowDays": {
+    "description": "Phase 6: stock.yellowDaysOfCover"
+  },
+  "settingPurchaseWindow": "فترة حساب الاستهلاك من المشتريات (يوم)",
+  "@settingPurchaseWindow": {
+    "description": "Phase 6: estimation.purchaseWindowDays"
+  },
+  "settingMinPurchase": "أقل مدة مشتريات قبل التقدير (يوم)",
+  "@settingMinPurchase": {
+    "description": "Phase 6: estimation.minPurchaseDays"
+  },
+  "settingMinMeasure": "أقل مدة بين عمليتي جرد للقياس (يوم)",
+  "@settingMinMeasure": {
+    "description": "Phase 6: estimation.minMeasureDays"
+  },
+  "settingMeasureWindow": "فترة الجرد المعتمدة للقياس (يوم)",
+  "@settingMeasureWindow": {
+    "description": "Phase 6: estimation.measurePairWindowDays"
+  },
+  "settingMaxCatchUp": "أقصى أيام خصم متأخر في مرة واحدة",
+  "@settingMaxCatchUp": {
+    "description": "Phase 6: estimation.maxCatchUpDays"
+  },
+  "settingRepeatAlerts": "تكرار تنبيه الصنف نفسه بعد (يوم)",
+  "@settingRepeatAlerts": {
+    "description": "Phase 6: alerts.repeatAfterDays"
+  },
+  "settingWarnAhead": "التنبيه قبل انتهاء الصلاحية بـ (يوم)",
+  "@settingWarnAhead": {
+    "description": "Phase 6: expiry.warnDaysAhead"
+  },
+  "settingMinShelfLife": "أقل صلاحية متبقية عند التسليم (يوم)",
+  "@settingMinShelfLife": {
+    "description": "Phase 6: expiry.minShelfLifeOnDeliveryDays"
+  },
+  "settingRotation": "مدة عرض كل عرض (ثانية)",
+  "@settingRotation": {
+    "description": "Phase 6: hotDeals.rotationSeconds"
+  },
+  "settingFrequentWindow": "فترة حساب الأصناف الأكثر طلباً (يوم)",
+  "@settingFrequentWindow": {
+    "description": "Phase 6: hotDeals.frequentWindowDays"
+  },
+  "settingNewItemDays": "يعتبر الصنف جديداً لمدة (يوم)",
+  "@settingNewItemDays": {
+    "description": "Phase 6: hotDeals.newItemDays"
+  },
+  "settingMaxEntries": "أقصى عدد للعروض",
+  "@settingMaxEntries": {
+    "description": "Phase 6: hotDeals.maxEntries"
+  },
+  "search": "بحث",
+  "@search": {
+    "description": "Phase 6: Phase 6: applies the audit filters"
+  },
+  "allEntities": "الكل",
+  "@allEntities": {
+    "description": "Phase 6: Phase 6: no entity filter"
+  },
+  "entityFilter": "النوع",
+  "@entityFilter": {
+    "description": "Phase 6: Phase 6: audit entity filter label"
+  },
+  "fromDate": "من (مثال 2027-01-31)",
+  "@fromDate": {
+    "description": "Phase 6: Phase 6: audit filter start date"
+  },
+  "toDate": "إلى (مثال 2027-01-31)",
+  "@toDate": {
+    "description": "Phase 6: Phase 6: audit filter end date"
+  },
+  "invalidDate": "اكتب التاريخ بالشكل 2027-01-31",
+  "@invalidDate": {
+    "description": "Phase 6: Phase 6: bad date in the audit filter"
+  },
+  "beforeLabel": "قبل",
+  "@beforeLabel": {
+    "description": "Phase 6: Phase 6: audit before"
+  },
+  "afterLabel": "بعد",
+  "@afterLabel": {
+    "description": "Phase 6: Phase 6: audit after"
+  },
+  "noAuditEntries": "لا توجد سجلات",
+  "@noAuditEntries": {
+    "description": "Phase 6: Phase 6: empty audit log"
+  },
+  "clientOrders": "طلبات العميل",
+  "@clientOrders": {
+    "description": "Phase 6: Phase 6: the clinic account page orders"
+  },
+  "entityUser": "الحسابات",
+  "@entityUser": {
+    "description": "Phase 6: audit entity user"
+  },
+  "entityItem": "الأصناف",
+  "@entityItem": {
+    "description": "Phase 6: audit entity item"
+  },
+  "entityCategory": "الأقسام",
+  "@entityCategory": {
+    "description": "Phase 6: audit entity category"
+  },
+  "entityOrder": "الطلبات",
+  "@entityOrder": {
+    "description": "Phase 6: audit entity order"
+  },
+  "entityClientInventory": "مخزون العملاء",
+  "@entityClientInventory": {
+    "description": "Phase 6: audit entity client_inventory_item"
+  },
+  "entitySettings": "الإعدادات",
+  "@entitySettings": {
+    "description": "Phase 6: audit entity settings"
+  },
+  "entityBatch": "الدفعات",
+  "@entityBatch": {
+    "description": "Phase 6: audit entity warehouse_batch"
+  },
+  "auditClientApproved": "الموافقة على حساب",
+  "@auditClientApproved": {
+    "description": "Phase 6: CLIENT_APPROVED"
+  },
+  "auditClientRejected": "رفض حساب",
+  "@auditClientRejected": {
+    "description": "Phase 6: CLIENT_REJECTED"
+  },
+  "auditClientSuspended": "إيقاف حساب",
+  "@auditClientSuspended": {
+    "description": "Phase 6: CLIENT_SUSPENDED"
+  },
+  "auditClientReactivated": "إعادة تفعيل حساب",
+  "@auditClientReactivated": {
+    "description": "Phase 6: CLIENT_REACTIVATED"
+  },
+  "auditPasswordReset": "إعادة تعيين كلمة المرور",
+  "@auditPasswordReset": {
+    "description": "Phase 6: PASSWORD_RESET"
+  },
+  "auditCategoryCreated": "إضافة قسم",
+  "@auditCategoryCreated": {
+    "description": "Phase 6: CATEGORY_CREATED"
+  },
+  "auditCategoryUpdated": "تعديل قسم",
+  "@auditCategoryUpdated": {
+    "description": "Phase 6: CATEGORY_UPDATED"
+  },
+  "auditCategoryDeleted": "حذف قسم",
+  "@auditCategoryDeleted": {
+    "description": "Phase 6: CATEGORY_DELETED"
+  },
+  "auditItemCreated": "إضافة صنف",
+  "@auditItemCreated": {
+    "description": "Phase 6: ITEM_CREATED"
+  },
+  "auditItemUpdated": "تعديل صنف",
+  "@auditItemUpdated": {
+    "description": "Phase 6: ITEM_UPDATED"
+  },
+  "auditItemDeactivated": "إيقاف صنف",
+  "@auditItemDeactivated": {
+    "description": "Phase 6: ITEM_DEACTIVATED"
+  },
+  "auditBatchReceived": "استلام دفعة",
+  "@auditBatchReceived": {
+    "description": "Phase 6: BATCH_RECEIVED"
+  },
+  "auditOrderConfirmed": "تأكيد طلب",
+  "@auditOrderConfirmed": {
+    "description": "Phase 6: ORDER_CONFIRMED"
+  },
+  "auditOrderCancelled": "إلغاء طلب",
+  "@auditOrderCancelled": {
+    "description": "Phase 6: ORDER_CANCELLED"
+  },
+  "auditHotDealPinned": "تثبيت عرض",
+  "@auditHotDealPinned": {
+    "description": "Phase 6: HOT_DEAL_PINNED"
+  },
+  "auditHotDealUnpinned": "إلغاء تثبيت عرض",
+  "@auditHotDealUnpinned": {
+    "description": "Phase 6: HOT_DEAL_UNPINNED"
+  },
+  "auditAutoDecrementEnabled": "تشغيل الخصم التلقائي",
+  "@auditAutoDecrementEnabled": {
+    "description": "Phase 6: INVENTORY_AUTO_DECREMENT_ENABLED"
+  },
+  "auditAutoDecrementDisabled": "إيقاف الخصم التلقائي",
+  "@auditAutoDecrementDisabled": {
+    "description": "Phase 6: INVENTORY_AUTO_DECREMENT_DISABLED"
+  },
+  "auditRateSet": "تحديد معدل الاستهلاك",
+  "@auditRateSet": {
+    "description": "Phase 6: INVENTORY_RATE_OVERRIDE_SET"
+  },
+  "auditRateCleared": "مسح معدل الاستهلاك",
+  "@auditRateCleared": {
+    "description": "Phase 6: INVENTORY_RATE_OVERRIDE_CLEARED"
+  },
+  "auditMinChanged": "تغيير الحد الأدنى",
+  "@auditMinChanged": {
+    "description": "Phase 6: INVENTORY_MIN_CHANGED"
+  },
+  "auditSettingsChanged": "تغيير الإعدادات",
+  "@auditSettingsChanged": {
+    "description": "Phase 6: SETTINGS_CHANGED"
   }
 }

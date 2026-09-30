@@ -666,4 +666,196 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get close => 'إغلاق';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
+  String get auditLog => 'سجل التدقيق';
+
+  @override
+  String get settingsSaved => 'تم حفظ الإعدادات';
+
+  @override
+  String get valueRejected => 'القيمة غير مقبولة';
+
+  @override
+  String get settingsStock => 'المخزون';
+
+  @override
+  String get settingsEstimation => 'التقدير';
+
+  @override
+  String get settingsAlerts => 'التنبيهات';
+
+  @override
+  String get settingsExpiry => 'الصلاحية';
+
+  @override
+  String get settingsHotDeals => 'العروض';
+
+  @override
+  String get settingsGeneral => 'عام';
+
+  @override
+  String get timezoneLabel => 'المنطقة الزمنية';
+
+  @override
+  String get settingRedDays => 'أحمر إذا كان المخزون يكفي أقل من (يوم)';
+
+  @override
+  String get settingYellowDays => 'أصفر إذا كان المخزون يكفي أقل من (يوم)';
+
+  @override
+  String get settingPurchaseWindow => 'فترة حساب الاستهلاك من المشتريات (يوم)';
+
+  @override
+  String get settingMinPurchase => 'أقل مدة مشتريات قبل التقدير (يوم)';
+
+  @override
+  String get settingMinMeasure => 'أقل مدة بين عمليتي جرد للقياس (يوم)';
+
+  @override
+  String get settingMeasureWindow => 'فترة الجرد المعتمدة للقياس (يوم)';
+
+  @override
+  String get settingMaxCatchUp => 'أقصى أيام خصم متأخر في مرة واحدة';
+
+  @override
+  String get settingRepeatAlerts => 'تكرار تنبيه الصنف نفسه بعد (يوم)';
+
+  @override
+  String get settingWarnAhead => 'التنبيه قبل انتهاء الصلاحية بـ (يوم)';
+
+  @override
+  String get settingMinShelfLife => 'أقل صلاحية متبقية عند التسليم (يوم)';
+
+  @override
+  String get settingRotation => 'مدة عرض كل عرض (ثانية)';
+
+  @override
+  String get settingFrequentWindow => 'فترة حساب الأصناف الأكثر طلباً (يوم)';
+
+  @override
+  String get settingNewItemDays => 'يعتبر الصنف جديداً لمدة (يوم)';
+
+  @override
+  String get settingMaxEntries => 'أقصى عدد للعروض';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get allEntities => 'الكل';
+
+  @override
+  String get entityFilter => 'النوع';
+
+  @override
+  String get fromDate => 'من (مثال 2027-01-31)';
+
+  @override
+  String get toDate => 'إلى (مثال 2027-01-31)';
+
+  @override
+  String get invalidDate => 'اكتب التاريخ بالشكل 2027-01-31';
+
+  @override
+  String get beforeLabel => 'قبل';
+
+  @override
+  String get afterLabel => 'بعد';
+
+  @override
+  String get noAuditEntries => 'لا توجد سجلات';
+
+  @override
+  String get clientOrders => 'طلبات العميل';
+
+  @override
+  String get entityUser => 'الحسابات';
+
+  @override
+  String get entityItem => 'الأصناف';
+
+  @override
+  String get entityCategory => 'الأقسام';
+
+  @override
+  String get entityOrder => 'الطلبات';
+
+  @override
+  String get entityClientInventory => 'مخزون العملاء';
+
+  @override
+  String get entitySettings => 'الإعدادات';
+
+  @override
+  String get entityBatch => 'الدفعات';
+
+  @override
+  String get auditClientApproved => 'الموافقة على حساب';
+
+  @override
+  String get auditClientRejected => 'رفض حساب';
+
+  @override
+  String get auditClientSuspended => 'إيقاف حساب';
+
+  @override
+  String get auditClientReactivated => 'إعادة تفعيل حساب';
+
+  @override
+  String get auditPasswordReset => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get auditCategoryCreated => 'إضافة قسم';
+
+  @override
+  String get auditCategoryUpdated => 'تعديل قسم';
+
+  @override
+  String get auditCategoryDeleted => 'حذف قسم';
+
+  @override
+  String get auditItemCreated => 'إضافة صنف';
+
+  @override
+  String get auditItemUpdated => 'تعديل صنف';
+
+  @override
+  String get auditItemDeactivated => 'إيقاف صنف';
+
+  @override
+  String get auditBatchReceived => 'استلام دفعة';
+
+  @override
+  String get auditOrderConfirmed => 'تأكيد طلب';
+
+  @override
+  String get auditOrderCancelled => 'إلغاء طلب';
+
+  @override
+  String get auditHotDealPinned => 'تثبيت عرض';
+
+  @override
+  String get auditHotDealUnpinned => 'إلغاء تثبيت عرض';
+
+  @override
+  String get auditAutoDecrementEnabled => 'تشغيل الخصم التلقائي';
+
+  @override
+  String get auditAutoDecrementDisabled => 'إيقاف الخصم التلقائي';
+
+  @override
+  String get auditRateSet => 'تحديد معدل الاستهلاك';
+
+  @override
+  String get auditRateCleared => 'مسح معدل الاستهلاك';
+
+  @override
+  String get auditMinChanged => 'تغيير الحد الأدنى';
+
+  @override
+  String get auditSettingsChanged => 'تغيير الإعدادات';
 }

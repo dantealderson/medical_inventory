@@ -6,7 +6,9 @@ import '../features/accounts/account_detail_screen.dart';
 import '../features/accounts/client_inventory_screen.dart';
 import '../features/notifications/compose_broadcast_screen.dart';
 import '../features/notifications/notifications_screen.dart';
+import '../features/settings/settings_screen.dart';
 import '../features/accounts/pending_accounts_screen.dart';
+import '../features/audit/audit_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/catalog/batches_screen.dart';
@@ -32,6 +34,8 @@ abstract final class Routes {
   static const hotDeals = '/hot-deals';
   static const notifications = '/notifications';
   static const composeBroadcast = '/notifications/compose';
+  static const settings = '/settings';
+  static const audit = '/audit';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -82,6 +86,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: Routes.hotDeals, builder: (_, _) => const HotDealsScreen()),
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: Routes.settings, builder: (_, _) => const SettingsScreen()),
+      GoRoute(path: Routes.audit, builder: (_, _) => const AuditScreen()),
       GoRoute(path: Routes.composeBroadcast, builder: (_, _) => const ComposeBroadcastScreen()),
     ],
   );

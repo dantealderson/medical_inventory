@@ -1,3 +1,4 @@
+import 'package:client/features/cart/cart_badge_button.dart';
 import 'package:client/features/catalog/item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,7 +39,10 @@ Finder onLine(String name, Finder matching) => find.descendant(
   matching: matching,
 );
 
-Badge badge(WidgetTester tester) => tester.widget<Badge>(find.byType(Badge));
+/// The cart's own badge: home also carries the notification bell's.
+Badge badge(WidgetTester tester) => tester.widget<Badge>(
+  find.descendant(of: find.byType(CartBadgeButton), matching: find.byType(Badge)),
+);
 
 void expectFitsHorizontally(WidgetTester tester, Finder finder, double screenWidth) {
   for (final element in finder.evaluate()) {

@@ -425,4 +425,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backToInventory => 'العودة إلى مخزوني';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get noNotifications => 'لا توجد إشعارات';
+
+  @override
+  String get markAllRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get unreadLabel => 'جديد';
 }

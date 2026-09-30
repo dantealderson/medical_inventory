@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../cart/cart_badge_button.dart';
 import '../home/hot_deals_carousel.dart';
 import '../inventory/low_stock_strip.dart';
+import '../notifications/notification_bell.dart';
 import 'item_card.dart';
 
 /// The client home: a search bar, a big «مخزوني» button, the rotating hot
@@ -27,6 +28,7 @@ class BrowseScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          const NotificationBell(),
           IconButton(
             tooltip: l10n.myOrders,
             icon: const Icon(Icons.receipt_long_outlined),

@@ -568,5 +568,21 @@
   "backToInventory": "العودة إلى مخزوني",
   "@backToInventory": {
     "description": "Phase 4 count: leaves the result"
+  },
+  "notifications": "الإشعارات",
+  "@notifications": {
+    "description": "Phase 5: the notification bell tooltip and the centre title"
+  },
+  "noNotifications": "لا توجد إشعارات",
+  "@noNotifications": {
+    "description": "Phase 5: the centre with nothing in it"
+  },
+  "markAllRead": "تحديد الكل كمقروء",
+  "@markAllRead": {
+    "description": "Phase 5: marks every notification read"
+  },
+  "unreadLabel": "جديد",
+  "@unreadLabel": {
+    "description": "Phase 5: an unread notification, said in words and not only in weight"
   }
 }

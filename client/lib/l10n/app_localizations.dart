@@ -813,6 +813,30 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'العودة إلى مخزوني'**
   String get backToInventory;
+
+  /// Phase 5: the notification bell tooltip and the centre title
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات'**
+  String get notifications;
+
+  /// Phase 5: the centre with nothing in it
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد إشعارات'**
+  String get noNotifications;
+
+  /// Phase 5: marks every notification read
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد الكل كمقروء'**
+  String get markAllRead;
+
+  /// Phase 5: an unread notification, said in words and not only in weight
+  ///
+  /// In ar, this message translates to:
+  /// **'جديد'**
+  String get unreadLabel;
 }
 
 class _AppLocalizationsDelegate

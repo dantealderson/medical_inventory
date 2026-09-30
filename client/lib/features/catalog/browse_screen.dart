@@ -13,6 +13,7 @@ import '../home/hot_deals_carousel.dart';
 import '../inventory/low_stock_strip.dart';
 import '../notifications/notification_bell.dart';
 import 'item_card.dart';
+import 'search_results_view.dart';
 
 enum _HomeMenu { logout }
 
@@ -41,15 +42,54 @@ Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
 
 /// The client home: a search bar, a big «مخزوني» button, the rotating hot
 /// deals, the clinic's red items, and the top-level categories.
-class BrowseScreen extends ConsumerWidget {
+///
+/// Search happens here, under the box being typed in: while it has text, the
+/// results take the place of everything below it. Clearing it, or the phone's
+/// back button, brings the home screen back.
+class BrowseScreen extends ConsumerStatefulWidget {
   const BrowseScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final tree = ref.watch(categoryTreeProvider);
+  ConsumerState<BrowseScreen> createState() => _BrowseScreenState();
+}
 
-    return Scaffold(
+class _BrowseScreenState extends ConsumerState<BrowseScreen> {
+  // Starts from the last search, so coming back from an item shows the same
+  // results instead of an empty box.
+  late final _search = TextEditingController(text: ref.read(searchQueryProvider));
+
+  bool get _searching => _search.text.trim().isNotEmpty;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _onChanged(String value) {
+    // Debounced in the controller — see SearchQuery.
+    ref.read(searchQueryProvider.notifier).update(value);
+    setState(() {});
+  }
+
+  void _clear() {
+    _search.clear();
+    ref.read(searchQueryProvider.notifier).update('');
+    FocusScope.of(context).unfocus();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final query = ref.watch(searchQueryProvider);
+
+    return PopScope(
+      canPop: !_searching,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _clear();
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
@@ -82,27 +122,41 @@ class BrowseScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          const _SearchBar(),
-          const _MyInventoryButton(),
-          const HotDealsCarousel(),
-          const LowStockStrip(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async => ref.invalidate(categoryTreeProvider),
-              child: AsyncSection<List<Category>>(
-                value: tree,
-                onRetry: () => ref.invalidate(categoryTreeProvider),
-                emptyMessage: l10n.noCategoriesYet,
-                isEmpty: (data) => data.isEmpty,
-                builder: (roots) => ListView.builder(
-                  padding: const EdgeInsetsDirectional.all(16),
-                  itemCount: roots.length,
-                  itemBuilder: (context, i) => CategoryTile(category: roots[i]),
-                ),
-              ),
-            ),
-          ),
+          _SearchField(controller: _search, onChanged: _onChanged, onClear: _clear),
+          if (_searching)
+            Expanded(child: SearchResultsView(pending: _search.text.trim() != query))
+          else ...[
+            const _MyInventoryButton(),
+            const HotDealsCarousel(),
+            const LowStockStrip(),
+            const Expanded(child: _Categories()),
+          ],
         ],
+      ),
+      ),
+    );
+  }
+}
+
+class _Categories extends ConsumerWidget {
+  const _Categories();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return RefreshIndicator(
+      onRefresh: () async => ref.invalidate(categoryTreeProvider),
+      child: AsyncSection<List<Category>>(
+        value: ref.watch(categoryTreeProvider),
+        onRetry: () => ref.invalidate(categoryTreeProvider),
+        emptyMessage: l10n.noCategoriesYet,
+        isEmpty: (data) => data.isEmpty,
+        builder: (roots) => ListView.builder(
+          padding: const EdgeInsetsDirectional.all(16),
+          itemCount: roots.length,
+          itemBuilder: (context, i) => CategoryTile(category: roots[i]),
+        ),
       ),
     );
   }
@@ -128,21 +182,12 @@ class _MyInventoryButton extends StatelessWidget {
   }
 }
 
-class _SearchBar extends ConsumerStatefulWidget {
-  const _SearchBar();
+class _SearchField extends StatelessWidget {
+  const _SearchField({required this.controller, required this.onChanged, required this.onClear});
 
-  @override
-  ConsumerState<_SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends ConsumerState<_SearchBar> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -151,18 +196,21 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
     return Padding(
       padding: const EdgeInsetsDirectional.all(16),
       child: TextField(
-        controller: _controller,
+        controller: controller,
         decoration: InputDecoration(
           hintText: l10n.searchHint,
           prefixIcon: const Icon(Icons.search),
+          suffixIcon: controller.text.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: l10n.clearSearch,
+                  icon: const Icon(Icons.close),
+                  onPressed: onClear,
+                ),
           border: const OutlineInputBorder(),
         ),
         textInputAction: TextInputAction.search,
-        onChanged: (value) {
-          // Debounced in the controller — see SearchQuery.
-          ref.read(searchQueryProvider.notifier).update(value);
-          if (value.trim().isNotEmpty) context.go(Routes.search);
-        },
+        onChanged: onChanged,
       ),
     );
   }

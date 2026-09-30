@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:admin/features/catalog/categories_screen.dart';
+import 'package:admin/features/dashboard/dashboard_screen.dart';
+
 import 'support/harness.dart';
 
 Map<String, dynamic> category(
@@ -93,7 +96,51 @@ void main() {
     };
   }
 
+  // A tab is a page of the same app, not a new app opening: no zoom, no fade.
+  testWidgets('switching tabs is instant, with no page animation', (tester) async {
+    await pumpSignedIn(tester, routes());
+    expect(find.byType(DashboardScreen), findsOneWidget);
+
+    await tester.tap(find.text('الأقسام'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(CategoriesScreen), findsOneWidget);
+    expect(find.byType(DashboardScreen), findsNothing, reason: 'the old page is gone at once');
+    await tester.pumpAndSettle(); // let the categories load before the test ends
+  });
+
   group('Categories screen', () {
+    // A web browser leaves the typed word "composing" (underlined) until the
+    // field loses focus. Closing the dialog then writes to the field while it
+    // animates out, so its controller must still be alive: disposing it as
+    // soon as showDialog returned put a red error screen after every save.
+    testWidgets('saving a dialog in which the browser was mid-word does not crash', (
+      tester,
+    ) async {
+      await openCatalog(tester, 'الأقسام', (req) {
+        if (req.path == '/admin/categories') return [201, category('c9', 'قسم', 1)];
+        return routes()(req);
+      });
+
+      await tester.tap(find.text('إضافة قسم').first);
+      await tester.pumpAndSettle();
+      await tester.showKeyboard(fieldWithLabel('الاسم بالعربية'));
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: 'قسم',
+          selection: TextSelection.collapsed(offset: 3),
+          composing: TextRange(start: 0, end: 3),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'حفظ'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
     testWidgets('renders the tree nested and indented', (tester) async {
       await openCatalog(tester, 'الأقسام', routes(categories: [
         category('c1', 'مستهلكات', 1, children: [category('c2', 'سرنجات', 2)]),

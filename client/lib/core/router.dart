@@ -10,7 +10,6 @@ import '../features/cart/cart_screen.dart';
 import '../features/catalog/browse_screen.dart';
 import '../features/catalog/category_screen.dart';
 import '../features/catalog/item_detail_screen.dart';
-import '../features/catalog/search_screen.dart';
 import '../features/inventory/inventory_item_screen.dart';
 import '../features/inventory/inventory_screen.dart';
 import '../features/inventory/stock_count_screen.dart';
@@ -25,7 +24,6 @@ abstract final class Routes {
   static const register = '/register';
   static const pending = '/pending';
   static const home = '/';
-  static const search = '/search';
   static String category(String id) => '/category/$id';
   static String item(String id) => '/item/$id';
   static const cart = '/cart';
@@ -80,7 +78,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.register, builder: (_, _) => const RegisterScreen()),
       GoRoute(path: Routes.pending, builder: (_, _) => const PendingApprovalScreen()),
       GoRoute(path: Routes.home, builder: (_, _) => const BrowseScreen()),
-      GoRoute(path: Routes.search, builder: (_, _) => const SearchScreen()),
       GoRoute(
         path: '/category/:id',
         builder: (_, state) => CategoryScreen(categoryId: state.pathParameters['id']!),

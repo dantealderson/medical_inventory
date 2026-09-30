@@ -241,9 +241,11 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
     price: price.text.trim(),
     minBoxes: int.tryParse(minBoxes.text.trim()),
   );
-  for (final c in [nameAr, nameEn, unitsPerBox, unitLabel, price, minBoxes]) {
-    c.dispose();
-  }
+  // The controllers are not disposed here: the dialog's fields still use them
+  // while it animates closed, after showDialog has returned. Disposing them
+  // now crashed the admin web app with a red error screen after every save
+  // (a browser leaves the last word "composing" until the field loses focus).
+  // Nothing else holds them, so they are collected with the dialog.
 
   if (saved != true || !context.mounted) return;
 

@@ -643,6 +643,10 @@
   "@keepMeSignedIn": {
     "description": "Login: checkbox, ticked by default. Unticked, closing the app signs out"
   },
+  "clearSearch": "مسح البحث",
+  "@clearSearch": {
+    "description": "Home search box: the clear button, which brings the categories back"
+  },
   "serverUnreachable": "تعذر الاتصال بالخادم، تحقق من الإنترنت",
   "@serverUnreachable": {
     "description": "Startup: the server cannot be reached; the session is kept and a retry is offered"

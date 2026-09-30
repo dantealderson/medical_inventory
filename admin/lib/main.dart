@@ -48,7 +48,11 @@ class _AdminAppState extends ConsumerState<AdminApp> {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.build(),
+      theme: AppTheme.build().copyWith(
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {for (final p in TargetPlatform.values) p: const _InstantPages()},
+        ),
+      ),
       routerConfig: ref.watch(routerProvider),
 
       // Arabic only — no language switcher (spec §10.3).
@@ -60,4 +64,22 @@ class _AdminAppState extends ConsumerState<AdminApp> {
           Directionality(textDirection: TextDirection.rtl, child: child ?? const SizedBox.shrink()),
     );
   }
+}
+
+/// Pages switch at once, as on a website. The default zoom made every tab
+/// look like a different app opening.
+class _InstantPages extends PageTransitionsBuilder {
+  const _InstantPages();
+
+  @override
+  Duration get transitionDuration => Duration.zero;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => child;
 }

@@ -44,7 +44,11 @@ class _ClientAppState extends ConsumerState<ClientApp> {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.build(),
+      theme: AppTheme.build().copyWith(
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {for (final p in TargetPlatform.values) p: const _GentleFade()},
+        ),
+      ),
       routerConfig: ref.watch(routerProvider),
 
       // Arabic only — no language switcher (spec §10.3).
@@ -58,4 +62,22 @@ class _ClientAppState extends ConsumerState<ClientApp> {
           Directionality(textDirection: TextDirection.rtl, child: child ?? const SizedBox.shrink()),
     );
   }
+}
+
+/// A short fade between pages. The default zoom made each page change feel
+/// like another app opening.
+class _GentleFade extends PageTransitionsBuilder {
+  const _GentleFade();
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 200);
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => FadeTransition(opacity: animation, child: child);
 }

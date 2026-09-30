@@ -910,6 +910,12 @@ abstract class AppLocalizations {
   /// **'إبقني مسجّلاً الدخول على هذا الهاتف'**
   String get keepMeSignedIn;
 
+  /// Home search box: the clear button, which brings the categories back
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح البحث'**
+  String get clearSearch;
+
   /// Startup: the server cannot be reached; the session is kept and a retry is offered
   ///
   /// In ar, this message translates to:

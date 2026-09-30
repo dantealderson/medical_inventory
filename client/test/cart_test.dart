@@ -1,4 +1,6 @@
 import 'package:client/features/cart/cart_badge_button.dart';
+import 'package:client/features/cart/cart_screen.dart';
+import 'package:client/features/catalog/browse_screen.dart';
 import 'package:client/features/catalog/item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -161,6 +163,20 @@ void main() {
       await pumpSignedIn(tester, shop(cart: () => emptyCartJson));
       expect(badge(tester).isLabelVisible, isFalse);
     });
+  });
+
+  // The default zoom felt like another app opening. A short fade is calmer.
+  testWidgets('a page change is a short fade, over within a quarter second', (tester) async {
+    await pumpSignedIn(tester, shop(cart: () => emptyCartJson));
+
+    await tester.tap(find.byTooltip('السلة'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 210));
+    await tester.pump();
+
+    expect(find.byType(CartScreen), findsOneWidget);
+    expect(find.byType(BrowseScreen), findsNothing);
+    await tester.pumpAndSettle();
   });
 
   group('Cart screen', () {

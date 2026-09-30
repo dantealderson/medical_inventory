@@ -188,7 +188,11 @@ class _Body extends ConsumerWidget {
       ),
     );
 
-    controller.dispose();
+    // The controllers are not disposed here: the dialog's fields still use them
+    // while it animates closed, after showDialog has returned. Disposing them
+    // now crashed the admin web app with a red error screen after every save
+    // (a browser leaves the last word "composing" until the field loses focus).
+    // Nothing else holds them, so they are collected with the dialog.
     if (newPassword == null) return;
 
     await ref.read(accountActionsProvider).resetPassword(id, newPassword);

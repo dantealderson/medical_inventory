@@ -220,8 +220,11 @@ Future<void> _openIntake(BuildContext context, WidgetRef ref) async {
   final number = batchNumber.text.trim();
   final boxes = int.tryParse(qtyBoxes.text.trim()) ?? 0;
   final chosenExpiry = expiry;
-  batchNumber.dispose();
-  qtyBoxes.dispose();
+  // The controllers are not disposed here: the dialog's fields still use them
+  // while it animates closed, after showDialog has returned. Disposing them
+  // now crashed the admin web app with a red error screen after every save
+  // (a browser leaves the last word "composing" until the field loses focus).
+  // Nothing else holds them, so they are collected with the dialog.
 
   if (saved != true || chosenExpiry == null || !context.mounted) return;
 

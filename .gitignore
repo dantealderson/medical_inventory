@@ -44,3 +44,6 @@ uploads/
 # --- Local scratch ---
 tmp/
 .temp/
+
+# Scratch notes from Phase 3 planning; local only.
+docs/superpowers/plans/phase-3-work/

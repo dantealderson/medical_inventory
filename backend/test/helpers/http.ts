@@ -55,6 +55,7 @@ export function authed(
 ): {
   get(path: string): request.Test;
   post(path: string): request.Test;
+  put(path: string): request.Test;
   patch(path: string): request.Test;
   delete(path: string): request.Test;
 } {
@@ -64,6 +65,7 @@ export function authed(
   return {
     get: (path) => bearer(http().get(path)),
     post: (path) => bearer(http().post(path)),
+    put: (path) => bearer(http().put(path)),
     patch: (path) => bearer(http().patch(path)),
     delete: (path) => bearer(http().delete(path)),
   };

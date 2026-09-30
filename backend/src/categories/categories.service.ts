@@ -4,6 +4,7 @@ import type { Category } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
+import { MediaService } from '../media/media.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateCategoryDto } from './dto/create-category.dto';
 import type { UpdateCategoryDto } from './dto/update-category.dto';
@@ -27,6 +28,7 @@ export class CategoriesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly media: MediaService,
   ) {}
 
   /**
@@ -106,6 +108,45 @@ export class CategoriesService {
     });
 
     return this.toNode(after);
+  }
+
+  /** As ItemsService.setImage: checked first, stored before the row changes. */
+  async setImage(actorUserId: string, id: string, file: Buffer): Promise<CategoryNode> {
+    const before = await this.findOrThrow(id);
+    const stored = await this.media.store(file);
+    return this.replaceImage(actorUserId, before, stored.url);
+  }
+
+  async removeImage(actorUserId: string, id: string): Promise<CategoryNode> {
+    return this.replaceImage(actorUserId, await this.findOrThrow(id), null);
+  }
+
+  private async replaceImage(
+    actorUserId: string,
+    before: Category,
+    imageUrl: string | null,
+  ): Promise<CategoryNode> {
+    const after = await this.prisma.category.update({ where: { id: before.id }, data: { imageUrl } });
+    if (before.imageUrl !== imageUrl) {
+      await this.audit.record({
+        actorUserId,
+        action: 'CATEGORY_UPDATED',
+        entityType: 'category',
+        entityId: before.id,
+        before: { imageUrl: before.imageUrl },
+        after: { imageUrl },
+      });
+      await this.media.removeByUrl(before.imageUrl);
+    }
+    return this.toNode(after);
+  }
+
+  private async findOrThrow(id: string): Promise<Category> {
+    const category = await this.prisma.category.findUnique({ where: { id } });
+    if (!category) {
+      throw new AppException(HttpStatus.NOT_FOUND, 'NOT_FOUND', ERROR_CODES.NOT_FOUND);
+    }
+    return category;
   }
 
   async remove(actorUserId: string, id: string): Promise<void> {

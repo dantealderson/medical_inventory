@@ -1,10 +1,24 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { AccessTokenPayload } from '../auth/token.service';
+import { IMAGE_UPLOAD, requireImage, type UploadedImage } from '../media/upload';
 import { CategoriesService, type CategoryNode } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -33,6 +47,26 @@ export class AdminCategoriesController {
     @Body() dto: UpdateCategoryDto,
   ): Promise<CategoryNode> {
     return this.categories.update(admin.sub, id, dto);
+  }
+
+  /** Uploads a picture (field `file`) and attaches it, replacing any before. */
+  @Put(':id/image')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', IMAGE_UPLOAD))
+  setImage(
+    @CurrentUser() admin: AccessTokenPayload,
+    @Param('id') id: string,
+    @UploadedFile() file?: UploadedImage,
+  ): Promise<CategoryNode> {
+    return this.categories.setImage(admin.sub, id, requireImage(file));
+  }
+
+  @Delete(':id/image')
+  removeImage(
+    @CurrentUser() admin: AccessTokenPayload,
+    @Param('id') id: string,
+  ): Promise<CategoryNode> {
+    return this.categories.removeImage(admin.sub, id);
   }
 
   @Delete(':id')

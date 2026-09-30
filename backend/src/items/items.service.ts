@@ -5,6 +5,7 @@ import { AuditService } from '../audit/audit.service';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
 import { boxesToUnits, unitsToBoxes } from '../common/units';
+import { MediaService } from '../media/media.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateItemDto } from './dto/create-item.dto';
 import type { ListItemsDto } from './dto/list-items.dto';
@@ -57,6 +58,7 @@ export class ItemsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly media: MediaService,
   ) {}
 
   async list(query: ListItemsDto, role: Role): Promise<ItemPage> {
@@ -169,6 +171,49 @@ export class ItemsService {
     });
 
     return itemToView(after);
+  }
+
+  /**
+   * Attaches a new picture and deletes the one it replaces. The item is
+   * checked first and the file is stored before the item changes, so an
+   * unknown item stores nothing and a bad file leaves the old picture.
+   */
+  async setImage(actorUserId: string, id: string, file: Buffer): Promise<ItemView> {
+    const before = await this.findOrThrow(id);
+    const stored = await this.media.store(file);
+    return this.replaceImage(actorUserId, before, stored.url);
+  }
+
+  async removeImage(actorUserId: string, id: string): Promise<ItemView> {
+    return this.replaceImage(actorUserId, await this.findOrThrow(id), null);
+  }
+
+  private async replaceImage(
+    actorUserId: string,
+    before: { id: string; imageUrl: string | null },
+    imageUrl: string | null,
+  ): Promise<ItemView> {
+    const after = await this.prisma.item.update({ where: { id: before.id }, data: { imageUrl } });
+    if (before.imageUrl !== imageUrl) {
+      await this.audit.record({
+        actorUserId,
+        action: 'ITEM_UPDATED',
+        entityType: 'item',
+        entityId: before.id,
+        before: { imageUrl: before.imageUrl },
+        after: { imageUrl },
+      });
+      await this.media.removeByUrl(before.imageUrl);
+    }
+    return itemToView(after);
+  }
+
+  private async findOrThrow(id: string) {
+    const item = await this.prisma.item.findUnique({ where: { id } });
+    if (!item) {
+      throw new AppException(HttpStatus.NOT_FOUND, 'ITEM_NOT_FOUND', ERROR_CODES.ITEM_NOT_FOUND);
+    }
+    return item;
   }
 
   /**

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pending_approval_screen.dart';
 import '../features/auth/register_screen.dart';
+import '../features/auth/splash_screen.dart';
 import '../features/cart/cart_screen.dart';
 import '../features/catalog/browse_screen.dart';
 import '../features/catalog/category_screen.dart';
@@ -58,8 +59,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       switch (auth) {
         // Startup: hold on the splash rather than flashing the login screen
-        // at someone who is already signed in.
-        case AuthUnknown():
+        // at someone who is already signed in. Unreachable waits there too,
+        // with a retry, and keeps the session.
+        case AuthUnknown() || AuthUnreachable():
           return location == Routes.splash ? null : Routes.splash;
 
         case AuthLoggedOut():
@@ -73,7 +75,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
 
     routes: [
-      GoRoute(path: Routes.splash, builder: (_, _) => const _SplashScreen()),
+      GoRoute(path: Routes.splash, builder: (_, _) => const SplashScreen()),
       GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
       GoRoute(path: Routes.register, builder: (_, _) => const RegisterScreen()),
       GoRoute(path: Routes.pending, builder: (_, _) => const PendingApprovalScreen()),
@@ -103,11 +105,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
-
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: CircularProgressIndicator()));
-}

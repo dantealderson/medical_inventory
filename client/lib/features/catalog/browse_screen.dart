@@ -14,6 +14,31 @@ import '../inventory/low_stock_strip.dart';
 import '../notifications/notification_bell.dart';
 import 'item_card.dart';
 
+enum _HomeMenu { logout }
+
+/// Log out, after a «هل تريد…» question.
+Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context)!;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.logoutQuestion),
+      content: Text(l10n.logoutExplained),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: Text(l10n.confirmLogout),
+        ),
+      ],
+    ),
+  );
+  if (ok == true) await ref.read(authControllerProvider.notifier).logout();
+}
+
 /// The client home: a search bar, a big «مخزوني» button, the rotating hot
 /// deals, the clinic's red items, and the top-level categories.
 class BrowseScreen extends ConsumerWidget {
@@ -35,10 +60,23 @@ class BrowseScreen extends ConsumerWidget {
             onPressed: () => context.go(Routes.orders),
           ),
           const CartBadgeButton(),
-          IconButton(
-            tooltip: l10n.logout,
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authControllerProvider.notifier).logout(),
+          // Log out lives in a menu and asks first. As a bare icon beside the
+          // cart, one slip of the finger signed the clinic out.
+          PopupMenuButton<_HomeMenu>(
+            tooltip: l10n.more,
+            onSelected: (choice) => switch (choice) {
+              _HomeMenu.logout => _confirmLogout(context, ref),
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: _HomeMenu.logout,
+                child: ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: Text(l10n.logout),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ],
       ),

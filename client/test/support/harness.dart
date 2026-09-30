@@ -77,6 +77,16 @@ Future<FakeApiBackend> pumpSignedIn(
   return pumpApp(tester, handler, store: store, retry: retry, latency: latency);
 }
 
+/// Logs out from home: the «المزيد» menu, then yes to the question.
+Future<void> logOut(WidgetTester tester) async {
+  await tester.tap(find.byTooltip('المزيد'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('تسجيل الخروج'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(FilledButton, 'خروج'));
+  await tester.pumpAndSettle();
+}
+
 /// Finds a text field by the label its decoration carries.
 Finder fieldWithLabel(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(TextFormField));

@@ -23,6 +23,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _busy = false;
   String? _errorAr;
 
+  /// «Keep me signed in». Ticked by default: a clinic's phone is the clinic's.
+  bool _remember = true;
+
   @override
   void dispose() {
     _username.dispose();
@@ -41,7 +44,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref
           .read(authControllerProvider.notifier)
-          .login(username: _username.text.trim(), password: _password.text);
+          .login(
+            username: _username.text.trim(),
+            password: _password.text,
+            remember: _remember,
+          );
       // Navigation is handled by the router's redirect reacting to the new
       // auth state — not by pushing a route from here.
     } on ApiException catch (e) {
@@ -86,7 +93,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onFieldSubmitted: (_) => _submit(),
                 validator: (v) => (v ?? '').isEmpty ? l10n.passwordRequired : null,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              CheckboxListTile(
+                value: _remember,
+                onChanged: _busy ? null : (v) => setState(() => _remember = v ?? true),
+                title: Text(l10n.keepMeSignedIn),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : _submit,
                 child: _busy

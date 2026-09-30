@@ -879,6 +879,42 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'استئناف المتابعة'**
   String get resumeTracking;
+
+  /// Home app bar: the menu that holds log out
+  ///
+  /// In ar, this message translates to:
+  /// **'المزيد'**
+  String get more;
+
+  /// Log out: confirmation dialog title
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج؟'**
+  String get logoutQuestion;
+
+  /// Log out: confirmation dialog body
+  ///
+  /// In ar, this message translates to:
+  /// **'ستحتاج إلى اسم المستخدم وكلمة المرور للدخول مرة أخرى.'**
+  String get logoutExplained;
+
+  /// Log out: dialog button that logs out
+  ///
+  /// In ar, this message translates to:
+  /// **'خروج'**
+  String get confirmLogout;
+
+  /// Login: checkbox, ticked by default. Unticked, closing the app signs out
+  ///
+  /// In ar, this message translates to:
+  /// **'إبقني مسجّلاً الدخول على هذا الهاتف'**
+  String get keepMeSignedIn;
+
+  /// Startup: the server cannot be reached; the session is kept and a retry is offered
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر الاتصال بالخادم، تحقق من الإنترنت'**
+  String get serverUnreachable;
 }
 
 class _AppLocalizationsDelegate

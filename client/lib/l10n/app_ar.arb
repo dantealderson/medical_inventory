@@ -622,5 +622,29 @@
   "resumeTracking": "استئناف المتابعة",
   "@resumeTracking": {
     "description": "Stop tracking: brings an item back"
+  },
+  "more": "المزيد",
+  "@more": {
+    "description": "Home app bar: the menu that holds log out"
+  },
+  "logoutQuestion": "تسجيل الخروج؟",
+  "@logoutQuestion": {
+    "description": "Log out: confirmation dialog title"
+  },
+  "logoutExplained": "ستحتاج إلى اسم المستخدم وكلمة المرور للدخول مرة أخرى.",
+  "@logoutExplained": {
+    "description": "Log out: confirmation dialog body"
+  },
+  "confirmLogout": "خروج",
+  "@confirmLogout": {
+    "description": "Log out: dialog button that logs out"
+  },
+  "keepMeSignedIn": "إبقني مسجّلاً الدخول على هذا الهاتف",
+  "@keepMeSignedIn": {
+    "description": "Login: checkbox, ticked by default. Unticked, closing the app signs out"
+  },
+  "serverUnreachable": "تعذر الاتصال بالخادم، تحقق من الإنترنت",
+  "@serverUnreachable": {
+    "description": "Startup: the server cannot be reached; the session is kept and a retry is offered"
   }
 }

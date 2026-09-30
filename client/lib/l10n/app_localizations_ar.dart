@@ -463,4 +463,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get resumeTracking => 'استئناف المتابعة';
+
+  @override
+  String get more => 'المزيد';
+
+  @override
+  String get logoutQuestion => 'تسجيل الخروج؟';
+
+  @override
+  String get logoutExplained =>
+      'ستحتاج إلى اسم المستخدم وكلمة المرور للدخول مرة أخرى.';
+
+  @override
+  String get confirmLogout => 'خروج';
+
+  @override
+  String get keepMeSignedIn => 'إبقني مسجّلاً الدخول على هذا الهاتف';
+
+  @override
+  String get serverUnreachable => 'تعذر الاتصال بالخادم، تحقق من الإنترنت';
 }

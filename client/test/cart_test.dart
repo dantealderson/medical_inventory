@@ -334,8 +334,7 @@ void main() {
     });
     expect(find.descendant(of: find.byType(Badge), matching: find.text('1')), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.logout));
-    await tester.pumpAndSettle();
+    await logOut(tester);
     await tester.enterText(fieldWithLabel('اسم المستخدم'), 'clinic_two');
     await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
     await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));

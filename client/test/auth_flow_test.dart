@@ -58,6 +58,31 @@ void main() {
       expect(find.text('اسم المستخدم'), findsOneWidget);
       await expectLater(store.readAccess(), completion(isNull));
     });
+
+    testWidgets('a server it cannot reach keeps the session, and retry signs in', (tester) async {
+      final store = InMemoryTokenStore();
+      await store.save(
+        const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900),
+      );
+      var serverUp = false;
+
+      await pumpApp(tester, (req) {
+        if (!serverUp) throw StateError('the server cannot be reached');
+        if (req.path == '/auth/me') return [200, activeUser];
+        if (req.path == '/categories') return [200, <dynamic>[]];
+        return [404, null];
+      }, store: store);
+
+      expect(find.text('تعذر الاتصال بالخادم، تحقق من الإنترنت'), findsOneWidget);
+      expect(find.text('اسم المستخدم'), findsNothing, reason: 'a lost signal is not a log out');
+      await expectLater(store.readAccess(), completion('a'));
+
+      serverUp = true;
+      await tester.tap(find.widgetWithText(FilledButton, 'إعادة المحاولة'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget, reason: 'home, with its search bar');
+    });
   });
 
   group('Login', () {
@@ -127,6 +152,38 @@ void main() {
       // Lands on BrowseScreen, which carries the catalog search bar.
       expect(find.byType(TextField), findsOneWidget);
       await expectLater(store.readAccess(), completion('access-1'));
+    });
+
+    testWidgets('«keep me signed in» is ticked unless the clinic unticks it', (tester) async {
+      await pumpApp(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
+      bool ticked() => tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value!;
+
+      expect(find.text('إبقني مسجّلاً الدخول على هذا الهاتف'), findsOneWidget);
+      expect(ticked(), isTrue);
+
+      await tester.tap(find.text('إبقني مسجّلاً الدخول على هذا الهاتف'));
+      await tester.pump();
+      expect(ticked(), isFalse);
+    });
+
+    testWidgets('unticked, the login works but nothing is saved on the phone', (tester) async {
+      final store = InMemoryTokenStore();
+      final backend = await pumpApp(tester, (req) {
+        if (req.path == '/auth/login') return [200, {'user': activeUser, ...tokens}];
+        if (req.path == '/categories') return [200, <dynamic>[]];
+        return [404, null];
+      }, store: store);
+
+      await tester.tap(find.text('إبقني مسجّلاً الدخول على هذا الهاتف'));
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_alnoor');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
+      await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget, reason: 'signed in, on home');
+      expect(backend.lastTo('/categories').headers['Authorization'], 'Bearer access-1');
+      await expectLater(store.readAccess(), completion(isNull));
+      await expectLater(store.readRefresh(), completion(isNull));
     });
   });
 
@@ -221,26 +278,59 @@ void main() {
   });
 
   group('Logout', () {
-    testWidgets('returns to the login screen and clears the store', (tester) async {
-      final store = InMemoryTokenStore();
+    late InMemoryTokenStore store;
+
+    Future<FakeApiBackend> pumpHome(WidgetTester tester) async {
+      store = InMemoryTokenStore();
       await store.save(
         const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900),
       );
-
-      await pumpApp(tester, (req) {
+      return pumpApp(tester, (req) {
         if (req.path == '/auth/me') return [200, activeUser];
         if (req.path == '/auth/logout') return [204, null];
         if (req.path == '/categories') return [200, <dynamic>[]];
         return [404, null];
       }, store: store);
+    }
+
+    Future<void> chooseLogout(WidgetTester tester) async {
+      await tester.tap(find.byTooltip('المزيد'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('تسجيل الخروج'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('is not a one-tap icon beside the cart', (tester) async {
+      await pumpHome(tester);
 
       expect(find.byType(TextField), findsOneWidget);
+      expect(find.byIcon(Icons.logout), findsNothing);
+    });
 
-      await tester.tap(find.byIcon(Icons.logout));
+    testWidgets('asks first, then returns to the login screen and clears the store', (
+      tester,
+    ) async {
+      await pumpHome(tester);
+
+      await chooseLogout(tester);
+      expect(find.text('تسجيل الخروج؟'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'خروج'));
       await tester.pumpAndSettle();
 
       expect(find.text('اسم المستخدم'), findsOneWidget);
       await expectLater(store.readAccess(), completion(isNull));
+    });
+
+    testWidgets('cancelling the question keeps the clinic signed in', (tester) async {
+      final backend = await pumpHome(tester);
+
+      await chooseLogout(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'إلغاء'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget, reason: 'still on home');
+      expect(backend.callsTo('/auth/logout'), 0);
+      await expectLater(store.readAccess(), completion('a'));
     });
   });
 }

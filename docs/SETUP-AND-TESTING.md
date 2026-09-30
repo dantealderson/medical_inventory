@@ -89,7 +89,11 @@ The emulator reaches your PC's backend at `10.0.2.2` automatically.
 1. On the phone, turn on USB debugging: Settings → About phone → tap «Build number» 7 times. Then open Developer options and turn on «USB debugging». On Xiaomi/Redmi phones, also turn on «Install via USB».
 2. Connect the phone to the PC with the cable. On the phone, accept «Allow USB debugging?».
 3. Check that Flutter sees the phone: `flutter devices` should list it.
-4. Forward the phone's port 3000 to your PC. In PowerShell:
+4. Forward the phone's port 3000 to your PC. In Command Prompt (cmd):
+   ```bat
+   "%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe" reverse tcp:3000 tcp:3000
+   ```
+   Or in PowerShell:
    ```powershell
    & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:3000 tcp:3000
    ```

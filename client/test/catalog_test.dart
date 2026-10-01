@@ -7,6 +7,8 @@ import 'package:client/features/catalog/category_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import 'support/harness.dart';
+import 'package:client/features/catalog/item_detail_screen.dart';
+import 'package:client/features/catalog/item_card.dart';
 
 Map<String, dynamic> category(
   String id,
@@ -299,6 +301,25 @@ void main() {
       expect(find.text('عدد الوحدات في العلبة'), findsOneWidget);
       expect(find.text('سعر العلبة'), findsOneWidget);
       expect(find.text('12,500 د.ع'), findsOneWidget);
+    });
+
+    testWidgets('back from an item opened in a section returns to that section', (tester) async {
+      await openApp(tester, routes(
+        categories: [category('c1', 'سرنجات', 1)],
+        items: [item('i1', 'سرنجة 5 مل')],
+      ));
+      await openShop(tester);
+      await tester.tap(find.text('سرنجات'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('سرنجة 5 مل'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ItemDetailScreen), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CategoryScreen), findsOneWidget);
+      expect(find.byType(ItemGridCard), findsOneWidget);
     });
 
     testWidgets('shows both names when the item has both', (tester) async {

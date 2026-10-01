@@ -88,7 +88,7 @@ class ItemGridCard extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.go(Routes.item(item.id)),
+        onTap: () => context.go(Routes.item(item.id, fromSection: item.categoryId)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

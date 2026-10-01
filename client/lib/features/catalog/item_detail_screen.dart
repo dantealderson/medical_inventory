@@ -12,14 +12,17 @@ import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
 import 'item_picture.dart';
 
-/// Full detail for one item.
-///
-/// It carries the large **+** that adds a box to the cart, and the expiry of
-/// the stock the clinic would actually receive (§12.2).
+/// Full detail for one item, in the style of the chosen design: a big
+/// picture, the name, what is in a box and when the stock the clinic would
+/// receive expires (§12.2), and a bar at the bottom with the price and the
+/// large **+** that adds a box to the cart.
 class ItemDetailScreen extends ConsumerWidget {
-  const ItemDetailScreen({required this.itemId, super.key});
+  const ItemDetailScreen({required this.itemId, this.fromSection, super.key});
 
   final String itemId;
+
+  /// The section whose grid opened this item, if one did.
+  final String? fromSection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,12 +30,16 @@ class ItemDetailScreen extends ConsumerWidget {
     final item = ref.watch(itemDetailProvider(itemId));
     final colors = context.appColors;
     final text = Theme.of(context).textTheme;
+    final data = item.value;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.items),
-        leading: const BackArrow(Routes.home),
+        // Back where it was opened: its section's grid, or home (where a
+        // search still shows its results).
+        leading: BackArrow(fromSection == null ? Routes.home : Routes.category(fromSection!)),
       ),
+      bottomNavigationBar: data == null ? null : _PriceBar(item: data),
       body: item.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
@@ -45,43 +52,90 @@ class ItemDetailScreen extends ConsumerWidget {
             ),
           ),
         ),
-        data: (data) => SingleChildScrollView(
-          padding: const EdgeInsetsDirectional.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (data.imageUrl != null) ...[
-                ItemPicture.full(data.imageUrl),
-                const SizedBox(height: 16),
-              ],
-              Text(data.displayName, style: text.headlineSmall),
-              // Both names when both exist — a supplier catalogue and a
-              // clinic's shelf label are often in different languages.
-              if (data.nameEn != null && data.nameAr != null) ...[
-                const SizedBox(height: 4),
-                Text(data.nameEn!, style: text.bodyMedium),
-              ],
-              const SizedBox(height: 24),
-              _DetailRow(
-                label: l10n.unitsPerBox,
-                value: '${data.unitsPerBox} ${data.unitLabelAr}',
-              ),
-              const SizedBox(height: 12),
-              _DetailRow(label: l10n.pricePerBox, value: formatIqd(data.pricePerBox)),
-              const SizedBox(height: 12),
-              _NextExpiry(itemId: itemId),
-              const SizedBox(height: 24),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: AddToCartButton(item: data, size: 64),
-              ),
-              if (data.description != null) ...[
-                const SizedBox(height: 24),
-                Text(
-                  data.description!,
-                  style: text.bodyMedium?.copyWith(color: colors.onSurface),
+        data: (data) => ListView(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 24),
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: ColoredBox(
+                color: colors.pictureBackground,
+                child: SizedBox(
+                  height: 240,
+                  child: Center(
+                    child: data.imageUrl == null
+                        ? ItemPicture.thumb(null, size: 120)
+                        : ItemPicture.full(data.imageUrl, height: 240),
+                  ),
                 ),
-              ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(data.displayName, style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+            // Both names when both exist: a supplier catalogue and a
+            // clinic's shelf label are often in different languages.
+            if (data.nameEn != null && data.nameAr != null)
+              Text(data.nameEn!, style: TextStyle(fontSize: 16, color: colors.textMuted)),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
+                child: Column(
+                  children: [
+                    _DetailRow(
+                      label: l10n.unitsPerBox,
+                      value: '${data.unitsPerBox} ${data.unitLabelAr}',
+                    ),
+                    _NextExpiry(itemId: itemId),
+                  ],
+                ),
+              ),
+            ),
+            if (data.description != null) ...[
+              const SizedBox(height: 16),
+              Text(data.description!, style: text.bodyLarge),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The bar at the bottom: the price of a box, and the big + beside it.
+class _PriceBar extends StatelessWidget {
+  const _PriceBar({required this.item});
+
+  final Item item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.appColors;
+
+    return Material(
+      color: colors.surface,
+      elevation: 8,
+      shadowColor: colors.shadow,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.pricePerBox, style: TextStyle(fontSize: 14, color: colors.textMuted)),
+                    Text(
+                      formatIqd(item.pricePerBox),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: colors.primary),
+                    ),
+                  ],
+                ),
+              ),
+              AddToCartButton(item: item, size: 64),
             ],
           ),
         ),
@@ -124,13 +178,15 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: text.bodyMedium),
-        Text(value, style: text.titleSmall),
-      ],
+    final colors = context.appColors;
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Expanded(child: Text(label, style: TextStyle(fontSize: 16, color: colors.textMuted))),
+          Text(value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+        ],
+      ),
     );
   }
 }

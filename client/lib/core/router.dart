@@ -28,7 +28,11 @@ abstract final class Routes {
   static const pending = '/pending';
   static const home = '/';
   static String category(String id) => '/category/$id';
-  static String item(String id) => '/item/$id';
+  /// [fromSection]: opened from that section's grid, so back returns there.
+  /// From search, deals or anywhere else, back goes home, where a search
+  /// still shows its results.
+  static String item(String id, {String? fromSection}) =>
+      fromSection == null ? '/item/$id' : '/item/$id?from=$fromSection';
   static const cart = '/cart';
   static const orders = '/orders';
   static String order(String id) => '/orders/$id';
@@ -90,7 +94,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/item/:id',
-        builder: (_, state) => ItemDetailScreen(itemId: state.pathParameters['id']!),
+        builder: (_, state) => ItemDetailScreen(
+          itemId: state.pathParameters['id']!,
+          fromSection: state.uri.queryParameters['from'],
+        ),
       ),
       GoRoute(path: Routes.cart, builder: (_, _) => const CartScreen()),
       GoRoute(path: Routes.orders, builder: (_, _) => const OrdersScreen()),

@@ -147,6 +147,9 @@
     "description": "Above the clinic's name on the home header"
   },
   "newItems": "أصناف جديدة",
+  "orderSummary": "ملخص الطلب",
+  "summaryLines": "عدد الأصناف",
+  "summaryBoxes": "عدد العلب",
   "itemCount": "{count, plural, =0{لا أصناف} =1{صنف واحد} =2{صنفان} few{{count} أصناف} many{{count} صنفاً} other{{count} صنف}}",
   "@itemCount": {
     "description": "Above a section's items",

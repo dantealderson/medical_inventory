@@ -37,7 +37,7 @@ List<Object?> Function(SeenRequest) shop({
 
 /// The widgets inside the cart card that shows [name].
 Finder onLine(String name, Finder matching) => find.descendant(
-  of: find.ancestor(of: find.text(name), matching: find.byType(Card)),
+  of: find.ancestor(of: find.text(name), matching: find.byType(CartLineRow)),
   matching: matching,
 );
 
@@ -208,8 +208,9 @@ void main() {
       expect(onLine('سرنجة 5 مل', find.text('25,000 د.ع')), findsOneWidget);
       expect(onLine('سرنجة 5 مل', find.text('200 سرنجة')), findsOneWidget);
       expect(onLine('قفازات طبية', find.text('4,000 د.ع')), findsOneWidget);
-      expect(find.text('المجموع'), findsOneWidget);
-      expect(find.text('29,000 د.ع'), findsOneWidget);
+      // In the summary, and again in the bar with «إرسال الطلب».
+      expect(find.text('المجموع'), findsNWidgets(2));
+      expect(find.text('29,000 د.ع'), findsNWidgets(2));
     });
 
     testWidgets('+ sends the new absolute quantity', (tester) async {
@@ -364,6 +365,6 @@ void main() {
     await tester.tap(find.byTooltip('السلة'));
     await tester.pumpAndSettle();
     expect(find.text('قفازات طبية'), findsOneWidget);
-    expect(find.text('16,500 د.ع'), findsOneWidget);
+    expect(find.text('16,500 د.ع'), findsNWidgets(2), reason: 'the summary and the bottom bar');
   });
 }

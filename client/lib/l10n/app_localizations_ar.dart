@@ -128,6 +128,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newItems => 'أصناف جديدة';
 
   @override
+  String get orderSummary => 'ملخص الطلب';
+
+  @override
+  String get summaryLines => 'عدد الأصناف';
+
+  @override
+  String get summaryBoxes => 'عدد العلب';
+
+  @override
   String itemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

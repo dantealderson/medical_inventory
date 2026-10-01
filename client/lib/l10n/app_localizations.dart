@@ -328,6 +328,24 @@ abstract class AppLocalizations {
   /// **'أصناف جديدة'**
   String get newItems;
 
+  /// No description provided for @orderSummary.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملخص الطلب'**
+  String get orderSummary;
+
+  /// No description provided for @summaryLines.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الأصناف'**
+  String get summaryLines;
+
+  /// No description provided for @summaryBoxes.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد العلب'**
+  String get summaryBoxes;
+
   /// Above a section's items
   ///
   /// In ar, this message translates to:

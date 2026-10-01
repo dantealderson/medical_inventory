@@ -196,6 +196,71 @@ void main() {
       expect(find.widgetWithText(FilledButton, 'موافقة'), findsNothing);
       expect(find.text('مفعّل'), findsOneWidget);
     });
+
+    testWidgets('«حذف الحساب» asks first, then deletes the clinic for it', (tester) async {
+      var deleted = false;
+      final backend = await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users') {
+          return [
+            200,
+            page([
+              account(
+                'u1',
+                deleted ? 'deleted-u1' : 'lab_one',
+                deleted ? 'SUSPENDED' : 'ACTIVE',
+                clinicName: 'مختبر النور',
+                deletedAt: deleted ? '2026-10-01T09:00:00.000Z' : null,
+              ),
+            ]),
+          ];
+        }
+        if (req.path == '/admin/users/u1/delete') {
+          deleted = true;
+          return [204, null];
+        }
+        if (req.path == '/admin/orders') return [200, {'items': <Object>[], 'nextCursor': null}];
+        return [404, null];
+      });
+      await openAccountsTab(tester);
+      await tester.tap(find.text('مختبر النور'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'حذف الحساب'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('لا يمكن التراجع'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'حذف الحساب'));
+      await tester.pumpAndSettle();
+
+      expect(backend.lastTo('/admin/users/u1/delete').method, 'POST');
+      expect(find.text('محذوف'), findsOneWidget);
+    });
+
+    testWidgets('a clinic that deleted its account says so and offers nothing to undo it', (tester) async {
+      final deleted = account(
+        'u1',
+        'deleted-u1',
+        'SUSPENDED',
+        clinicName: 'مختبر النور',
+        deletedAt: '2026-10-01T09:00:00.000Z',
+      );
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users') return [200, page([deleted])];
+        if (req.path == '/admin/orders') return [200, {'items': <Object>[], 'nextCursor': null}];
+        return [404, null];
+      });
+      await openAccountsTab(tester);
+
+      expect(find.text('محذوف'), findsOneWidget);
+      await tester.tap(find.text('مختبر النور'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('حذف العميل حسابه في 2026-10-01'), findsOneWidget);
+      expect(find.text('إعادة تفعيل'), findsNothing);
+      expect(find.text('إعادة تعيين كلمة المرور'), findsNothing);
+      expect(find.text('deleted-u1'), findsNothing);
+    });
   });
 
   group('Responsive', () {

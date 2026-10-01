@@ -69,6 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
     final auth = ref.watch(authControllerProvider);
     final sessionEnded = auth is AuthLoggedOut && auth.sessionEnded;
+    final accountDeleted = auth is AuthLoggedOut && auth.accountDeleted;
 
     return AuthScaffold(
       title: l10n.login,
@@ -76,7 +77,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (_errorAr != null)
           AuthErrorBanner(messageAr: _errorAr!)
         else if (sessionEnded)
-          AuthErrorBanner(messageAr: l10n.sessionEnded),
+          AuthErrorBanner(messageAr: l10n.sessionEnded)
+        else if (accountDeleted)
+          AuthNoticeBanner(messageAr: l10n.accountDeletedNotice),
         Form(
           key: _formKey,
           child: Column(

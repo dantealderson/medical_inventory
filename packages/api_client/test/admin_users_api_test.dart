@@ -61,6 +61,13 @@ void main() {
       expect(h.backend.callsTo('/admin/users/u1/reactivate'), 1);
     });
 
+    test('deleteAccount deletes a clinic for it', () async {
+      final h = _build((req, nth) => [204, null]);
+      await h.api.deleteAccount('u1');
+
+      expect(h.backend.lastTo('/admin/users/u1/delete').method, 'POST');
+    });
+
     test('resetPassword sends the new password', () async {
       final h = _build((req, nth) => [200, {'ok': true}]);
       await h.api.resetPassword('u1', 'brandnewpassword9');

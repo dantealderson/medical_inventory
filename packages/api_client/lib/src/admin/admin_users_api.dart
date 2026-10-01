@@ -48,6 +48,12 @@ class AdminUsersApi {
   Future<SessionUser> suspend(String userId) => _action(userId, 'suspend');
   Future<SessionUser> reactivate(String userId) => _action(userId, 'reactivate');
 
+  /// Deletes a clinic's account for it, as the clinic could from the app:
+  /// for a clinic that asks without the app. Throws ORDERS_IN_PROGRESS while
+  /// an order is on its way.
+  Future<void> deleteAccount(String userId) =>
+      _call(() => _dio.post<dynamic>('/admin/users/$userId/delete'), (_) {});
+
   /// Sets a new password and revokes every active session for that account.
   Future<void> resetPassword(String userId, String newPassword) {
     return _call(

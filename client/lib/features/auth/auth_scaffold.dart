@@ -49,6 +49,38 @@ class AuthScaffold extends StatelessWidget {
   }
 }
 
+/// A calm note on an auth screen: something the person did went through.
+class AuthNoticeBanner extends StatelessWidget {
+  const AuthNoticeBanner({required this.messageAr, super.key});
+
+  final String messageAr;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: 12),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.primary.withValues(alpha: 0.08),
+          border: Border.all(color: colors.primary),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(12),
+          child: Row(
+            children: [
+              Icon(Icons.check_circle_outline, color: colors.primary),
+              const SizedBox(width: 8),
+              Expanded(child: Text(messageAr, style: TextStyle(color: colors.primary))),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Displays an `ApiException.messageAr` — never a raw transport message and
 /// never an English string.
 class AuthErrorBanner extends StatelessWidget {

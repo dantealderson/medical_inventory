@@ -46,6 +46,11 @@ model User {
   phone       String?
   address     String?
 
+  /// Set when the clinic deleted its own account from the app (a Google Play
+  /// rule). Its personal details are erased and it is SUSPENDED for good;
+  /// its orders and stock history stay as the supplier's records.
+  deletedAt DateTime?
+
   approvedById String?
   approvedAt   DateTime?
   createdAt    DateTime  @default(now())
@@ -568,6 +573,7 @@ enum NotificationType {
   CLIENT_OUT_OF_STOCK
   EXPIRY_WARNING
   ADMIN_BROADCAST
+  ACCOUNT_DELETED
 }
 
 /// Every notification is a row first; push is a best-effort layer on top

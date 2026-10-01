@@ -1,5 +1,14 @@
+import { randomBytes } from 'node:crypto';
+
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { NotificationType, UserStatus, type User } from '@prisma/client';
+import {
+  NotificationType,
+  OrderStatus,
+  Role,
+  UserStatus,
+  type Notification,
+  type User,
+} from '@prisma/client';
 
 import { AuditService } from '../audit/audit.service';
 import { PasswordService } from '../auth/password.service';
@@ -88,8 +97,105 @@ export class UsersService {
     return this.transition(adminId, userId, UserStatus.ACTIVE, 'CLIENT_REACTIVATED');
   }
 
+  /**
+   * A clinic deleting its own account from the app (a Google Play rule). Its
+   * personal details go at once and the account stays SUSPENDED for good.
+   * Its orders, stock history and clinic name stay: they are the supplier's
+   * business records, as the privacy policy says. The admins are told.
+   */
+  async deleteOwnAccount(userId: string, password: string): Promise<void> {
+    const user = await this.findOrThrow(userId);
+    if (!(await this.passwords.verify(user.passwordHash, password))) {
+      throw new AppException(HttpStatus.FORBIDDEN, 'WRONG_PASSWORD', ERROR_CODES.WRONG_PASSWORD);
+    }
+    const notes = await this.erase(user, userId, 'Deleted by the clinic from the app; personal details erased');
+    await this.notifications.push(notes);
+  }
+
+  /**
+   * The same deletion, done by an admin for a clinic that asked without the
+   * app (the privacy policy's web page promises it). Only clinic accounts.
+   */
+  async deleteForClient(adminId: string, userId: string): Promise<void> {
+    const user = await this.findOrThrow(userId);
+    if (user.role !== Role.CLIENT) {
+      throw new AppException(HttpStatus.FORBIDDEN, 'FORBIDDEN', ERROR_CODES.FORBIDDEN);
+    }
+    this.refuseIfDeleted(user);
+    await this.erase(user, adminId, 'Deleted by an admin at the clinic’s request; personal details erased');
+  }
+
+  /**
+   * Erases a clinic's personal details and ends the account, in one
+   * transaction. Returns the admins' notifications when the clinic did it
+   * itself, for the caller to push after the commit.
+   */
+  private async erase(user: User, actorUserId: string, note: string): Promise<Notification[]> {
+    const userId = user.id;
+    // A delivery on its way would arrive for an account that no longer exists.
+    const inProgress = await this.prisma.order.count({
+      where: {
+        clientId: userId,
+        status: { in: [OrderStatus.PLACED, OrderStatus.CONFIRMED, OrderStatus.OUT_FOR_DELIVERY] },
+      },
+    });
+    if (inProgress > 0) {
+      throw new AppException(HttpStatus.CONFLICT, 'ORDERS_IN_PROGRESS', ERROR_CODES.ORDERS_IN_PROGRESS);
+    }
+
+    const now = new Date();
+    const unusable = await this.passwords.hash(randomBytes(32).toString('hex'));
+    return this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          status: UserStatus.SUSPENDED,
+          deletedAt: now,
+          // Frees the name for someone else; the id keeps this one unique.
+          username: `deleted-${userId}`,
+          passwordHash: unusable,
+          contactName: null,
+          phone: null,
+          address: null,
+        },
+      });
+      // The orders stay; the copies of the address and phone they took do not.
+      await tx.order.updateMany({
+        where: { clientId: userId },
+        data: { addressSnapshot: null, phoneSnapshot: null },
+      });
+      await tx.refreshToken.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: now } });
+      await tx.deviceToken.deleteMany({ where: { userId } });
+      await tx.cart.deleteMany({ where: { clientId: userId } });
+      await tx.notification.deleteMany({ where: { recipientUserId: userId } });
+      // Out of the nightly jobs, the alerts and the dashboard, as "stop tracking" does.
+      await tx.clientInventoryItem.updateMany({
+        where: { clientId: userId, trackingStoppedAt: null },
+        data: { trackingStoppedAt: now },
+      });
+      await this.audit.record(
+        {
+          actorUserId,
+          action: 'ACCOUNT_DELETED',
+          entityType: 'user',
+          entityId: userId,
+          before: { status: user.status },
+          after: { status: UserStatus.SUSPENDED },
+          note,
+        },
+        tx,
+      );
+      if (actorUserId !== userId) return [];
+      return this.notifications.createForAdmins(tx, {
+        type: NotificationType.ACCOUNT_DELETED,
+        ...texts.accountDeleted(user.clinicName ?? user.username),
+        payload: { clientId: userId },
+      });
+    });
+  }
+
   async resetPassword(adminId: string, userId: string, newPassword: string): Promise<void> {
-    await this.findOrThrow(userId);
+    this.refuseIfDeleted(await this.findOrThrow(userId));
 
     const passwordHash = await this.passwords.hash(newPassword);
     await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
@@ -117,6 +223,7 @@ export class UsersService {
     extra: Record<string, unknown> = {},
   ): Promise<SessionUser> {
     const before = await this.findOrThrow(userId);
+    this.refuseIfDeleted(before);
 
     const after = await this.prisma.user.update({
       where: { id: userId },
@@ -133,6 +240,13 @@ export class UsersService {
     });
 
     return toSessionUser(after);
+  }
+
+  /** A deleted account has no details left to sign in with or approve. */
+  private refuseIfDeleted(user: User): void {
+    if (user.deletedAt) {
+      throw new AppException(HttpStatus.CONFLICT, 'ACCOUNT_DELETED', ERROR_CODES.ACCOUNT_DELETED);
+    }
   }
 
   private async findOrThrow(userId: string): Promise<User> {

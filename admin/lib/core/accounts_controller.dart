@@ -47,6 +47,7 @@ class AccountActions {
   Future<void> reject(String id) => _then(_api.reject(id));
   Future<void> suspend(String id) => _then(_api.suspend(id));
   Future<void> reactivate(String id) => _then(_api.reactivate(id));
+  Future<void> deleteAccount(String id) => _then(_api.deleteAccount(id));
 
   Future<void> resetPassword(String id, String newPassword) =>
       _then(_api.resetPassword(id, newPassword));

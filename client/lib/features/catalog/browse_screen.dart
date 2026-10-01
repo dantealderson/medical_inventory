@@ -16,7 +16,7 @@ import 'item_card.dart';
 import 'item_picture.dart';
 import 'search_results_view.dart';
 
-enum _HomeMenu { logout }
+enum _HomeMenu { logout, deleteAccount }
 
 /// Log out, after a «هل تريد…» question.
 Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
@@ -107,6 +107,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
             tooltip: l10n.more,
             onSelected: (choice) => switch (choice) {
               _HomeMenu.logout => _confirmLogout(context, ref),
+              _HomeMenu.deleteAccount => context.go(Routes.deleteAccount),
             },
             itemBuilder: (_) => [
               PopupMenuItem(
@@ -114,6 +115,15 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.logout),
                   title: Text(l10n.logout),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              // Last, and a page of its own that asks twice: it cannot be undone.
+              PopupMenuItem(
+                value: _HomeMenu.deleteAccount,
+                child: ListTile(
+                  leading: const Icon(Icons.person_remove_outlined),
+                  title: Text(l10n.deleteAccount),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),

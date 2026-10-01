@@ -90,7 +90,7 @@ class _AccountCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  AccountStatusChip(status: user.status),
+                  AccountStatusChip(status: user.status, deleted: user.isDeleted),
                 ],
               ),
               const SizedBox(height: 4),

@@ -147,6 +147,41 @@ void main() {
       await expectLater(h.store.readRefresh(), completion(isNull));
     });
 
+    test('deleteAccount sends the password, then clears the store', () async {
+      final h = _build((req, nth) {
+        if (req.path == '/auth/login') return [200, {'user': _user, ..._tokens}];
+        return [204, null];
+      });
+      await h.api.login(username: 'lab_alnoor', password: 'goodpassword1');
+      await h.api.deleteAccount('goodpassword1');
+
+      final sent = h.adapter.seen.firstWhere((r) => r.path == '/auth/delete-account');
+      expect(sent.method, 'POST');
+      expect(sent.body, {'password': 'goodpassword1'});
+      await expectLater(h.store.readAccess(), completion(isNull));
+    });
+
+    test('deleteAccount refused keeps the session and says why', () async {
+      final h = _build((req, nth) {
+        if (req.path == '/auth/login') return [200, {'user': _user, ..._tokens}];
+        return [403, {'statusCode': 403, 'code': 'WRONG_PASSWORD', 'messageAr': 'كلمة المرور غير صحيحة'}];
+      });
+      await h.api.login(username: 'lab_alnoor', password: 'goodpassword1');
+
+      await expectLater(
+        h.api.deleteAccount('wrong'),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'WRONG_PASSWORD')),
+      );
+      await expectLater(h.store.readAccess(), completion('access-1'));
+    });
+
+    test('a deleted account says when it was deleted', () {
+      final user = SessionUser.fromJson({..._user, 'status': 'SUSPENDED', 'deletedAt': '2026-10-01T12:00:00.000Z'});
+      expect(user.isDeleted, isTrue);
+      expect(user.deletedAt, DateTime.utc(2026, 10, 1, 12));
+      expect(SessionUser.fromJson(_user).isDeleted, isFalse);
+    });
+
     test('logout clears locally even when the server call fails', () async {
       // A dead network must not strand the user in a logged-in-looking state.
       final h = _build((req, nth) {

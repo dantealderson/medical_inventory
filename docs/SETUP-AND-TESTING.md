@@ -295,6 +295,18 @@ The jobs run by themselves at 00:30 Baghdad time. To run them now:
 
 Anything that looks wrong: note the step number and what you saw, and send it to me.
 
+### L. Push notifications and deleting an account (2026-10-01)
+
+Needs the online version (`docs/HOSTING.md`) and the Firebase key on Render.
+
+1. Install the app from the link, sign in as `clinic_alnoor`, and allow notifications when the phone asks.
+2. Lock the phone. In the admin, confirm the waiting order: «تم تأكيد طلبك» pops up on the phone within seconds.
+3. Tap it: the app opens on that order.
+4. With the app open, send a message from the admin's notifications tab: a bar with the message and «عرض» appears at the bottom.
+5. Delete an account: sign in as `clinic_alshifa`, then «المزيد» (⋮) → «حذف الحساب». Read the page, type the password, press «حذف حسابي نهائياً», then «حذف». The login screen says «تم حذف حسابك.».
+6. In the admin, that clinic now shows «محذوف», with no buttons, and its old order still listed. The bell has «حذف العميل … حسابه».
+7. Try `clinic_alnoor`: with its order still waiting, deleting is refused with «لديك طلبات لم تصل بعد…».
+
 ---
 
 ## 3. Where the project stands

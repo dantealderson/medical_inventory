@@ -65,6 +65,15 @@ class AuthApi {
     return _call(() => _dio.get<dynamic>('/auth/me'), (data) => SessionUser.fromJson(_asMap(data)));
   }
 
+  /// Deletes the signed-in clinic's own account; [password] confirms it. The
+  /// server ends every session, so the tokens are cleared here too. Throws
+  /// [ApiException] (WRONG_PASSWORD, ORDERS_IN_PROGRESS) and keeps the
+  /// session when refused.
+  Future<void> deleteAccount(String password) async {
+    await _call(() => _dio.post<dynamic>('/auth/delete-account', data: {'password': password}), (_) {});
+    await _store.clear();
+  }
+
   /// Best-effort server revocation, then unconditional local clear.
   ///
   /// The clear happens even if the request fails: leaving tokens behind on a

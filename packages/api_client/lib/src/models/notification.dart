@@ -13,6 +13,7 @@ enum NotificationType {
   clientOutOfStock('CLIENT_OUT_OF_STOCK'),
   expiryWarning('EXPIRY_WARNING'),
   adminBroadcast('ADMIN_BROADCAST'),
+  accountDeleted('ACCOUNT_DELETED'),
   unknown('UNKNOWN');
 
   const NotificationType(this.wire);

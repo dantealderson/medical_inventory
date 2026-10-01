@@ -100,6 +100,25 @@
   "@statusSuspended": {
     "description": "UserStatus SUSPENDED"
   },
+  "deleteAccount": "حذف الحساب",
+  "@deleteAccount": {
+    "description": "For a clinic that asks to be deleted without the app"
+  },
+  "confirmDeleteAccount": "تُحذف بيانات العيادة الشخصية (اسم المسؤول والهاتف والعنوان) ولا يمكنها الدخول مرة أخرى. تبقى طلباتها وسجل مخزونه باسمها. لا يمكن التراجع عن ذلك. هل تريد المتابعة؟",
+  "@confirmDeleteAccount": {
+    "description": "The question before an admin deletes a clinic's account"
+  },
+  "statusDeleted": "محذوف",
+  "@statusDeleted": {
+    "description": "A clinic that deleted its own account from the app"
+  },
+  "accountDeletedOn": "حذف العميل حسابه في {date}. حُذفت بياناته الشخصية، وبقيت طلباته وسجل مخزونه.",
+  "@accountDeletedOn": {
+    "description": "The account page of a clinic that deleted its own account",
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "statusRejected": "مرفوض",
   "@statusRejected": {
     "description": "UserStatus REJECTED"

@@ -21,11 +21,14 @@ class AuthUnreachable extends AuthState {
 }
 
 class AuthLoggedOut extends AuthState {
-  const AuthLoggedOut({this.sessionEnded = false});
+  const AuthLoggedOut({this.sessionEnded = false, this.accountDeleted = false});
 
   /// The server ended the session: the account was suspended, its password
   /// was reset, or it went unused too long. The login screen says so.
   final bool sessionEnded;
+
+  /// The clinic has just deleted its own account. The login screen says so.
+  final bool accountDeleted;
 }
 
 class AuthAuthenticated extends AuthState {
@@ -66,8 +69,12 @@ class AuthController extends Notifier<AuthState> {
   /// screen and say why. Log out and a refused startup are not signed in when
   /// they clear, so they do not come through here.
   void _onTokensCleared() {
-    if (state is AuthAuthenticated) state = const AuthLoggedOut(sessionEnded: true);
+    if (state is AuthAuthenticated && !_deleting) state = const AuthLoggedOut(sessionEnded: true);
   }
+
+  /// Deleting the account clears the tokens on purpose; that is not the
+  /// server ending the session.
+  bool _deleting = false;
 
   AuthApi get _api => ref.read(authApiProvider);
   SessionTokenStore get _store => ref.read(sessionStoreProvider);
@@ -136,6 +143,18 @@ class AuthController extends Notifier<AuthState> {
       phone: phone,
       address: address,
     );
+  }
+
+  /// Deletes the clinic's own account. Throws [ApiException] when refused (a
+  /// wrong password, an order on its way) and stays signed in.
+  Future<void> deleteAccount(String password) async {
+    _deleting = true;
+    try {
+      await _api.deleteAccount(password);
+    } finally {
+      _deleting = false;
+    }
+    state = const AuthLoggedOut(accountDeleted: true);
   }
 
   /// Runs at the start of [logout], while the session still works. Set by

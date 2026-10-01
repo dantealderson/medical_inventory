@@ -15,6 +15,8 @@ export interface SessionUser {
   role: User['role'];
   status: UserStatus;
   clinicName: string | null;
+  /** When the clinic deleted its own account; null for every other account. */
+  deletedAt: Date | null;
 }
 
 /**
@@ -28,6 +30,7 @@ export function toSessionUser(user: User): SessionUser {
     role: user.role,
     status: user.status,
     clinicName: user.clinicName,
+    deletedAt: user.deletedAt,
   };
 }
 

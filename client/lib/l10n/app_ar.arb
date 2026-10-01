@@ -651,6 +651,23 @@
   "@categoryUnavailable": {
     "description": "Category screen: the category is no longer in the catalog"
   },
+  "accountDeletedNotice": "تم حذف حسابك.",
+  "@accountDeletedNotice": {
+    "description": "The login screen, right after the clinic deleted its account"
+  },
+  "deleteAccount": "حذف الحساب",
+  "@deleteAccount": {
+    "description": "The «المزيد» menu entry and the page's title"
+  },
+  "deleteAccountIntro": "عند حذف حسابك:",
+  "deleteAccountErases": "تُحذف بياناتك الشخصية: اسم المسؤول ورقم الهاتف والعنوان.",
+  "deleteAccountNoSignIn": "لا يمكن الدخول بهذا الحساب مرة أخرى.",
+  "deleteAccountKeeps": "تبقى طلباتك السابقة وسجل المخزون باسم العيادة لدى المورّد، لأنها سجلات بيع.",
+  "deleteAccountFinal": "لا يمكن التراجع عن الحذف.",
+  "deleteAccountPasswordPrompt": "للتأكيد، اكتب كلمة المرور:",
+  "deleteAccountButton": "حذف حسابي نهائياً",
+  "deleteAccountQuestion": "حذف الحساب نهائياً؟",
+  "deleteAccountConfirm": "حذف",
   "sessionEnded": "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
   "@sessionEnded": {
     "description": "Login: the server ended the session (account suspended, password reset, or unused too long)"

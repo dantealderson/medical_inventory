@@ -18,11 +18,18 @@
   - A tapped push opens its order or item, as the centre does, and marks it read; one that started the app waits for the session check. One arriving while the app is open shows its title in a bar with «عرض» and reloads the bell.
   - Android: the «التنبيهات» channel (`alerts`, high importance) made in `MainActivity`, a white status-bar icon `ic_stat_notify`, teal accent. The server sends `android.priority: high`.
   - Not yet seen on a real phone: that needs the user's step 5 (the service-account key on Render).
+- **Account deletion (step 15), built:** the user chose "deleted at once" (2026-10-01).
+  - `POST /auth/delete-account {password}` (clinics only) and `POST /admin/users/:id/delete` (an admin, for a clinic that asks without the app) share `UsersService.erase`.
+  - Erased at once: contact name, phone, address, and the address/phone copies on its orders; sessions, device tokens, cart, notifications. The username becomes `deleted-<id>` (free again), the password unusable, status SUSPENDED, `users.deletedAt` set, tracking stopped on all its stock.
+  - Kept: orders, stock history, the clinic name. Refused with ORDERS_IN_PROGRESS while an order is PLACED, CONFIRMED or OUT_FOR_DELIVERY; WRONG_PASSWORD is 403 (not 401, which the refresh interceptor would treat as an expired session).
+  - A deleted account cannot be approved, reactivated or given a password (ACCOUNT_DELETED). The admins get an ACCOUNT_DELETED notification when the clinic did it.
+  - Client: «المزيد» → «حذف الحساب», a page that says what goes and stays, the password, and one more question. The login screen then says «تم حذف حسابك.». Admin: «محذوف» chip, no actions on the page, and a «حذف الحساب» button on clinic accounts.
+- **Privacy policy and deletion page (step 16):** `admin/web/privacy.html` and `admin/web/delete-account.html`, Arabic then English, published with the admin site at `https://dantealderson.github.io/medical_inventory/privacy.html` and `.../delete-account.html`. **Both have a `[رقم الهاتف أو البريد الإلكتروني]` / `[phone number or email]` placeholder for the user to fill in (step 21).**
 - `flutter build appbundle` works and is signed `CN=Medical Supply, C=IQ`. Flutter reports "failed to strip debug symbols" although the toolchain is complete; the bundle is still produced. Look at it before the first Play upload.
 
 **The plan, in order:**
 - **The user, now:** 1 decisions (done) · 2 Play account · 3 Neon · 4 Render · 5 Firebase service-account key into Render as `FIREBASE_SERVICE_ACCOUNT_JSON` · 6 GitHub Pages + `API_BASE_URL` · 7 try it on a phone · 8 back up `medinv-signing` · 9 find 12+ testers.
-- **Me:** 10 app id, name, icon (done) · 11 signing + .aab (done) · 12 push (built; untested on a phone until step 5) · 13 fix what breaks online · 14 daily database backups · 15 account deletion in the app and on a web page (a Play rule) · 16 privacy policy on GitHub Pages · 17 the redesign (`design-canvas` memory) with IQD prices and the two Phase 4 minors · 18 a review of the Phase 4 stock and estimate logic · 19 Excel import only if needed.
+- **Me:** 10 app id, name, icon (done) · 11 signing + .aab (done) · 12 push (built; untested on a phone until step 5) · 13 fix what breaks online · 14 daily database backups · 15 account deletion (built) · 16 privacy policy and deletion page (built; contact details to fill in) · 17 the redesign (`design-canvas` memory) with IQD prices and the two Phase 4 minors · 18 a review of the Phase 4 stock and estimate logic · 19 Excel import only if needed.
 - **Later:** 20 the user's UI comments · 21 the user checks the privacy policy · 22 Play closed test and listing · 23 2–3 days of heavy testing · 24 fixes and re-test · 25 real server and domain · 26 the real catalogue on a clean database · 27 apply for production and publish.
 
 **Earlier work order (2026-10-01), superseded by the plan above:**

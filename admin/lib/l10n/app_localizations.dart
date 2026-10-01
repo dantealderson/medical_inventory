@@ -244,6 +244,30 @@ abstract class AppLocalizations {
   /// **'موقوف'**
   String get statusSuspended;
 
+  /// For a clinic that asks to be deleted without the app
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get deleteAccount;
+
+  /// The question before an admin deletes a clinic's account
+  ///
+  /// In ar, this message translates to:
+  /// **'تُحذف بيانات العيادة الشخصية (اسم المسؤول والهاتف والعنوان) ولا يمكنها الدخول مرة أخرى. تبقى طلباتها وسجل مخزونه باسمها. لا يمكن التراجع عن ذلك. هل تريد المتابعة؟'**
+  String get confirmDeleteAccount;
+
+  /// A clinic that deleted its own account from the app
+  ///
+  /// In ar, this message translates to:
+  /// **'محذوف'**
+  String get statusDeleted;
+
+  /// The account page of a clinic that deleted its own account
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف العميل حسابه في {date}. حُذفت بياناته الشخصية، وبقيت طلباته وسجل مخزونه.'**
+  String accountDeletedOn(String date);
+
   /// UserStatus REJECTED
   ///
   /// In ar, this message translates to:

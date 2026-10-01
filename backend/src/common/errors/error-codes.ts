@@ -54,6 +54,10 @@ export const ERROR_CODES = Object.freeze({
   NOTIFICATION_NOT_FOUND: 'الإشعار غير موجود',
   DEVICE_NOT_FOUND: 'الجهاز غير مسجل',
   JOBS_ALREADY_RUNNING: 'التحديث الليلي قيد التشغيل حالياً',
+  // --- Deleting an account (Google Play) ---
+  WRONG_PASSWORD: 'كلمة المرور غير صحيحة',
+  ORDERS_IN_PROGRESS: 'لديك طلبات لم تصل بعد. يمكنك حذف الحساب بعد وصولها أو إلغائها.',
+  ACCOUNT_DELETED: 'حذف العميل هذا الحساب، ولا يمكن إعادته',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

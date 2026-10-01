@@ -922,6 +922,72 @@ abstract class AppLocalizations {
   /// **'هذا القسم لم يعد متوفراً'**
   String get categoryUnavailable;
 
+  /// The login screen, right after the clinic deleted its account
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف حسابك.'**
+  String get accountDeletedNotice;
+
+  /// The «المزيد» menu entry and the page's title
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'عند حذف حسابك:'**
+  String get deleteAccountIntro;
+
+  /// No description provided for @deleteAccountErases.
+  ///
+  /// In ar, this message translates to:
+  /// **'تُحذف بياناتك الشخصية: اسم المسؤول ورقم الهاتف والعنوان.'**
+  String get deleteAccountErases;
+
+  /// No description provided for @deleteAccountNoSignIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن الدخول بهذا الحساب مرة أخرى.'**
+  String get deleteAccountNoSignIn;
+
+  /// No description provided for @deleteAccountKeeps.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبقى طلباتك السابقة وسجل المخزون باسم العيادة لدى المورّد، لأنها سجلات بيع.'**
+  String get deleteAccountKeeps;
+
+  /// No description provided for @deleteAccountFinal.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن التراجع عن الحذف.'**
+  String get deleteAccountFinal;
+
+  /// No description provided for @deleteAccountPasswordPrompt.
+  ///
+  /// In ar, this message translates to:
+  /// **'للتأكيد، اكتب كلمة المرور:'**
+  String get deleteAccountPasswordPrompt;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف حسابي نهائياً'**
+  String get deleteAccountButton;
+
+  /// No description provided for @deleteAccountQuestion.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب نهائياً؟'**
+  String get deleteAccountQuestion;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get deleteAccountConfirm;
+
   /// Login: the server ended the session (account suspended, password reset, or unused too long)
   ///
   /// In ar, this message translates to:

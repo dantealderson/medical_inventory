@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/accounts_controller.dart';
 import '../../core/formatting.dart';
@@ -61,51 +62,65 @@ class _Body extends ConsumerWidget {
                 children: [
                   Text(user.clinicName ?? user.username, style: text.headlineSmall),
                   const SizedBox(height: 8),
-                  Text(user.username, style: text.bodyMedium),
+                  // A deleted account's username is a placeholder, not a name.
+                  if (!user.isDeleted) Text(user.username, style: text.bodyMedium),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Text('${l10n.status}: ', style: text.bodyMedium),
-                      AccountStatusChip(status: user.status),
+                      AccountStatusChip(status: user.status, deleted: user.isDeleted),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (user.status == 'PENDING') ...[
-                        FilledButton(
-                          onPressed: () => actions.approve(user.id),
-                          child: Text(l10n.approve),
-                        ),
+                  // Its details are erased and it cannot be brought back, so
+                  // there is nothing to press; its orders stay below.
+                  if (user.deletedAt case final at?)
+                    Text(l10n.accountDeletedOn(formatCalendarDate(at.toLocal())), style: text.bodyLarge)
+                  else
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (user.status == 'PENDING') ...[
+                          FilledButton(
+                            onPressed: () => actions.approve(user.id),
+                            child: Text(l10n.approve),
+                          ),
+                          OutlinedButton(
+                            onPressed: () => actions.reject(user.id),
+                            child: Text(l10n.reject),
+                          ),
+                        ],
+                        if (user.status == 'ACTIVE') ...[
+                          // Requirement 4: the admin's controls over a clinic's shelf.
+                          FilledButton.tonal(
+                            onPressed: () => context.go(Routes.clientInventory(user.id)),
+                            child: Text(l10n.clientInventory),
+                          ),
+                          OutlinedButton(
+                            onPressed: () => _confirmSuspend(context, ref, user.id),
+                            child: Text(l10n.suspend),
+                          ),
+                        ],
+                        if (user.status == 'SUSPENDED')
+                          FilledButton(
+                            onPressed: () => actions.reactivate(user.id),
+                            child: Text(l10n.reactivate),
+                          ),
                         OutlinedButton(
-                          onPressed: () => actions.reject(user.id),
-                          child: Text(l10n.reject),
+                          onPressed: () => _resetPassword(context, ref, user.id),
+                          child: Text(l10n.resetPassword),
                         ),
+                        // For a clinic that asks without the app (the
+                        // privacy policy's web page promises this).
+                        if (user.role == 'CLIENT')
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(foregroundColor: context.appColors.danger),
+                            onPressed: () => _confirmDelete(context, ref, user.id),
+                            child: Text(l10n.deleteAccount),
+                          ),
                       ],
-                      if (user.status == 'ACTIVE') ...[
-                        // Requirement 4: the admin's controls over a clinic's shelf.
-                        FilledButton.tonal(
-                          onPressed: () => context.go(Routes.clientInventory(user.id)),
-                          child: Text(l10n.clientInventory),
-                        ),
-                        OutlinedButton(
-                          onPressed: () => _confirmSuspend(context, ref, user.id),
-                          child: Text(l10n.suspend),
-                        ),
-                      ],
-                      if (user.status == 'SUSPENDED')
-                        FilledButton(
-                          onPressed: () => actions.reactivate(user.id),
-                          child: Text(l10n.reactivate),
-                        ),
-                      OutlinedButton(
-                        onPressed: () => _resetPassword(context, ref, user.id),
-                        child: Text(l10n.resetPassword),
-                      ),
-                    ],
-                  ),
+                    ),
                   if (user.role == 'CLIENT') _ClientOrders(clientId: user.id),
                 ],
               ),
@@ -137,6 +152,39 @@ class _Body extends ConsumerWidget {
       ),
     );
     if (ok ?? false) await ref.read(accountActionsProvider).suspend(id);
+  }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, String id) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteAccount),
+        content: Text(l10n.confirmDeleteAccount),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: dialogContext.appColors.danger,
+              foregroundColor: dialogContext.appColors.onDanger,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.deleteAccount),
+          ),
+        ],
+      ),
+    );
+    if (!(ok ?? false)) return;
+    try {
+      await ref.read(accountActionsProvider).deleteAccount(id);
+    } on ApiException catch (e) {
+      // ORDERS_IN_PROGRESS is the one an admin can meet: an order on its way.
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    }
   }
 
   Future<void> _resetPassword(BuildContext context, WidgetRef ref, String id) async {

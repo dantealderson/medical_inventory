@@ -84,6 +84,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusSuspended => 'موقوف';
 
   @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get confirmDeleteAccount =>
+      'تُحذف بيانات العيادة الشخصية (اسم المسؤول والهاتف والعنوان) ولا يمكنها الدخول مرة أخرى. تبقى طلباتها وسجل مخزونه باسمها. لا يمكن التراجع عن ذلك. هل تريد المتابعة؟';
+
+  @override
+  String get statusDeleted => 'محذوف';
+
+  @override
+  String accountDeletedOn(String date) {
+    return 'حذف العميل حسابه في $date. حُذفت بياناته الشخصية، وبقيت طلباته وسجل مخزونه.';
+  }
+
+  @override
   String get statusRejected => 'مرفوض';
 
   @override

@@ -487,6 +487,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get categoryUnavailable => 'هذا القسم لم يعد متوفراً';
 
   @override
+  String get accountDeletedNotice => 'تم حذف حسابك.';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountIntro => 'عند حذف حسابك:';
+
+  @override
+  String get deleteAccountErases =>
+      'تُحذف بياناتك الشخصية: اسم المسؤول ورقم الهاتف والعنوان.';
+
+  @override
+  String get deleteAccountNoSignIn => 'لا يمكن الدخول بهذا الحساب مرة أخرى.';
+
+  @override
+  String get deleteAccountKeeps =>
+      'تبقى طلباتك السابقة وسجل المخزون باسم العيادة لدى المورّد، لأنها سجلات بيع.';
+
+  @override
+  String get deleteAccountFinal => 'لا يمكن التراجع عن الحذف.';
+
+  @override
+  String get deleteAccountPasswordPrompt => 'للتأكيد، اكتب كلمة المرور:';
+
+  @override
+  String get deleteAccountButton => 'حذف حسابي نهائياً';
+
+  @override
+  String get deleteAccountQuestion => 'حذف الحساب نهائياً؟';
+
+  @override
+  String get deleteAccountConfirm => 'حذف';
+
+  @override
   String get sessionEnded => 'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى';
 
   @override

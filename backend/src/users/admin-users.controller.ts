@@ -54,6 +54,13 @@ export class AdminUsersController {
     return this.users.reactivate(admin.sub, id);
   }
 
+  /** For a clinic that asks without the app; the clinic can also do it itself. */
+  @Post(':id/delete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteForClient(@CurrentUser() admin: AccessTokenPayload, @Param('id') id: string): Promise<void> {
+    return this.users.deleteForClient(admin.sub, id);
+  }
+
   @Post(':id/reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(

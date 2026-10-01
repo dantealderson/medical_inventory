@@ -75,4 +75,10 @@ export const texts = {
     titleAr: 'لم تتم الموافقة على حسابك',
     bodyAr: 'للاستفسار تواصل مع الإدارة.',
   }),
+
+  /** For the admins. «العميل» keeps the sentence right whatever the name. */
+  accountDeleted: (clinic: string): NotificationText => ({
+    titleAr: `حذف العميل ${clinic} حسابه`,
+    bodyAr: 'حُذفت بياناته الشخصية، وبقيت طلباته وسجل مخزونه.',
+  }),
 };

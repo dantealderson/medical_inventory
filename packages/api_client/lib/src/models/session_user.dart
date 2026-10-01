@@ -12,6 +12,7 @@ class SessionUser {
     required this.role,
     required this.status,
     this.clinicName,
+    this.deletedAt,
   });
 
   final String id;
@@ -25,8 +26,13 @@ class SessionUser {
 
   final String? clinicName;
 
+  /// When the clinic deleted its own account. Its status is then SUSPENDED
+  /// for good, and its personal details are gone.
+  final DateTime? deletedAt;
+
   bool get isAdmin => role == 'ADMIN';
   bool get isActive => status == 'ACTIVE';
+  bool get isDeleted => deletedAt != null;
 
   factory SessionUser.fromJson(Map<String, dynamic> json) => SessionUser(
     id: json['id'] as String,
@@ -34,6 +40,10 @@ class SessionUser {
     role: json['role'] as String,
     status: json['status'] as String,
     clinicName: json['clinicName'] as String?,
+    deletedAt: switch (json['deletedAt']) {
+      final String at => DateTime.parse(at),
+      _ => null,
+    },
   );
 
   @override

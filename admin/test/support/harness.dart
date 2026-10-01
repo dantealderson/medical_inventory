@@ -23,12 +23,14 @@ Map<String, dynamic> account(
   String username,
   String status, {
   String? clinicName,
+  String? deletedAt,
 }) => {
   'id': id,
   'username': username,
   'role': 'CLIENT',
   'status': status,
   'clinicName': clinicName,
+  'deletedAt': deletedAt,
 };
 
 Map<String, dynamic> page(List<Map<String, dynamic>> items) => {

@@ -144,7 +144,7 @@ class _Header extends StatelessWidget {
             ],
             if (order.cancelReason != null) Text('${l10n.cancelReason}: ${order.cancelReason}'),
             const SizedBox(height: 12),
-            Text('${l10n.orderTotal}: ${order.totalAmount}', style: text.titleMedium),
+            Text('${l10n.orderTotal}: ${formatIqd(order.totalAmount)}', style: text.titleMedium),
           ],
         ),
       ),
@@ -186,8 +186,8 @@ class _LineCard extends StatelessWidget {
               ),
             ],
             Text(
-              '${l10n.pricePerBox}: ${line.pricePerBoxSnapshot}'
-              '  ·  ${l10n.lineTotal}: ${line.lineTotal}',
+              '${l10n.pricePerBox}: ${formatIqd(line.pricePerBoxSnapshot)}'
+              '  ·  ${l10n.lineTotal}: ${formatIqd(line.lineTotal)}',
               style: text.bodySmall,
             ),
             if (line.isPartial) ...[

@@ -21,7 +21,7 @@ void main() {
   }
 
   testWidgets("an item's new price shows the next time the item is opened", (tester) async {
-    var price = '12.50';
+    var price = '12500.00';
     await pumpSignedIn(tester, (req) {
       if (req.path == '/auth/me') return [200, activeUser];
       if (req.path == '/items/i1') return [200, itemJson('i1', 'سرنجة 5 مل', price: price)];
@@ -31,16 +31,16 @@ void main() {
 
     router.go('/item/i1');
     await tester.pumpAndSettle();
-    expect(find.textContaining('12.50'), findsWidgets);
+    expect(find.textContaining('12,500 د.ع'), findsWidgets);
 
     router.go('/');
     await tester.pumpAndSettle();
-    price = '15.00';
+    price = '15000.00';
     router.go('/item/i1');
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('15.00'), findsWidgets);
-    expect(find.textContaining('12.50'), findsNothing);
+    expect(find.textContaining('15,000 د.ع'), findsWidgets);
+    expect(find.textContaining('12,500 د.ع'), findsNothing);
   });
 
   testWidgets('search results come back after visiting an item', (tester) async {
@@ -66,7 +66,7 @@ void main() {
   });
 
   testWidgets('coming back to the app refreshes what the clinic sees', (tester) async {
-    var lines = [cartLineJson(syringe, 1, lineTotal: '12.50')];
+    var lines = [cartLineJson(syringe, 1, lineTotal: '12500.00')];
     await pumpSignedIn(tester, (req) {
       if (req.path == '/auth/me') return [200, activeUser];
       if (req.path == '/categories') return [200, <dynamic>[]];
@@ -76,7 +76,7 @@ void main() {
     expect(badgeLabel(tester), '1');
 
     // Meanwhile, on another phone of the same clinic, a second line was added.
-    lines = [...lines, cartLineJson(itemJson('i2', 'قفازات'), 1, lineTotal: '4.00')];
+    lines = [...lines, cartLineJson(itemJson('i2', 'قفازات'), 1, lineTotal: '4000.00')];
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();

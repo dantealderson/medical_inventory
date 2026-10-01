@@ -17,7 +17,7 @@ Map<String, dynamic> categoryJson(String id, String nameAr) => {
 Map<String, dynamic> itemJson(
   String id,
   String nameAr, {
-  String price = '12.50',
+  String price = '12500.00',
   int unitsPerBox = 100,
   String unitLabelAr = 'سرنجة',
   bool isActive = true,
@@ -66,8 +66,8 @@ Map<String, dynamic> orderLineJson({
   int position = 0,
   int unitsPerBox = 100,
   String unitLabelAr = 'سرنجة',
-  String price = '12.50',
-  String lineTotal = '25.00',
+  String price = '12500.00',
+  String lineTotal = '25000.00',
   int qtyBoxesRequested = 2,
   int? qtyBoxesApproved,
   int qtyUnitsFulfilled = 0,
@@ -110,7 +110,7 @@ Map<String, dynamic> orderJson({
   String? deliveredAt,
   String? cancelledAt,
   String? cancelDisposition,
-  String totalAmount = '25.00',
+  String totalAmount = '25000.00',
   List<Map<String, dynamic>>? lines,
 }) => {
   'id': id,
@@ -134,7 +134,7 @@ Map<String, dynamic> orderSummaryJson({
   required String id,
   String status = 'PLACED',
   String placedAt = placedAtJson,
-  String totalAmount = '25.00',
+  String totalAmount = '25000.00',
   int lineCount = 1,
 }) => {
   'id': id,

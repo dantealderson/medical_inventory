@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
 import '../../core/orders_controller.dart';
@@ -165,7 +166,7 @@ class _OrderCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text('${l10n.placedAt}: ${formatTimestamp(order.placedAt)}', style: text.bodySmall),
               Text(
-                '${l10n.orderTotal}: ${order.totalAmount}  ·  ${l10n.lineCount}: ${order.lineCount}',
+                '${l10n.orderTotal}: ${formatIqd(order.totalAmount)}  ·  ${l10n.lineCount}: ${order.lineCount}',
                 style: text.bodySmall,
               ),
             ],

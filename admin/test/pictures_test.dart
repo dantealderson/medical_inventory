@@ -17,7 +17,7 @@ void main() {
     'unitsPerBox': 100,
     'unitLabelAr': 'سرنجة',
     'unitLabelEn': null,
-    'pricePerBox': '12.50',
+    'pricePerBox': '12500.00',
     'imageUrl': imageUrl,
     'minQtyUnits': null,
     'minQtyBoxes': null,

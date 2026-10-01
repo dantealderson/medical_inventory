@@ -25,7 +25,7 @@ Map<String, dynamic> category(
   'children': children,
 };
 
-Map<String, dynamic> item(String id, String nameAr, {String price = '12.50'}) => {
+Map<String, dynamic> item(String id, String nameAr, {String price = '12500.00'}) => {
   'id': id,
   'nameAr': nameAr,
   'nameEn': 'Syringe 5ml',
@@ -144,7 +144,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('100'), findsWidgets);
-      expect(find.textContaining('12.50'), findsWidgets);
+      expect(find.textContaining('12,500 د.ع'), findsWidgets);
     });
 
     testWidgets('an empty leaf category says so', (tester) async {
@@ -289,7 +289,7 @@ void main() {
 
       expect(find.text('عدد الوحدات في العلبة'), findsOneWidget);
       expect(find.text('سعر العلبة'), findsOneWidget);
-      expect(find.text('12.50'), findsOneWidget);
+      expect(find.text('12,500 د.ع'), findsOneWidget);
     });
 
     testWidgets('shows both names when the item has both', (tester) async {

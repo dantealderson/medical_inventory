@@ -27,7 +27,7 @@ Map<String, dynamic> item(
   String id,
   String nameAr, {
   int unitsPerBox = 100,
-  String price = '12.50',
+  String price = '12500.00',
   int? minQtyBoxes,
   bool isActive = true,
 }) => {
@@ -218,7 +218,7 @@ void main() {
       await openCatalog(tester, 'الأصناف', routes(items: [item('i1', 'سرنجة 5 مل')]));
       expect(find.text('سرنجة 5 مل'), findsOneWidget);
       expect(find.textContaining('100'), findsWidgets);
-      expect(find.textContaining('12.50'), findsWidgets);
+      expect(find.textContaining('12,500 د.ع'), findsWidgets);
     });
 
     testWidgets('shows the minimum in BOXES, not units', (tester) async {

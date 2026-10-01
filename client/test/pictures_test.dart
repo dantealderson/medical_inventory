@@ -79,7 +79,7 @@ void main() {
     await pumpSignedIn(
       tester,
       shop(
-        cart: cartJson([cartLineJson(syringe, 1, lineTotal: '12.50')], total: '12.50'),
+        cart: cartJson([cartLineJson(syringe, 1, lineTotal: '12500.00')], total: '12500.00'),
         deals: [
           200,
           {

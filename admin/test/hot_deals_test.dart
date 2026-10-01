@@ -13,7 +13,7 @@ Map<String, dynamic> item(String id, String nameAr, {bool isActive = true}) => {
   'unitsPerBox': 100,
   'unitLabelAr': 'سرنجة',
   'unitLabelEn': null,
-  'pricePerBox': '12.50',
+  'pricePerBox': '12500.00',
   'imageUrl': null,
   'minQtyUnits': null,
   'minQtyBoxes': null,

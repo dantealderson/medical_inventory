@@ -135,7 +135,7 @@ class _DealCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.pricePerBox}: ${item.pricePerBox}',
+                      '${l10n.pricePerBox}: ${formatIqd(item.pricePerBox)}',
                       style: text.bodySmall?.copyWith(color: colors.primary),
                     ),
                   ],

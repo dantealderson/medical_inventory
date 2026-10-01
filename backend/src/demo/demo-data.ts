@@ -41,25 +41,25 @@ const CATALOGUE: DemoCategory[] = [
         nameAr: 'سرنجات',
         nameEn: 'Syringes',
         items: [
-          { code: 'SYR5', nameAr: 'سرنجة 5 مل', nameEn: 'Syringe 5 ml', unitsPerBox: 100, unitLabelAr: 'سرنجة', pricePerBox: '12.50', minQtyBoxes: 2, batches: [[400, 30], [200, 20]] },
-          { code: 'SYR10', nameAr: 'سرنجة 10 مل', nameEn: 'Syringe 10 ml', unitsPerBox: 100, unitLabelAr: 'سرنجة', pricePerBox: '15.00', batches: [[365, 20]] },
+          { code: 'SYR5', nameAr: 'سرنجة 5 مل', nameEn: 'Syringe 5 ml', unitsPerBox: 100, unitLabelAr: 'سرنجة', pricePerBox: '12500', minQtyBoxes: 2, batches: [[400, 30], [200, 20]] },
+          { code: 'SYR10', nameAr: 'سرنجة 10 مل', nameEn: 'Syringe 10 ml', unitsPerBox: 100, unitLabelAr: 'سرنجة', pricePerBox: '15000', batches: [[365, 20]] },
         ],
       },
       {
         nameAr: 'قفازات',
         nameEn: 'Gloves',
         items: [
-          { code: 'GLVM', nameAr: 'قفازات طبية مقاس M', nameEn: 'Examination gloves M', unitsPerBox: 100, unitLabelAr: 'قفاز', pricePerBox: '6.00', minQtyBoxes: 3, batches: [[300, 40]] },
-          { code: 'GLVS', nameAr: 'قفازات معقمة', nameEn: 'Sterile gloves', unitsPerBox: 50, unitLabelAr: 'زوج', pricePerBox: '9.50', batches: [[250, 15]] },
+          { code: 'GLVM', nameAr: 'قفازات طبية مقاس M', nameEn: 'Examination gloves M', unitsPerBox: 100, unitLabelAr: 'قفاز', pricePerBox: '6000', minQtyBoxes: 3, batches: [[300, 40]] },
+          { code: 'GLVS', nameAr: 'قفازات معقمة', nameEn: 'Sterile gloves', unitsPerBox: 50, unitLabelAr: 'زوج', pricePerBox: '9500', batches: [[250, 15]] },
         ],
       },
       {
         nameAr: 'شاش وضمادات',
         nameEn: 'Gauze and dressings',
         items: [
-          { code: 'GAU', nameAr: 'شاش معقم 10×10', nameEn: 'Sterile gauze 10x10', unitsPerBox: 100, unitLabelAr: 'قطعة', pricePerBox: '4.25', batches: [[500, 25]] },
-          { code: 'TAPE', nameAr: 'لاصق طبي', nameEn: 'Medical tape', unitsPerBox: 12, unitLabelAr: 'بكرة', pricePerBox: '7.00', batches: [[600, 10]] },
-          { code: 'BND', nameAr: 'ضماد مرن', nameEn: 'Elastic bandage', unitsPerBox: 10, unitLabelAr: 'لفافة', pricePerBox: '5.50', batches: [[700, 12]] },
+          { code: 'GAU', nameAr: 'شاش معقم 10×10', nameEn: 'Sterile gauze 10x10', unitsPerBox: 100, unitLabelAr: 'قطعة', pricePerBox: '4250', batches: [[500, 25]] },
+          { code: 'TAPE', nameAr: 'لاصق طبي', nameEn: 'Medical tape', unitsPerBox: 12, unitLabelAr: 'بكرة', pricePerBox: '7000', batches: [[600, 10]] },
+          { code: 'BND', nameAr: 'ضماد مرن', nameEn: 'Elastic bandage', unitsPerBox: 10, unitLabelAr: 'لفافة', pricePerBox: '5500', batches: [[700, 12]] },
         ],
       },
     ],
@@ -72,16 +72,16 @@ const CATALOGUE: DemoCategory[] = [
         nameAr: 'مسكنات',
         nameEn: 'Painkillers',
         items: [
-          { code: 'PARA', nameAr: 'باراسيتامول 500 ملغ', nameEn: 'Paracetamol 500 mg', unitsPerBox: 100, unitLabelAr: 'حبة', pricePerBox: '3.00', batches: [[330, 30]] },
+          { code: 'PARA', nameAr: 'باراسيتامول 500 ملغ', nameEn: 'Paracetamol 500 mg', unitsPerBox: 100, unitLabelAr: 'حبة', pricePerBox: '3000', batches: [[330, 30]] },
           // One batch about to expire, for the dashboard's expiry list.
-          { code: 'IBU', nameAr: 'إيبوبروفين 400 ملغ', nameEn: 'Ibuprofen 400 mg', unitsPerBox: 50, unitLabelAr: 'حبة', pricePerBox: '4.50', batches: [[25, 6], [400, 20]] },
+          { code: 'IBU', nameAr: 'إيبوبروفين 400 ملغ', nameEn: 'Ibuprofen 400 mg', unitsPerBox: 50, unitLabelAr: 'حبة', pricePerBox: '4500', batches: [[25, 6], [400, 20]] },
         ],
       },
       {
         nameAr: 'مضادات حيوية',
         nameEn: 'Antibiotics',
         items: [
-          { code: 'AMOX', nameAr: 'أموكسيسيلين 500 ملغ', nameEn: 'Amoxicillin 500 mg', unitsPerBox: 20, unitLabelAr: 'كبسولة', pricePerBox: '5.75', minQtyBoxes: 5, batches: [[180, 25]] },
+          { code: 'AMOX', nameAr: 'أموكسيسيلين 500 ملغ', nameEn: 'Amoxicillin 500 mg', unitsPerBox: 20, unitLabelAr: 'كبسولة', pricePerBox: '5750', minQtyBoxes: 5, batches: [[180, 25]] },
         ],
       },
     ],
@@ -94,9 +94,9 @@ const CATALOGUE: DemoCategory[] = [
         nameAr: 'أجهزة قياس',
         nameEn: 'Measuring devices',
         items: [
-          { code: 'BP', nameAr: 'جهاز قياس ضغط', nameEn: 'Blood pressure monitor', unitsPerBox: 1, unitLabelAr: 'جهاز', pricePerBox: '35.00', batches: [[1500, 8]] },
-          { code: 'THERM', nameAr: 'مقياس حرارة رقمي', nameEn: 'Digital thermometer', unitsPerBox: 1, unitLabelAr: 'جهاز', pricePerBox: '8.00', batches: [[1200, 15]] },
-          { code: 'GLUC', nameAr: 'أشرطة قياس السكر', nameEn: 'Glucose test strips', unitsPerBox: 50, unitLabelAr: 'شريط', pricePerBox: '11.00', minQtyBoxes: 2, batches: [[120, 20]] },
+          { code: 'BP', nameAr: 'جهاز قياس ضغط', nameEn: 'Blood pressure monitor', unitsPerBox: 1, unitLabelAr: 'جهاز', pricePerBox: '35000', batches: [[1500, 8]] },
+          { code: 'THERM', nameAr: 'مقياس حرارة رقمي', nameEn: 'Digital thermometer', unitsPerBox: 1, unitLabelAr: 'جهاز', pricePerBox: '8000', batches: [[1200, 15]] },
+          { code: 'GLUC', nameAr: 'أشرطة قياس السكر', nameEn: 'Glucose test strips', unitsPerBox: 50, unitLabelAr: 'شريط', pricePerBox: '11000', minQtyBoxes: 2, batches: [[120, 20]] },
         ],
       },
     ],

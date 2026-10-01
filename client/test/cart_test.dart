@@ -10,7 +10,7 @@ import 'support/harness.dart';
 import 'support/order_fixtures.dart';
 
 final syringe = itemJson('i1', 'سرنجة 5 مل');
-final gloves = itemJson('i2', 'قفازات طبية', price: '4.00', unitsPerBox: 50, unitLabelAr: 'زوج');
+final gloves = itemJson('i2', 'قفازات طبية', price: '4000.00', unitsPerBox: 50, unitLabelAr: 'زوج');
 
 /// The server side of the catalog and the cart. `cart` is what every cart
 /// route answers. `overrides` replaces one route, keyed "METHOD /path".
@@ -149,9 +149,9 @@ void main() {
         tester,
         shop(
           cart: () => cartJson([
-            cartLineJson(syringe, 2, lineTotal: '25.00'),
-            cartLineJson(gloves, 3, lineTotal: '12.00'),
-          ], total: '37.00'),
+            cartLineJson(syringe, 2, lineTotal: '25000.00'),
+            cartLineJson(gloves, 3, lineTotal: '12000.00'),
+          ], total: '37000.00'),
         ),
       );
 
@@ -181,9 +181,9 @@ void main() {
 
   group('Cart screen', () {
     final twoLines = cartJson([
-      cartLineJson(syringe, 2, lineTotal: '25.00'),
-      cartLineJson(gloves, 1, lineTotal: '4.00'),
-    ], total: '29.00');
+      cartLineJson(syringe, 2, lineTotal: '25000.00'),
+      cartLineJson(gloves, 1, lineTotal: '4000.00'),
+    ], total: '29000.00');
 
     Future<FakeApiBackend> openCart(
       WidgetTester tester,
@@ -201,11 +201,11 @@ void main() {
 
       expect(find.text('سرنجة 5 مل'), findsOneWidget);
       expect(find.text('قفازات طبية'), findsOneWidget);
-      expect(onLine('سرنجة 5 مل', find.text('25.00')), findsOneWidget);
+      expect(onLine('سرنجة 5 مل', find.text('25,000 د.ع')), findsOneWidget);
       expect(onLine('سرنجة 5 مل', find.text('200 سرنجة')), findsOneWidget);
-      expect(onLine('قفازات طبية', find.text('4.00')), findsOneWidget);
+      expect(onLine('قفازات طبية', find.text('4,000 د.ع')), findsOneWidget);
       expect(find.text('المجموع'), findsOneWidget);
-      expect(find.text('29.00'), findsOneWidget);
+      expect(find.text('29,000 د.ع'), findsOneWidget);
     });
 
     testWidgets('+ sends the new absolute quantity', (tester) async {
@@ -238,7 +238,7 @@ void main() {
       // cart arrives, leaves fewer boxes than were tapped.
       var qty = 2;
       final serve = shop(
-        cart: () => cartJson([cartLineJson(syringe, qty, lineTotal: '25.00')], total: '25.00'),
+        cart: () => cartJson([cartLineJson(syringe, qty, lineTotal: '25000.00')], total: '25000.00'),
       );
       await pumpSignedIn(tester, (req) {
         if (req.method == 'PATCH' && req.path == '/cart/lines/i1') {
@@ -276,7 +276,7 @@ void main() {
       await openCart(
         tester,
         cartJson([
-          cartLineJson(itemJson('i1', 'سرنجة 5 مل', isActive: false), 2, lineTotal: '25.00', isAvailable: false),
+          cartLineJson(itemJson('i1', 'سرنجة 5 مل', isActive: false), 2, lineTotal: '25000.00', isAvailable: false),
         ], total: '0.00'),
       );
 
@@ -327,11 +327,11 @@ void main() {
     // Without the per-user reset, the second clinic would be shown the first
     // clinic's cached cart.
     var signedIn = 'first';
-    final firstCart = cartJson([cartLineJson(syringe, 2, lineTotal: '25.00')], total: '25.00');
+    final firstCart = cartJson([cartLineJson(syringe, 2, lineTotal: '25000.00')], total: '25000.00');
     final secondCart = cartJson([
-      cartLineJson(gloves, 1, lineTotal: '4.00'),
-      cartLineJson(syringe, 1, lineTotal: '12.50'),
-    ], total: '16.50');
+      cartLineJson(gloves, 1, lineTotal: '4000.00'),
+      cartLineJson(syringe, 1, lineTotal: '12500.00'),
+    ], total: '16500.00');
     final base = shop(cart: () => signedIn == 'first' ? firstCart : secondCart);
 
     await pumpSignedIn(tester, (req) {
@@ -360,6 +360,6 @@ void main() {
     await tester.tap(find.byTooltip('السلة'));
     await tester.pumpAndSettle();
     expect(find.text('قفازات طبية'), findsOneWidget);
-    expect(find.text('16.50'), findsOneWidget);
+    expect(find.text('16,500 د.ع'), findsOneWidget);
   });
 }

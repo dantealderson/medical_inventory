@@ -278,7 +278,7 @@ class _ClientOrders extends ConsumerWidget {
                   for (final order in page.items)
                     ListTile(
                       contentPadding: EdgeInsetsDirectional.zero,
-                      title: Text('${formatTimestamp(order.placedAt)} · ${order.totalAmount}'),
+                      title: Text('${formatTimestamp(order.placedAt)} · ${formatIqd(order.totalAmount)}'),
                       trailing: OrderStatusChip(status: order.status),
                       onTap: () => context.go(Routes.order(order.id)),
                     ),

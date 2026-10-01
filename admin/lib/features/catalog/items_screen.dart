@@ -82,7 +82,7 @@ class _ItemCard extends ConsumerWidget {
             // Box size and price are the two numbers an admin scans for.
             Text(
               '${item.unitsPerBox} ${item.unitLabelAr} / ${l10n.boxesShort}'
-              '  ·  ${item.pricePerBox}',
+              '  ·  ${formatIqd(item.pricePerBox)}',
               style: text.bodySmall,
             ),
             if (item.minQtyBoxes != null)

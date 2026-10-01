@@ -38,7 +38,7 @@ Map<String, dynamic> line(
   int? approved,
   int fulfilled = 0,
   int unitsPerBox = 100,
-  String lineTotal = '20.00',
+  String lineTotal = '20000.00',
   List<Map<String, dynamic>> allocations = const [],
 }) {
   final approvedUnits = approved == null ? null : approved * unitsPerBox;
@@ -54,7 +54,7 @@ Map<String, dynamic> line(
       'imageUrl': null,
     },
     'unitsPerBoxSnapshot': unitsPerBox,
-    'pricePerBoxSnapshot': '10.00',
+    'pricePerBoxSnapshot': '10000.00',
     'lineTotal': lineTotal,
     'qtyBoxesRequested': requested,
     'qtyUnitsRequested': requested * unitsPerBox,
@@ -84,7 +84,7 @@ Map<String, dynamic> order(
   String id,
   String status, {
   required List<Map<String, dynamic>> lines,
-  String total = '20.00',
+  String total = '20000.00',
   String? disposition,
   String? cancelReason,
 }) {
@@ -291,7 +291,7 @@ void main() {
               'status': 'PLACED',
               'client': _client,
               'placedAt': _at,
-              'totalAmount': '35.50',
+              'totalAmount': '35500.00',
               'lineCount': 2,
             },
           ]),
@@ -301,7 +301,7 @@ void main() {
       expect(find.text('مختبر النور'), findsOneWidget);
       expect(find.text('lab_one'), findsOneWidget);
       expect(find.textContaining('2026-09-20'), findsOneWidget);
-      expect(find.textContaining('35.50'), findsOneWidget);
+      expect(find.textContaining('35,500 د.ع'), findsOneWidget);
       expect(find.textContaining('عدد الأصناف: 2'), findsOneWidget);
       // The card's chip, not the filter chip with the same label.
       expect(
@@ -408,7 +408,7 @@ void main() {
               requested: 3,
               approved: 2,
               fulfilled: 150,
-              lineTotal: '15.00',
+              lineTotal: '15000.00',
               allocations: [allocation('B-001', '2027-03-01', 150)],
             ),
             // Served in full: must carry neither flag.
@@ -419,7 +419,7 @@ void main() {
               requested: 1,
               approved: 1,
               fulfilled: 100,
-              lineTotal: '10.00',
+              lineTotal: '10000.00',
               allocations: [allocation('B-009', '2027-05-01', 100)],
             ),
           ],
@@ -479,10 +479,10 @@ void main() {
                 approvedBoxes: 1,
                 allocated: 100,
                 portions: [portion('B-001', '2027-03-01', 100)],
-                projected: '10.00',
+                projected: '10000.00',
               ),
               previewLine('l2', approvedBoxes: 1, allocated: 0),
-            ], total: '10.00'),
+            ], total: '10000.00'),
           ];
         },
       );
@@ -498,7 +498,7 @@ void main() {
       expect(find.textContaining('B-001'), findsOneWidget);
       expect(find.textContaining('ينتهي في 2027-03-01'), findsOneWidget);
       expect(find.text('نقص في المستودع: 1 علبة'), findsOneWidget);
-      expect(find.textContaining('الإجمالي المتوقع: 10.00'), findsOneWidget);
+      expect(find.textContaining('الإجمالي المتوقع: 10,000 د.ع'), findsOneWidget);
       expect(find.textContaining('2026-10-28'), findsOneWidget);
       // A preview writes nothing, and it did not confirm anything either.
       expect(backend.callsTo('/admin/orders/o1/confirm'), 0);
@@ -518,9 +518,9 @@ void main() {
               approvedBoxes: 2,
               allocated: 200,
               portions: [portion('B-001', '2027-03-01', 200)],
-              projected: '20.00',
+              projected: '20000.00',
             ),
-          ], total: '20.00'),
+          ], total: '20000.00'),
         ],
       );
 
@@ -559,7 +559,7 @@ void main() {
                 requested: 2,
                 approved: 1,
                 fulfilled: 100,
-                lineTotal: '10.00',
+                lineTotal: '10000.00',
                 allocations: [allocation('B-001', '2027-03-01', 100)],
               ),
               line(
@@ -569,7 +569,7 @@ void main() {
                 requested: 1,
                 approved: 1,
                 fulfilled: 100,
-                lineTotal: '10.00',
+                lineTotal: '10000.00',
                 allocations: [allocation('B-009', '2027-05-01', 100)],
               ),
             ],
@@ -614,7 +614,7 @@ void main() {
                 requested: 2,
                 approved: 2,
                 fulfilled: 100,
-                lineTotal: '10.00',
+                lineTotal: '10000.00',
                 allocations: [allocation('B-001', '2027-03-01', 100)],
               ),
             ],

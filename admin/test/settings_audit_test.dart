@@ -57,7 +57,7 @@ List<Object?> Function(SeenRequest) world({List<Object?>? patch}) {
               'status': 'DELIVERED',
               'client': {'id': 'u1', 'username': 'clinic_one', 'clinicName': 'عيادة النور'},
               'placedAt': '2027-01-18T09:00:00.000Z',
-              'totalAmount': '25.00',
+              'totalAmount': '25000.00',
               'lineCount': 2,
             },
           ],
@@ -177,7 +177,7 @@ void main() {
 
     expect(backend.lastTo('/admin/orders').query['clientId'], 'u1');
     expect(find.text('طلبات العميل'), findsOneWidget);
-    await tapVisible(tester, find.textContaining('25.00'));
+    await tapVisible(tester, find.textContaining('25,000 د.ع'));
     expect(backend.lastTo('/admin/orders/o1').method, 'GET');
   });
 }

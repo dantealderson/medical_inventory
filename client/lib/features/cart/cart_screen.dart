@@ -153,7 +153,7 @@ class _CartLineCardState extends ConsumerState<_CartLineCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(line.lineTotal, style: text.titleSmall),
+                Text(formatIqd(line.lineTotal), style: text.titleSmall),
               ],
             ),
           ],
@@ -253,7 +253,7 @@ class _TotalRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(l10n.cartTotal, style: text.titleMedium),
-          Text(total, style: text.titleLarge),
+          Text(formatIqd(total), style: text.titleLarge),
         ],
       ),
     );

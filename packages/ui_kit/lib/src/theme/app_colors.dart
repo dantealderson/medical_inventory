@@ -17,6 +17,26 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.stockGreen,
     required this.danger,
     required this.onDanger,
+    this.primaryDark = Palette.tealDark,
+    this.onPrimaryMuted = Palette.tealMist,
+    this.textMuted = Palette.slate,
+    this.chip = Palette.fog,
+    this.pictureBackground = Palette.frost,
+    this.divider = Palette.hairline,
+    this.shadow = Palette.shadow,
+    this.badge = Palette.vermilion,
+    this.tag = Palette.peach,
+    this.onTag = Palette.peachInk,
+    this.tileMint = Palette.mint,
+    this.tilePeach = Palette.peach,
+    this.tileSky = Palette.sky,
+    this.tileLavender = Palette.lavender,
+    this.tileCream = Palette.cream,
+    this.tileSage = Palette.sageTile,
+    this.stockRedInk = Palette.rust,
+    this.stockRedSoft = Palette.rose,
+    this.stockYellowInk = Palette.ochre,
+    this.stockGreenInk = Palette.teal,
   });
 
   final Color primary;
@@ -26,7 +46,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color surfaceMuted;
   final Color border;
 
-  /// Stock status (spec §7.6). Referenced by StockBadge and the quick-add row.
+  /// Stock status (spec §7.6), for bars, dots and badges.
   final Color stockRed;
   final Color stockYellow;
   final Color stockGreen;
@@ -34,17 +54,59 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color danger;
   final Color onDanger;
 
+  /// Pressed or emphasised brand colour.
+  final Color primaryDark;
+
+  /// Secondary text on the brand colour, such as «مرحباً» above the clinic's name.
+  final Color onPrimaryMuted;
+
+  /// Secondary text on a surface: units, captions, counts.
+  final Color textMuted;
+
+  /// Unselected chips and round icon buttons on a white header.
+  final Color chip;
+
+  /// Behind an item's picture, or its placeholder.
+  final Color pictureBackground;
+
+  /// Lines between rows inside one card.
+  final Color divider;
+
+  /// The soft shadow under cards and bars.
+  final Color shadow;
+
+  /// The red counter on the bell, the cart and the tiles.
+  final Color badge;
+
+  /// A small label such as «عرض الأسبوع» or «جديد», and its text.
+  final Color tag;
+  final Color onTag;
+
+  /// The home screen's pastel tiles.
+  final Color tileMint;
+  final Color tilePeach;
+  final Color tileSky;
+  final Color tileLavender;
+  final Color tileCream;
+  final Color tileSage;
+
+  /// Stock status in words: darker than the bar colours, so it stays readable.
+  final Color stockRedInk;
+  final Color stockRedSoft;
+  final Color stockYellowInk;
+  final Color stockGreenInk;
+
   static const AppColors light = AppColors(
-    primary: Palette.skyBlue,
+    primary: Palette.teal,
     onPrimary: Palette.white,
     surface: Palette.white,
     onSurface: Palette.ink,
-    surfaceMuted: Palette.cloud,
-    border: Palette.mist,
-    stockRed: Palette.red,
+    surfaceMuted: Palette.ground,
+    border: Palette.sage,
+    stockRed: Palette.coral,
     stockYellow: Palette.amber,
-    stockGreen: Palette.green,
-    danger: Palette.red,
+    stockGreen: Palette.tealBright,
+    danger: Palette.rust,
     onDanger: Palette.white,
   );
 
@@ -74,6 +136,26 @@ class AppColors extends ThemeExtension<AppColors> {
       stockGreen: stockGreen ?? this.stockGreen,
       danger: danger ?? this.danger,
       onDanger: onDanger ?? this.onDanger,
+      primaryDark: primaryDark,
+      onPrimaryMuted: onPrimaryMuted,
+      textMuted: textMuted,
+      chip: chip,
+      pictureBackground: pictureBackground,
+      divider: divider,
+      shadow: shadow,
+      badge: badge,
+      tag: tag,
+      onTag: onTag,
+      tileMint: tileMint,
+      tilePeach: tilePeach,
+      tileSky: tileSky,
+      tileLavender: tileLavender,
+      tileCream: tileCream,
+      tileSage: tileSage,
+      stockRedInk: stockRedInk,
+      stockRedSoft: stockRedSoft,
+      stockYellowInk: stockYellowInk,
+      stockGreenInk: stockGreenInk,
     );
   }
 
@@ -93,6 +175,26 @@ class AppColors extends ThemeExtension<AppColors> {
       stockGreen: mix(stockGreen, other.stockGreen),
       danger: mix(danger, other.danger),
       onDanger: mix(onDanger, other.onDanger),
+      primaryDark: mix(primaryDark, other.primaryDark),
+      onPrimaryMuted: mix(onPrimaryMuted, other.onPrimaryMuted),
+      textMuted: mix(textMuted, other.textMuted),
+      chip: mix(chip, other.chip),
+      pictureBackground: mix(pictureBackground, other.pictureBackground),
+      divider: mix(divider, other.divider),
+      shadow: mix(shadow, other.shadow),
+      badge: mix(badge, other.badge),
+      tag: mix(tag, other.tag),
+      onTag: mix(onTag, other.onTag),
+      tileMint: mix(tileMint, other.tileMint),
+      tilePeach: mix(tilePeach, other.tilePeach),
+      tileSky: mix(tileSky, other.tileSky),
+      tileLavender: mix(tileLavender, other.tileLavender),
+      tileCream: mix(tileCream, other.tileCream),
+      tileSage: mix(tileSage, other.tileSage),
+      stockRedInk: mix(stockRedInk, other.stockRedInk),
+      stockRedSoft: mix(stockRedSoft, other.stockRedSoft),
+      stockYellowInk: mix(stockYellowInk, other.stockYellowInk),
+      stockGreenInk: mix(stockGreenInk, other.stockGreenInk),
     );
   }
 }

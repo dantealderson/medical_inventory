@@ -20,7 +20,7 @@ List<Object?> Function(SeenRequest) orderBackend({
     if (req.path == '/auth/me') return [200, activeUser];
     if (req.path == '/categories') return [200, <dynamic>[]];
     if (req.path == '/cart' && req.method == 'GET') {
-      return [200, cartJson([cartLineJson(syringe, 2, lineTotal: '25.00')], total: '25.00')];
+      return [200, cartJson([cartLineJson(syringe, 2, lineTotal: '25000.00')], total: '25000.00')];
     }
     if (req.path == '/orders' && req.method == 'GET') {
       return [200, history ?? {'items': <dynamic>[], 'nextCursor': null}];
@@ -76,7 +76,7 @@ void main() {
         orderBackend(
           history: {
             'items': [
-              orderSummaryJson(id: 'o2', status: 'PLACED', totalAmount: '37.00', lineCount: 2),
+              orderSummaryJson(id: 'o2', status: 'PLACED', totalAmount: '37000.00', lineCount: 2),
               orderSummaryJson(id: 'o1', status: 'DELIVERED'),
             ],
             'nextCursor': null,
@@ -90,7 +90,7 @@ void main() {
       expect(find.text('طلباتي'), findsOneWidget);
       expect(find.text('بانتظار التأكيد'), findsOneWidget);
       expect(find.text('تم التسليم'), findsOneWidget);
-      expect(find.text('37.00'), findsOneWidget);
+      expect(find.text('37,000 د.ع'), findsOneWidget);
       expect(find.textContaining('2026/09/02'), findsNWidgets(2));
       expect(find.textContaining('عدد الأصناف: 2'), findsOneWidget);
     });
@@ -99,22 +99,22 @@ void main() {
       final backend = await pumpSignedIn(tester, (req) {
         if (req.path == '/orders' && req.method == 'GET') {
           return req.query['cursor'] == 'o2'
-              ? [200, {'items': [orderSummaryJson(id: 'o1', totalAmount: '11.00')], 'nextCursor': null}]
-              : [200, {'items': [orderSummaryJson(id: 'o2', totalAmount: '22.00')], 'nextCursor': 'o2'}];
+              ? [200, {'items': [orderSummaryJson(id: 'o1', totalAmount: '11000.00')], 'nextCursor': null}]
+              : [200, {'items': [orderSummaryJson(id: 'o2', totalAmount: '22000.00')], 'nextCursor': 'o2'}];
         }
         return orderBackend()(req);
       });
       await tester.tap(find.byTooltip('طلباتي'));
       await tester.pumpAndSettle();
-      expect(find.text('22.00'), findsOneWidget);
-      expect(find.text('11.00'), findsNothing);
+      expect(find.text('22,000 د.ع'), findsOneWidget);
+      expect(find.text('11,000 د.ع'), findsNothing);
 
       await tester.tap(find.text('عرض المزيد'));
       await tester.pumpAndSettle();
 
       expect(backend.lastTo('/orders').query['cursor'], 'o2');
-      expect(find.text('22.00'), findsOneWidget);
-      expect(find.text('11.00'), findsOneWidget);
+      expect(find.text('22,000 د.ع'), findsOneWidget);
+      expect(find.text('11,000 د.ع'), findsOneWidget);
       expect(find.text('عرض المزيد'), findsNothing);
     });
 
@@ -130,7 +130,7 @@ void main() {
     testWidgets('marks the steps reached, and shows the cash total', (tester) async {
       await openOrder(
         tester,
-        orderJson(status: 'CONFIRMED', confirmedAt: '2026-09-02T13:00:00.000Z', totalAmount: '25.00'),
+        orderJson(status: 'CONFIRMED', confirmedAt: '2026-09-02T13:00:00.000Z', totalAmount: '25000.00'),
       );
 
       expect(find.text('تفاصيل الطلب'), findsOneWidget);
@@ -174,7 +174,7 @@ void main() {
               qtyBoxesApproved: 3,
               qtyUnitsFulfilled: 300,
               adjustedBySupplier: true,
-              lineTotal: '37.50',
+              lineTotal: '37500.00',
             ),
           ],
         ),
@@ -199,7 +199,7 @@ void main() {
               qtyBoxesApproved: 3,
               qtyUnitsFulfilled: 250,
               shortByUnits: 50,
-              lineTotal: '31.25',
+              lineTotal: '31250.00',
             ),
           ],
         ),

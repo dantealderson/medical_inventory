@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
 import '../../core/orders_controller.dart';
@@ -62,7 +63,7 @@ class _OrderTile extends StatelessWidget {
         subtitle: Text(
           '${formatInstantDate(order.placedAt)} · ${l10n.orderLineCount(order.lineCount)}',
         ),
-        trailing: Text(order.totalAmount, style: text.titleSmall),
+        trailing: Text(formatIqd(order.totalAmount), style: text.titleSmall),
         onTap: () => context.go(Routes.order(order.id)),
       ),
     );

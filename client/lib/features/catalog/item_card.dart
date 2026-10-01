@@ -52,7 +52,7 @@ class ItemCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.pricePerBox}: ${item.pricePerBox}',
+                      '${l10n.pricePerBox}: ${formatIqd(item.pricePerBox)}',
                       style: text.titleSmall?.copyWith(color: colors.primary),
                     ),
                   ],

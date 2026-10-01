@@ -67,7 +67,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 value: '${data.unitsPerBox} ${data.unitLabelAr}',
               ),
               const SizedBox(height: 12),
-              _DetailRow(label: l10n.pricePerBox, value: data.pricePerBox),
+              _DetailRow(label: l10n.pricePerBox, value: formatIqd(data.pricePerBox)),
               const SizedBox(height: 12),
               _NextExpiry(itemId: itemId),
               const SizedBox(height: 24),

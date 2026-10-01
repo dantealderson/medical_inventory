@@ -7,7 +7,7 @@ import 'support/harness.dart';
 import 'support/order_fixtures.dart';
 
 final syringe = itemJson('i1', 'سرنجة 5 مل');
-final gloves = itemJson('i2', 'قفازات طبية', price: '4.00', unitsPerBox: 50);
+final gloves = itemJson('i2', 'قفازات طبية', price: '4000.00', unitsPerBox: 50);
 
 Map<String, dynamic> dealsJson(List<Map<String, dynamic>> items, {int rotationSeconds = 4}) => {
   'rotationSeconds': rotationSeconds,

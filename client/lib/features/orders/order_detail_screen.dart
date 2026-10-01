@@ -81,7 +81,7 @@ class _Header extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(child: Text(l10n.orderTotal, style: text.titleSmall)),
-                Text(order.totalAmount, style: text.titleLarge),
+                Text(formatIqd(order.totalAmount), style: text.titleLarge),
               ],
             ),
           ],
@@ -224,7 +224,7 @@ class _LineCard extends StatelessWidget {
             const SizedBox(height: 8),
             Align(
               alignment: AlignmentDirectional.centerEnd,
-              child: Text(line.lineTotal, style: text.titleSmall),
+              child: Text(formatIqd(line.lineTotal), style: text.titleSmall),
             ),
           ],
         ),

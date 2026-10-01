@@ -98,7 +98,7 @@ class _OrderReviewPanelState extends ConsumerState<OrderReviewPanel>
           // shelf-life window the clinic is guaranteed (§7.3).
           Text('${l10n.previewCutoff}: ${preview.minExpiryExclusive}', style: text.bodySmall),
           const SizedBox(height: 4),
-          Text('${l10n.projectedTotal}: ${preview.projectedTotalAmount}', style: text.titleSmall),
+          Text('${l10n.projectedTotal}: ${formatIqd(preview.projectedTotalAmount)}', style: text.titleSmall),
           const SizedBox(height: 12),
         ],
         // Wrap, not Row: at 390px three buttons plus padding overflow a Row.
@@ -163,7 +163,7 @@ class _ReviewLine extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${l10n.requestedQty}: ${lineUnits(l10n, line, line.qtyUnitsRequested)}'
-              '  ·  ${l10n.pricePerBox}: ${line.pricePerBoxSnapshot}',
+              '  ·  ${l10n.pricePerBox}: ${formatIqd(line.pricePerBoxSnapshot)}',
               style: text.bodySmall,
             ),
             const SizedBox(height: 8),
@@ -219,7 +219,7 @@ class _ReviewLine extends StatelessWidget {
               ],
               const SizedBox(height: 4),
               Text(
-                '${l10n.projectedLineTotal}: ${planned.projectedLineTotal}',
+                '${l10n.projectedLineTotal}: ${formatIqd(planned.projectedLineTotal)}',
                 style: text.bodySmall,
               ),
             ],

@@ -17,3 +17,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Tajawal (SIL Open Font License, fonts/OFL.txt). Apps use it as
+  # 'packages/ui_kit/Tajawal' through AppTheme.fontFamily.
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: fonts/Tajawal-Regular.ttf
+        - asset: fonts/Tajawal-Medium.ttf
+          weight: 500
+        - asset: fonts/Tajawal-Bold.ttf
+          weight: 700
+        - asset: fonts/Tajawal-ExtraBold.ttf
+          weight: 800

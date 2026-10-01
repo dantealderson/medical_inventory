@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576172009733",
+    "project_id": "iq-medsupply-app",
+    "storage_bucket": "iq-medsupply-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576172009733:android:bc21652b58c00fdef2ef6c",
+        "android_client_info": {
+          "package_name": "iq.medsupply.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSJW5p_Yd1movAtOT70eQ7Gc40b9is08c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

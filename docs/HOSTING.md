@@ -65,7 +65,8 @@ About 20 minutes of clicking, with no payment card. Afterwards you can test from
    - Open the app link in the phone's browser:
      `https://github.com/dantealderson/medical_inventory/releases/download/test-build/medical-inventory.apk`
    - Download it and install it. When Android asks, allow installing from that browser.
-   - **If the version installed over the USB cable is still on the phone, uninstall it first.** The two are signed differently, so Android refuses to replace one with the other ("App not installed").
+   - **Uninstall the old app called "client"** if it is still on the phone from the USB cable. The app is now «مخزون العيادة» (`iq.medsupply.app`), a different app as far as the phone is concerned, so both would sit side by side.
+   - **Later, before installing from Google Play,** uninstall this test version: the two are signed with different keys, so Android refuses to replace one with the other ("App not installed").
 
 ## The demo accounts
 

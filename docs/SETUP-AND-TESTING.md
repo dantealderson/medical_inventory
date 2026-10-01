@@ -122,13 +122,13 @@ Without this, every notification still appears inside both apps (the bell and th
 
 | Decision | Why it matters | Needed by |
 |---|---|---|
-| **The app's id**: currently the placeholder `com.example.client`, e.g. `iq.yourcompany.medinventory` | Google Play rejects `com.example…`; Firebase is tied to the id | Before Firebase, and before publishing |
-| **The app's display name and icon** | What clinics see on their phones | Before publishing |
+| ~~**The app's id**~~ ✅ `iq.medsupply.app` (2026-10-01) | Google Play rejects `com.example…`; Firebase is tied to the id | Done |
+| ~~**The app's display name and icon**~~ ✅ «مخزون العيادة», a teal icon with a medicine box | What clinics see on their phones | Done (the icon can be swapped any time) |
 | **Temporary hosting**: free accounts on Render and Neon. The steps are in `docs/HOSTING.md` (about 20 minutes). | To test from anywhere, without your PC on | Whenever you are ready |
 | **Real hosting**: a cloud server (VPS) with Docker and a domain name, plus HTTPS | Clinics' phones need a server that is always on | Before real use |
 | **Google Play developer account** (one-time $25) | To publish the Android app | Publishing |
 | **iPhone app**: needs a Mac and an Apple developer account ($99/year) | Only if clinics use iPhones | Optional |
-| **The "day-30 «نفد»" behaviour** (see 3.4) | Whether a once-bought item shows «نفد» on day 30 | Any time |
+| ~~**The "day-30 «نفد»" behaviour**~~ ✅ kept as it is (2026-10-01) | Whether a once-bought item shows «نفد» on day 30 | Done |
 
 ### Troubleshooting
 
@@ -343,10 +343,12 @@ Anything that looks wrong: note the step number and what you saw, and send it to
 
 ### 3.4 Waiting on you
 
-1. **The app id** and **hosting** (1.7).
-2. **Firebase**, if you want push notifications on phones (1.6).
-3. **The "day-30 «نفد»" behaviour.**
-   - When a clinic bought an item only once and never counted it, the purchase-based estimate appears after 30 days. It then subtracts the whole purchase at once, so the item shows «نفد» on day 30.
-   - Today it is kept, because it errs toward warning early.
-   - The alternative is to start subtracting only from the day the estimate appears.
-   - A stock count (جرد) always corrects it.
+Your hands-on steps (2026-10-01), in order:
+1. ✅ Decisions: app id, name, icon, day-30 «نفد», colours.
+2. The Google Play developer account (personal, $25, ID check).
+3. Neon, then 4. Render (`docs/HOSTING.md` steps 1–2).
+5. The Firebase key (project `iq-medsupply-app`) into Render as `FIREBASE_SERVICE_ACCOUNT_JSON`.
+6. GitHub Pages and `API_BASE_URL` (`docs/HOSTING.md` step 3).
+7. Try it on your phone.
+8. Back up the folder `C:\Users\ACER PC\medinv-signing` (the Play signing key) to Google Drive or a USB stick.
+9. Find 12 or more testers with Android phones (Google Play needs them for 14 days before the app can go public).

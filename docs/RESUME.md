@@ -1,8 +1,25 @@
 # Resume Point
 
-## >>> PHASE 10 AND THE PHASE 9 PREP COMPLETE (2026-10-01). Next: a first UI pass. Going online needs the user's 20 minutes (`docs/HOSTING.md`); Phase 8 waits for the user
+## >>> GO-LIVE PLAN AGREED (2026-10-01). The user is doing their hands-on steps 1–9; mine are 10–19
 
-**Work order agreed with the user (2026-10-01):**
+**Decided by the user (2026-10-01):**
+- App id **`iq.medsupply.app`**; app name and business name **«مخزون العيادة»**; icon made by me (teal, white medicine box, green cross; source `client/store/icon.svg`, Play icon `client/store/icon-512.png`).
+- Day-30 «نفد»: **kept** as the spec says. Green (the design pick) is **final**; it replaces the spec's white and sky blue.
+- Catalogue size unknown, so **no Excel import** for now.
+- Google Play: a **personal** account. New personal accounts need a closed test with **12 testers for 14 days** before going public; the heavy testing happens inside that window.
+
+**Done on 2026-10-01:**
+- **App id changed** on Android (`namespace`, `applicationId`, `MainActivity` under `kotlin/iq/medsupply/app`) and iOS (bundle id, display name).
+- **Firebase project `iq-medsupply-app`** ("Medical Supply"), created with the user's Firebase CLI login. `flutterfire configure` registered the Android app: `google-services.json`, `lib/firebase_options.dart`, the `google-services` Gradle plugin, and `firebase_core` in the client. Nothing calls Firebase yet (step 12).
+- **Play upload key** in `C:\Users\ACER PC\medinv-signing\` (`upload-keystore.jks` + `key.properties`, alias `upload`), outside the repo. `client/android/key.properties` (untracked) points at it. Without that file, as on GitHub, release builds use the debug key.
+- `flutter build appbundle` works and is signed `CN=Medical Supply, C=IQ`. Flutter reports "failed to strip debug symbols" although the toolchain is complete; the bundle is still produced. Look at it before the first Play upload.
+
+**The plan, in order:**
+- **The user, now:** 1 decisions (done) · 2 Play account · 3 Neon · 4 Render · 5 Firebase service-account key into Render as `FIREBASE_SERVICE_ACCOUNT_JSON` · 6 GitHub Pages + `API_BASE_URL` · 7 try it on a phone · 8 back up `medinv-signing` · 9 find 12+ testers.
+- **Me:** 10 app id, name, icon (done) · 11 signing + .aab (done) · 12 push (`firebase_messaging`, token via `POST /devices`) · 13 fix what breaks online · 14 daily database backups · 15 account deletion in the app and on a web page (a Play rule) · 16 privacy policy on GitHub Pages · 17 the redesign (`design-canvas` memory) with IQD prices and the two Phase 4 minors · 18 a review of the Phase 4 stock and estimate logic · 19 Excel import only if needed.
+- **Later:** 20 the user's UI comments · 21 the user checks the privacy policy · 22 Play closed test and listing · 23 2–3 days of heavy testing · 24 fixes and re-test · 25 real server and domain · 26 the real catalogue on a clean database · 27 apply for production and publish.
+
+**Earlier work order (2026-10-01), superseded by the plan above:**
 1. Pictures (Phase 10), which is done.
 2. Hosting prep (Phase 9, up to the accounts only the user can create), which is done.
 3. My own UI pass: the spec's audits plus a clean-up for older users.

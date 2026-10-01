@@ -5,6 +5,7 @@ import 'package:ui_kit/ui_kit.dart';
 import 'support/harness.dart';
 import 'support/inventory_fixtures.dart';
 import 'support/order_fixtures.dart';
+import 'package:client/features/inventory/inventory_screen.dart';
 
 final adrenaline = itemJson('i1', 'أدرينالين', unitsPerBox: 10, unitLabelAr: 'أمبولة');
 final gauze = itemJson('i2', 'شاش', unitsPerBox: 10, unitLabelAr: 'لفة');
@@ -80,7 +81,7 @@ void main() {
 
       await openInventory(tester);
 
-      expect(find.widgetWithText(AppBar, 'مخزوني'), findsOneWidget);
+      expect(find.byType(InventoryScreen), findsOneWidget);
       expect(find.text('سرنجة 5 مل'), findsOneWidget);
     });
 
@@ -107,7 +108,7 @@ void main() {
 
       await tester.tap(find.descendant(of: strip, matching: find.text('عرض الكل')));
       await tester.pumpAndSettle();
-      expect(find.widgetWithText(AppBar, 'مخزوني'), findsOneWidget);
+      expect(find.byType(InventoryScreen), findsOneWidget);
     });
 
     testWidgets('shows no strip when nothing is red, or when the inventory cannot be read', (tester) async {
@@ -314,7 +315,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(backend.lastTo('/inventory/i2/stop-tracking').method, 'POST');
-      expect(find.widgetWithText(AppBar, 'مخزوني'), findsOneWidget);
+      expect(find.byType(InventoryScreen), findsOneWidget);
       expect(find.text('تم إيقاف متابعة شاش'), findsOneWidget);
       // It is only in the stopped list now, with a way back.
       expect(find.text('أصناف أوقفت متابعتها'), findsOneWidget);

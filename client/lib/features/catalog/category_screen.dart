@@ -61,7 +61,7 @@ class CategoryScreen extends ConsumerWidget {
           final found = find(roots, categoryId)!;
           if (found.hasChildren) {
             return GridView.builder(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 32),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 56),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 220,
                 mainAxisSpacing: 12,
@@ -162,7 +162,7 @@ class _CategoryItems extends ConsumerWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 40),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 56),
               sliver: SliverGrid.builder(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 240,

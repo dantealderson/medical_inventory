@@ -128,6 +128,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newItems => 'أصناف جديدة';
 
   @override
+  String get needsOrdering => 'يحتاج طلب';
+
+  @override
+  String get runningLow => 'قريباً';
+
+  @override
+  String get inStockPlenty => 'متوفر';
+
+  @override
+  String get neverCounted => 'لم يُجرد المخزون بعد';
+
+  @override
+  String lastCountOn(String date) {
+    return 'آخر جرد: $date';
+  }
+
+  @override
   String get orderSummary => 'ملخص الطلب';
 
   @override

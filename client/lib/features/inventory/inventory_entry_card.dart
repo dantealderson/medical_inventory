@@ -5,6 +5,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/formatting.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
+import '../catalog/item_picture.dart';
 import 'stock_labels.dart';
 
 /// One item on the clinic's shelf: its name and status in words, how much is
@@ -20,6 +21,9 @@ class InventoryEntryCard extends StatelessWidget {
   final InventoryEntry entry;
   final VoidCallback? onTap;
 
+  /// Days of cover a full bar stands for: a month, as in the design.
+  static const fullBarDays = 30;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -27,61 +31,88 @@ class InventoryEntryCard extends StatelessWidget {
     final colors = context.appColors;
     final source = sourceLabel(l10n, entry.estimate.source);
     final cover = entry.daysOfCover;
+    final (tint, bar, ink) = switch (entry.status) {
+      StockStatus.red => (colors.stockRedSoft, colors.stockRed, colors.stockRedInk),
+      StockStatus.yellow => (colors.tileCream, colors.stockYellow, colors.stockYellowInk),
+      StockStatus.green => (colors.tileMint, colors.stockGreen, colors.stockGreenInk),
+      _ => (colors.pictureBackground, colors.border, colors.textMuted),
+    };
 
     return Card(
       margin: const EdgeInsetsDirectional.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsetsDirectional.all(16),
+          padding: const EdgeInsetsDirectional.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: Text(entry.item.displayName, style: text.titleLarge)),
-                  const SizedBox(width: 8),
-                  StockBadge(level: stockLevel(entry.status), label: stockLabel(l10n, entry)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(16)),
+                    alignment: Alignment.center,
+                    child: ItemPicture.thumb(entry.item.imageUrl, size: 44),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(quantityOf(l10n, entry.item, entry.qtyUnits), style: text.titleMedium),
-                        // An empty shelf already says «نفد»; a cover line
-                        // under it would only confuse.
-                        if (entry.qtyUnits > 0) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            cover == null ? l10n.noEstimate : l10n.daysOfCover(cover),
-                            style: text.bodyLarge,
-                          ),
-                        ],
-                        if (source != null) ...[
-                          const SizedBox(height: 4),
-                          Text(source, style: text.bodyMedium),
-                        ],
+                        Text(entry.item.displayName, style: text.titleMedium),
+                        Text(
+                          quantityOf(l10n, entry.item, entry.qtyUnits),
+                          style: TextStyle(fontSize: 15, color: colors.textMuted),
+                        ),
                       ],
                     ),
                   ),
-                  if (entry.status == StockStatus.red) ...[
-                    const SizedBox(width: 12),
-                    AddToCartButton(item: entry.item),
-                  ],
+                  const SizedBox(width: 8),
+                  // Red asks for an order: the big + adds a box (requirement 12).
+                  if (entry.status == StockStatus.red)
+                    AddToCartButton(item: entry.item, size: 52)
+                  else
+                    StockBadge(level: stockLevel(entry.status), label: stockLabel(l10n, entry)),
                 ],
               ),
+              // An empty shelf says «نفد» on its badge; a cover line would
+              // only confuse.
+              if (entry.qtyUnits > 0) ...[
+                const SizedBox(height: 10),
+                if (cover != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: LinearProgressIndicator(
+                      value: (cover / fullBarDays).clamp(0.04, 1.0),
+                      minHeight: 9,
+                      color: bar,
+                      backgroundColor: colors.divider,
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  cover == null ? l10n.noEstimate : l10n.daysOfCover(cover),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink),
+                ),
+              ],
+              if (entry.status == StockStatus.red) ...[
+                const SizedBox(height: 6),
+                StockBadge(level: stockLevel(entry.status), label: stockLabel(l10n, entry)),
+              ],
+              if (source != null) ...[
+                const SizedBox(height: 4),
+                Text(source, style: TextStyle(fontSize: 14, color: colors.textMuted)),
+              ],
               for (final batch in entry.expiringBatches) ...[
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Icon(
                       batch.expired ? Icons.event_busy : Icons.schedule,
-                      color: batch.expired ? colors.danger : colors.stockYellow,
+                      color: batch.expired ? colors.danger : colors.stockYellowInk,
                     ),
                     const SizedBox(width: 8),
                     Expanded(

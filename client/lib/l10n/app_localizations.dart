@@ -328,6 +328,36 @@ abstract class AppLocalizations {
   /// **'أصناف جديدة'**
   String get newItems;
 
+  /// No description provided for @needsOrdering.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج طلب'**
+  String get needsOrdering;
+
+  /// No description provided for @runningLow.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريباً'**
+  String get runningLow;
+
+  /// No description provided for @inStockPlenty.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوفر'**
+  String get inStockPlenty;
+
+  /// No description provided for @neverCounted.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُجرد المخزون بعد'**
+  String get neverCounted;
+
+  /// No description provided for @lastCountOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر جرد: {date}'**
+  String lastCountOn(String date);
+
   /// No description provided for @orderSummary.
   ///
   /// In ar, this message translates to:

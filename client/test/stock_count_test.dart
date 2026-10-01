@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/harness.dart';
 import 'support/inventory_fixtures.dart';
 import 'support/order_fixtures.dart';
+import 'package:client/features/inventory/inventory_screen.dart';
 
 final syringe = itemJson('i3', 'سرنجة 5 مل'); // 100 per box
 final gloves = itemJson('i4', 'قفازات طبية', unitsPerBox: 50, unitLabelAr: 'زوج');
@@ -186,7 +187,7 @@ void main() {
     await tester.tap(find.text('العودة إلى مخزوني'));
     await tester.pumpAndSettle();
 
-    expect(find.widgetWithText(AppBar, 'مخزوني'), findsOneWidget);
+    expect(find.byType(InventoryScreen), findsOneWidget);
     expect(backend.seen.where((r) => r.path == '/inventory').length, greaterThan(inventoryReads));
   });
 

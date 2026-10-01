@@ -38,7 +38,7 @@ class OrdersScreen extends ConsumerWidget {
           emptyMessage: l10n.noOrders,
           isEmpty: (data) => data.orders.isEmpty,
           builder: (data) => ListView(
-            padding: const EdgeInsetsDirectional.all(16),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 56),
             children: [
               for (final order in data.orders) _OrderTile(order: order),
               if (data.hasMore) const _LoadMoreButton(),

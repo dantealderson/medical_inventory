@@ -34,7 +34,7 @@ class ShopScreen extends ConsumerWidget {
           emptyMessage: l10n.noCategoriesYet,
           isEmpty: (data) => data.isEmpty,
           builder: (roots) => GridView.builder(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 32),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 56),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 220,
               mainAxisSpacing: 12,

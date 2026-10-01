@@ -147,6 +147,16 @@
     "description": "Above the clinic's name on the home header"
   },
   "newItems": "أصناف جديدة",
+  "needsOrdering": "يحتاج طلب",
+  "runningLow": "قريباً",
+  "inStockPlenty": "متوفر",
+  "neverCounted": "لم يُجرد المخزون بعد",
+  "lastCountOn": "آخر جرد: {date}",
+  "@lastCountOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "orderSummary": "ملخص الطلب",
   "summaryLines": "عدد الأصناف",
   "summaryBoxes": "عدد العلب",

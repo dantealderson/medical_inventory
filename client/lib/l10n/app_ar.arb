@@ -1,8 +1,12 @@
 {
   "@@locale": "ar",
-  "appTitle": "المخزون الطبي",
+  "appTitle": "مخزون العيادة",
   "@appTitle": {
-    "description": "Client application title"
+    "description": "Client application title; the same as the name under the phone's icon"
+  },
+  "pushOpen": "عرض",
+  "@pushOpen": {
+    "description": "The button on the bar a notification shows while the app is open"
   },
   "loading": "جارٍ التحميل...",
   "@loading": {

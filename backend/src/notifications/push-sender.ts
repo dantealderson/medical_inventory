@@ -52,6 +52,8 @@ export class FcmPushSender implements PushSender {
         tokens: chunk,
         notification: { title: message.title, body: message.body },
         data: message.data,
+        // Normal priority may wait for a dozing phone's next maintenance window.
+        android: { priority: 'high' },
       });
       result.responses.forEach((response, i) => {
         if (!response.success && DEAD_TOKEN_CODES.has(response.error?.code ?? '')) {

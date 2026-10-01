@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:client/core/auth_controller.dart';
+import 'package:client/core/push.dart';
 import 'package:client/main.dart';
 
 export 'package:api_client/testing.dart' show FakeApiBackend, SeenRequest, errorEnvelope;
@@ -46,6 +47,7 @@ Future<FakeApiBackend> pumpApp(
   TokenStore? store,
   Duration? Function(int retryCount, Object error)? retry,
   Duration latency = Duration.zero,
+  PushMessaging? push,
 }) async {
   final client = ApiClient(baseUrl: 'http://test.local/api/v1');
   final backend = FakeApiBackend((req, _) => handler(req), latency: latency)..attachTo(client);
@@ -56,6 +58,7 @@ Future<FakeApiBackend> pumpApp(
       overrides: [
         apiClientProvider.overrideWithValue(client),
         tokenStoreProvider.overrideWithValue(store ?? InMemoryTokenStore()),
+        pushMessagingProvider.overrideWithValue(push),
       ],
       child: const ClientApp(),
     ),
@@ -71,10 +74,11 @@ Future<FakeApiBackend> pumpSignedIn(
   List<Object?> Function(SeenRequest req) handler, {
   Duration? Function(int retryCount, Object error)? retry,
   Duration latency = Duration.zero,
+  PushMessaging? push,
 }) async {
   final store = InMemoryTokenStore();
   await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
-  return pumpApp(tester, handler, store: store, retry: retry, latency: latency);
+  return pumpApp(tester, handler, store: store, retry: retry, latency: latency, push: push);
 }
 
 /// Logs out from home: the «المزيد» menu, then yes to the question.

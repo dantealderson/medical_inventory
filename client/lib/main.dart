@@ -5,17 +5,22 @@ import 'package:ui_kit/ui_kit.dart';
 
 import 'core/api_config.dart';
 import 'core/auth_controller.dart';
+import 'core/firebase_push.dart';
+import 'core/push.dart';
 import 'core/refresh.dart';
 import 'core/router.dart';
 import 'core/secure_token_store.dart';
 import 'l10n/app_localizations.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final push = await startFirebasePush();
   runApp(
     ProviderScope(
       overrides: [
         apiClientProvider.overrideWithValue(ApiClient(baseUrl: apiBaseUrl)),
         tokenStoreProvider.overrideWithValue(SecureTokenStore()),
+        pushMessagingProvider.overrideWithValue(push),
       ],
       child: const ClientApp(),
     ),
@@ -38,6 +43,8 @@ class _ClientAppState extends ConsumerState<ClientApp> {
   void initState() {
     super.initState();
     _lifecycle = AppLifecycleListener(onResume: () => refreshServerData(ref));
+    // Registers this phone for push once signed in, and opens tapped pushes.
+    ref.read(pushControllerProvider);
     // Resolve the stored token before the router settles, so a signed-in user
     // never sees the login screen flash past.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -62,6 +69,7 @@ class _ClientAppState extends ConsumerState<ClientApp> {
         ),
       ),
       routerConfig: ref.watch(routerProvider),
+      scaffoldMessengerKey: ref.watch(messengerKeyProvider),
 
       // Arabic only — no language switcher (spec §10.3).
       locale: const Locale('ar'),

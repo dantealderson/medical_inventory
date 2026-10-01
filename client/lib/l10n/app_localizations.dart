@@ -94,11 +94,17 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('ar')];
 
-  /// Client application title
+  /// Client application title; the same as the name under the phone's icon
   ///
   /// In ar, this message translates to:
-  /// **'المخزون الطبي'**
+  /// **'مخزون العيادة'**
   String get appTitle;
+
+  /// The button on the bar a notification shows while the app is open
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض'**
+  String get pushOpen;
 
   /// Generic loading indicator label
   ///

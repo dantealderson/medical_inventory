@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The name of the push notification category in the phone's settings. -->
+    <string name="notification_channel_alerts">التنبيهات</string>
+</resources>

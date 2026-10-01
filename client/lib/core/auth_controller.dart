@@ -138,10 +138,17 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
+  /// Runs at the start of [logout], while the session still works. Set by
+  /// push, which unregisters this phone (a shared clinic phone must stop
+  /// getting the last account's pushes).
+  Future<void> Function()? beforeLogout;
+
   Future<void> logout() async {
+    final before = beforeLogout?.call();
     // Signed out first, so clearing the tokens is not taken for the server
     // ending the session.
     state = const AuthLoggedOut();
+    await before;
     await _api.logout();
   }
 }

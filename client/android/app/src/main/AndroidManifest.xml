@@ -8,6 +8,17 @@
         android:label="مخزون العيادة"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Pushes: the channel MainActivity creates, a white status-bar icon
+             (Android shows a coloured one as a white square) and the app's teal. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="alerts" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ic_launcher_background" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

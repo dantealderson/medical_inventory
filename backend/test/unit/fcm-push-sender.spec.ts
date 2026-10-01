@@ -51,6 +51,14 @@ describe('FcmPushSender', () => {
     });
   });
 
+  it('asks Android for high priority, so a sleeping phone shows it at once', async () => {
+    const { calls, messaging } = fakeMessaging();
+
+    await new FcmPushSender(messaging).send(['t1'], message);
+
+    expect(calls[0].android).toEqual({ priority: 'high' });
+  });
+
   it('reports only the tokens FCM says are dead', async () => {
     const { messaging } = fakeMessaging((token) =>
       token === 't2'

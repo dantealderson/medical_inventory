@@ -69,6 +69,11 @@ export const envSchema = z.object({
   // A Firebase service-account JSON. Without it the system runs with no push
   // at all — every notification is still stored and shown in the app (§7.8).
   FIREBASE_SERVICE_ACCOUNT_JSON: z.string().min(1).optional(),
+
+  // A built admin website (admin/build/web) to serve at "/", beside the API.
+  // Set by start-online.cmd, so one address carries both through the tunnel.
+  // Hosts that serve the admin elsewhere (GitHub Pages) leave it unset.
+  ADMIN_WEB_DIR: z.string().min(1).optional(),
 })
   .refine((env) => env.JWT_ACCESS_SECRET !== env.JWT_REFRESH_SECRET, {
     message: 'JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must differ — reusing one secret means a leaked access secret can mint refresh tokens',

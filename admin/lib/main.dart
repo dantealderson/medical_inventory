@@ -11,10 +11,16 @@ import 'l10n/app_localizations.dart';
 
 /// Backend base URL. Overridden at build time:
 ///   flutter build web --dart-define=API_BASE_URL=https://api.example.com/api/v1
-const apiBaseUrl = String.fromEnvironment(
+/// `same-origin` means the server that served this page (start-online.cmd
+/// serves the admin and the API from one address).
+const _configuredApiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
   defaultValue: 'http://localhost:3000/api/v1',
 );
+
+final apiBaseUrl = _configuredApiBaseUrl == 'same-origin'
+    ? '${Uri.base.origin}/api/v1'
+    : _configuredApiBaseUrl;
 
 void main() {
   runApp(

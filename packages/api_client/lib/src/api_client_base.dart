@@ -12,7 +12,13 @@ class ApiClient {
           baseUrl: baseUrl,
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 20),
-          headers: {'Accept': 'application/json'},
+          headers: {
+            'Accept': 'application/json',
+            // The free test hosting is a free ngrok tunnel, which answers a
+            // browser with a warning page unless asked not to. Harmless
+            // anywhere else.
+            'ngrok-skip-browser-warning': '1',
+          },
         ),
       ) {
     dio.interceptors.add(

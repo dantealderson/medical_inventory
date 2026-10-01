@@ -12,6 +12,9 @@ async function bootstrap() {
 
   applyAppConfig(app);
 
+  const adminWebDir = config.get('ADMIN_WEB_DIR', { infer: true });
+  if (adminWebDir) app.useStaticAssets(adminWebDir);
+
   if (config.get('NODE_ENV', { infer: true }) !== 'production') {
     applySwagger(app);
   }

@@ -37,7 +37,9 @@ export function applyCors(app: INestApplication): void {
       return cb(null, false);
     },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    // ngrok-skip-browser-warning: the apps send it so a free ngrok tunnel
+    // (the free test hosting) never answers with its warning page.
+    allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
     // Auth is a Bearer header, not a cookie, so credentialed requests are not
     // needed — and leaving this off keeps the policy tighter.
     credentials: false,

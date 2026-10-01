@@ -140,7 +140,8 @@ void main() {
       expect(badge('أدرينالين'), 'ناقص');
       expect(badge('شاش'), 'نفد');
       expect(badge('سرنجة 5 مل'), 'قليل');
-      expect(badge('قفازات طبية'), 'غير محدد');
+      // Unknown has no badge: it says nothing a clinic can act on.
+      expect(inCard('قفازات طبية', find.byType(StockBadge)), findsNothing);
       expect(badge('قطن'), 'جيد');
 
       expect(inCard('أدرينالين', find.text('5 أمبولة')), findsOneWidget);
@@ -149,9 +150,9 @@ void main() {
 
       expect(inCard('أدرينالين', find.text('يكفي يومين')), findsOneWidget);
       expect(inCard('سرنجة 5 مل', find.text('يكفي حوالي 12 يوماً')), findsOneWidget);
-      expect(inCard('قفازات طبية', find.text('لا توجد بيانات كافية')), findsOneWidget);
-      // An empty shelf says «نفد»; "not enough data" would only confuse.
-      expect(inCard('شاش', find.text('لا توجد بيانات كافية')), findsNothing);
+      // No estimate yet: nothing about it at all, never "not enough data".
+      expect(find.text('لا توجد بيانات كافية'), findsNothing);
+      expect(inCard('قفازات طبية', find.byType(LinearProgressIndicator)), findsNothing);
 
       expect(inCard('أدرينالين', find.text('تقدير من الجرد')), findsOneWidget);
       expect(inCard('سرنجة 5 مل', find.text('تقدير من مشترياتك')), findsOneWidget);

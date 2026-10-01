@@ -74,27 +74,28 @@ class InventoryEntryCard extends StatelessWidget {
                   // Red asks for an order: the big + adds a box (requirement 12).
                   if (entry.status == StockStatus.red)
                     AddToCartButton(item: entry.item, size: 52)
-                  else
+                  // Unknown says nothing a clinic can act on: no badge at all.
+                  else if (entry.status != StockStatus.unknown)
                     StockBadge(level: stockLevel(entry.status), label: stockLabel(l10n, entry)),
                 ],
               ),
-              // An empty shelf says «نفد» on its badge; a cover line would
-              // only confuse.
-              if (entry.qtyUnits > 0) ...[
+              // How long it lasts, only when the system knows (the user,
+              // 2026-10-01: "not enough data" means nothing to clinic staff).
+              // An empty shelf says «نفد» on its badge instead.
+              if (entry.qtyUnits > 0 && cover != null) ...[
                 const SizedBox(height: 10),
-                if (cover != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: LinearProgressIndicator(
-                      value: (cover / fullBarDays).clamp(0.04, 1.0),
-                      minHeight: 9,
-                      color: bar,
-                      backgroundColor: colors.divider,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: LinearProgressIndicator(
+                    value: (cover / fullBarDays).clamp(0.04, 1.0),
+                    minHeight: 9,
+                    color: bar,
+                    backgroundColor: colors.divider,
                   ),
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  cover == null ? l10n.noEstimate : l10n.daysOfCover(cover),
+                  l10n.daysOfCover(cover),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink),
                 ),
               ],

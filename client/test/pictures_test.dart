@@ -1,10 +1,10 @@
-import 'package:client/features/catalog/browse_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'support/harness.dart';
 import 'support/order_fixtures.dart';
+import 'package:client/features/catalog/shop_screen.dart';
 
 /// Pictures the admin uploaded, where clinics look for them: a small one in
 /// lists, the full size on an item's page.
@@ -64,14 +64,15 @@ void main() {
     expect(loaded(tester), contains(fullUrl));
   });
 
-  testWidgets('a category with a picture shows it on home', (tester) async {
+  testWidgets('a category with a picture shows it in «تسوّق»', (tester) async {
     await pumpSignedIn(
       tester,
       shop(categories: [{...categoryJson('c1', 'سرنجات'), 'imageUrl': picture}]),
       retry: (_, _) => null,
     );
+    await openShop(tester);
 
-    expect(find.byType(BrowseScreen), findsOneWidget);
+    expect(find.byType(ShopScreen), findsOneWidget);
     expect(loaded(tester), [thumbUrl]);
   });
 

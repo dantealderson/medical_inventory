@@ -71,14 +71,16 @@ void main() {
   }
 
   group('Browse', () {
-    testWidgets('replaces the Phase 1 placeholder with categories', (tester) async {
+    testWidgets('home has the search bar, and «تسوّق» lists the sections', (tester) async {
       await openApp(tester, routes(categories: [category('c1', 'مستهلكات', 1)]));
-      expect(find.text('مستهلكات'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget); // the search bar
+      await openShop(tester);
+      expect(find.text('مستهلكات'), findsOneWidget);
     });
 
     testWidgets('shows an empty state when there is no catalog yet', (tester) async {
       await openApp(tester, routes());
+      await openShop(tester);
       expect(find.text('لم تتم إضافة أقسام بعد'), findsOneWidget);
     });
 
@@ -86,6 +88,8 @@ void main() {
       await openApp(tester, routes(categories: [
         category('c1', 'مستهلكات', 1, children: [category('c2', 'سرنجات', 2)]),
       ]));
+
+      await openShop(tester);
 
       await tester.tap(find.text('مستهلكات'));
       await tester.pumpAndSettle();
@@ -129,6 +133,8 @@ void main() {
         items: [item('i1', 'سرنجة 5 مل')],
       ));
 
+      await openShop(tester);
+
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
 
@@ -140,6 +146,7 @@ void main() {
         categories: [category('c1', 'سرنجات', 1)],
         items: [item('i1', 'سرنجة 5 مل')],
       ));
+      await openShop(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
 
@@ -149,6 +156,7 @@ void main() {
 
     testWidgets('an empty leaf category says so', (tester) async {
       await openApp(tester, routes(categories: [category('c1', 'سرنجات', 1)]));
+      await openShop(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       expect(find.text('لا توجد أصناف في هذا القسم'), findsOneWidget);
@@ -178,7 +186,7 @@ void main() {
       expect(backend.lastTo('/search').query['q'], 'سرنجة');
       expect(find.byType(BrowseScreen), findsOneWidget, reason: 'still on home');
       expect(find.text('سرنجة 5 مل'), findsOneWidget);
-      expect(find.text('مستهلكات'), findsNothing, reason: 'the results replace the categories');
+      expect(homeTile('shop'), findsNothing, reason: 'the results replace the home screen');
     });
 
     testWidgets('clearing the box brings the categories back', (tester) async {
@@ -193,7 +201,7 @@ void main() {
       await tester.tap(find.byTooltip('مسح البحث'));
       await tester.pumpAndSettle();
 
-      expect(find.text('مستهلكات'), findsOneWidget);
+      expect(homeTile('shop'), findsOneWidget);
       expect(find.text('سرنجة 5 مل'), findsNothing);
       expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, isEmpty);
     });
@@ -210,7 +218,7 @@ void main() {
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
-      expect(find.text('مستهلكات'), findsOneWidget);
+      expect(homeTile('shop'), findsOneWidget);
       expect(find.byType(BrowseScreen), findsOneWidget);
     });
 
@@ -282,6 +290,7 @@ void main() {
         categories: [category('c1', 'سرنجات', 1)],
         items: [item('i1', 'سرنجة 5 مل')],
       ));
+      await openShop(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));
@@ -297,6 +306,7 @@ void main() {
         categories: [category('c1', 'سرنجات', 1)],
         items: [item('i1', 'سرنجة 5 مل')],
       ));
+      await openShop(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));
@@ -315,6 +325,7 @@ void main() {
         }
         return [404, null];
       });
+      await openShop(tester);
 
       expect(find.text('حدث خطأ غير متوقع'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'إعادة المحاولة'), findsOneWidget);

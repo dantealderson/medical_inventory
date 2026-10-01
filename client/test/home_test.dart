@@ -111,7 +111,7 @@ void main() {
       // and no retry button from a hidden section.
       expect(find.byType(TextField), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'إعادة المحاولة'), findsNothing);
-      expect(find.text('سرنجات'), findsOneWidget);
+      expect(homeTile('shop'), findsOneWidget);
     });
 
     testWidgets('renders nothing when there are no deals', (tester) async {
@@ -135,6 +135,7 @@ void main() {
   group('Item detail expiry', () {
     Future<void> openItem(WidgetTester tester, List<Object?> availability) async {
       await pumpSignedIn(tester, home(availability: availability));
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));
@@ -164,6 +165,7 @@ void main() {
         if (req.path == '/items/i1/availability') return availability;
         return base(req);
       });
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));
@@ -173,6 +175,7 @@ void main() {
       availability = [200, {'itemId': 'i1', 'inStock': true, 'nextExpiryDate': '2027-03-01'}];
       await tester.tap(find.byType(BackButtonIcon));
       await tester.pumpAndSettle();
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));

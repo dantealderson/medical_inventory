@@ -81,10 +81,33 @@ Future<FakeApiBackend> pumpSignedIn(
   return pumpApp(tester, handler, store: store, retry: retry, latency: latency, push: push);
 }
 
-/// Logs out from home: the «المزيد» menu, then yes to the question.
-Future<void> logOut(WidgetTester tester) async {
-  await tester.tap(find.byTooltip('المزيد'));
+/// A home tile, by its drawing: shop, inventory, orders, count, bell, account.
+Finder homeTile(String drawing) => find.byKey(ValueKey('home-tile-$drawing'));
+
+/// Scrolls [finder] into view, then taps it: on a small phone with large
+/// text, a home tile can sit under the bottom bar.
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+/// From home, the «تسوّق» tile: the sections to order from.
+Future<void> openShop(WidgetTester tester) => tapVisible(tester, homeTile('shop'));
+
+/// On home, opens «تسوّق»; anywhere else, does nothing. For tests that reach
+/// a section from wherever they happen to be.
+Future<void> shopIfHome(WidgetTester tester) async {
+  if (homeTile('shop').evaluate().isNotEmpty) await openShop(tester);
+}
+
+/// From home, the «حسابي» tile.
+Future<void> openAccount(WidgetTester tester) => tapVisible(tester, homeTile('account'));
+
+/// Logs out from home: «حسابي», «تسجيل الخروج», then yes to the question.
+Future<void> logOut(WidgetTester tester) async {
+  await openAccount(tester);
   await tester.tap(find.text('تسجيل الخروج'));
   await tester.pumpAndSettle();
   await tester.tap(find.widgetWithText(FilledButton, 'خروج'));

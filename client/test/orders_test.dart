@@ -87,7 +87,7 @@ void main() {
       await tester.tap(find.byTooltip('طلباتي'));
       await tester.pumpAndSettle();
 
-      expect(find.text('طلباتي'), findsOneWidget);
+      expect(find.widgetWithText(AppBar, 'طلباتي'), findsOneWidget);
       expect(find.text('بانتظار التأكيد'), findsOneWidget);
       expect(find.text('تم التسليم'), findsOneWidget);
       expect(find.text('37,000 د.ع'), findsOneWidget);

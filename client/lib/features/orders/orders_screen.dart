@@ -11,6 +11,7 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
 import 'order_labels.dart';
+import '../shell/app_bottom_bar.dart';
 
 /// The clinic's order history, newest first, a page at a time.
 class OrdersScreen extends ConsumerWidget {
@@ -26,6 +27,9 @@ class OrdersScreen extends ConsumerWidget {
         title: Text(l10n.myOrders),
         leading: const BackArrow(Routes.home),
       ),
+      bottomNavigationBar: const AppBottomBar(current: MainTab.orders),
+      floatingActionButton: const CartFab(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(orderHistoryProvider),
         child: AsyncSection<OrderHistoryState>(

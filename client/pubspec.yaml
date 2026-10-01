@@ -44,6 +44,7 @@ dependencies:
   flutter_secure_storage: ^10.3.4
   firebase_core: ^4.15.0
   firebase_messaging: ^16.7.0
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true          # enables flutter gen-l10n
+  # The home tiles' drawings, from the chosen design (2026-10-01).
+  assets:
+    - assets/illustrations/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

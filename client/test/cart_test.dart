@@ -1,4 +1,3 @@
-import 'package:client/features/cart/cart_badge_button.dart';
 import 'package:client/features/cart/cart_screen.dart';
 import 'package:client/features/catalog/browse_screen.dart';
 import 'package:client/features/catalog/item_card.dart';
@@ -8,6 +7,7 @@ import 'package:ui_kit/ui_kit.dart';
 
 import 'support/harness.dart';
 import 'support/order_fixtures.dart';
+import 'package:client/features/shell/app_bottom_bar.dart';
 
 final syringe = itemJson('i1', 'سرنجة 5 مل');
 final gloves = itemJson('i2', 'قفازات طبية', price: '4000.00', unitsPerBox: 50, unitLabelAr: 'زوج');
@@ -43,7 +43,7 @@ Finder onLine(String name, Finder matching) => find.descendant(
 
 /// The cart's own badge: home also carries the notification bell's.
 Badge badge(WidgetTester tester) => tester.widget<Badge>(
-  find.descendant(of: find.byType(CartBadgeButton), matching: find.byType(Badge)),
+  find.descendant(of: find.byType(CartFab), matching: find.byType(Badge)),
 );
 
 void expectFitsHorizontally(WidgetTester tester, Finder finder, double screenWidth) {
@@ -58,6 +58,7 @@ void main() {
   group('Adding', () {
     testWidgets('+ on an item card adds one box and stays on the list', (tester) async {
       final backend = await pumpSignedIn(tester, shop(cart: () => emptyCartJson));
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
 
@@ -91,6 +92,7 @@ void main() {
         shop(cart: () => emptyCartJson),
         latency: const Duration(milliseconds: 300),
       );
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
 
@@ -111,6 +113,7 @@ void main() {
 
     testWidgets('+ on the item detail adds one box', (tester) async {
       final backend = await pumpSignedIn(tester, shop(cart: () => emptyCartJson));
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('سرنجة 5 مل'));
@@ -133,6 +136,7 @@ void main() {
           },
         ),
       );
+      await shopIfHome(tester);
       await tester.tap(find.text('سرنجات'));
       await tester.pumpAndSettle();
 

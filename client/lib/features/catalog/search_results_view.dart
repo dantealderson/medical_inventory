@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/catalog_controller.dart';
 import '../../l10n/app_localizations.dart';
-import 'browse_screen.dart';
+import 'shop_screen.dart';
 import 'item_card.dart';
 
 /// Search results, shown on home under the search box while it has text.
@@ -38,7 +38,7 @@ class SearchResultsView extends ConsumerWidget {
           if (data.categories.isNotEmpty) ...[
             Text(l10n.matchingCategories, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
-            for (final category in data.categories) CategoryTile(category: category),
+            for (final category in data.categories) CategoryRow(category: category),
             const SizedBox(height: 16),
           ],
           if (data.items.isNotEmpty) ...[

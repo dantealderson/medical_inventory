@@ -81,7 +81,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.deleteAccount),
-        leading: const BackArrow(Routes.home),
+        leading: const BackArrow(Routes.account),
       ),
       body: ListView(
         padding: const EdgeInsetsDirectional.all(16),

@@ -38,13 +38,13 @@ class LowStockStrip extends ConsumerWidget {
 
     return Padding(
       key: const ValueKey('low-stock-strip'),
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
+      padding: const EdgeInsetsDirectional.only(top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Expanded(child: Text(l10n.lowStockTitle, style: text.titleMedium)),
+              Expanded(child: Text(l10n.lowStockTitle, style: text.titleLarge?.copyWith(fontSize: 19))),
               if (red.length > maxRows)
                 TextButton(
                   onPressed: () => context.go(Routes.inventory),

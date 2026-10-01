@@ -181,7 +181,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget, reason: 'signed in, on home');
-      expect(backend.lastTo('/categories').headers['Authorization'], 'Bearer access-1');
+      expect(backend.lastTo('/hot-deals').headers['Authorization'], 'Bearer access-1');
       await expectLater(store.readAccess(), completion(isNull));
       await expectLater(store.readRefresh(), completion(isNull));
     });
@@ -321,8 +321,7 @@ void main() {
     }
 
     Future<void> chooseLogout(WidgetTester tester) async {
-      await tester.tap(find.byTooltip('المزيد'));
-      await tester.pumpAndSettle();
+      await openAccount(tester);
       await tester.tap(find.text('تسجيل الخروج'));
       await tester.pumpAndSettle();
     }
@@ -356,7 +355,7 @@ void main() {
       await tester.tap(find.widgetWithText(TextButton, 'إلغاء'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(TextField), findsOneWidget, reason: 'still on home');
+      expect(find.text('تسجيل الخروج'), findsOneWidget, reason: 'still on «حسابي»');
       expect(backend.callsTo('/auth/logout'), 0);
       await expectLater(store.readAccess(), completion('a'));
     });

@@ -14,8 +14,7 @@ List<Object?> Function(SeenRequest) deletionWorld({List<Object?>? refusal}) {
 }
 
 Future<void> openDeleteAccount(WidgetTester tester) async {
-  await tester.tap(find.byTooltip('المزيد'));
-  await tester.pumpAndSettle();
+  await openAccount(tester);
   await tester.tap(find.text('حذف الحساب'));
   await tester.pumpAndSettle();
 }
@@ -27,7 +26,7 @@ Future<void> deleteWith(WidgetTester tester, String password) async {
 }
 
 void main() {
-  testWidgets('the «المزيد» menu leads to a page that says what goes and what stays', (tester) async {
+  testWidgets('«حسابي» leads to a page that says what goes and what stays', (tester) async {
     await pumpSignedIn(tester, deletionWorld());
     await openDeleteAccount(tester);
 
@@ -86,7 +85,7 @@ void main() {
     expect(find.text('حذف حسابي نهائياً'), findsOneWidget);
   });
 
-  testWidgets('the phone’s back button returns home', (tester) async {
+  testWidgets('the phone’s back button returns to «حسابي»', (tester) async {
     await pumpSignedIn(tester, deletionWorld());
     await openDeleteAccount(tester);
 
@@ -94,6 +93,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('حذف حسابي نهائياً'), findsNothing);
-    expect(find.byTooltip('المزيد'), findsOneWidget);
+    expect(find.text('تسجيل الخروج'), findsOneWidget);
   });
 }

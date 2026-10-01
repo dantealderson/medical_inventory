@@ -6,7 +6,7 @@ import '../../core/catalog_controller.dart';
 import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
-import 'browse_screen.dart';
+import 'shop_screen.dart';
 import 'item_card.dart';
 
 /// One category: its sub-categories if it has any, otherwise its items.
@@ -52,7 +52,7 @@ class CategoryScreen extends ConsumerWidget {
               ? ListView.builder(
                   padding: const EdgeInsetsDirectional.all(16),
                   itemCount: found.children.length,
-                  itemBuilder: (context, i) => CategoryTile(category: found.children[i]),
+                  itemBuilder: (context, i) => CategoryRow(category: found.children[i]),
                 )
               : _CategoryItems(categoryId: categoryId);
         },

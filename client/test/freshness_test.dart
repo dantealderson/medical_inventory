@@ -1,4 +1,3 @@
-import 'package:client/features/cart/cart_badge_button.dart';
 import 'package:client/features/catalog/browse_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'support/harness.dart';
 import 'support/order_fixtures.dart';
+import 'package:client/features/shell/app_bottom_bar.dart';
 
 /// What the supplier changes must show when the clinic looks again. Screens
 /// used to keep their first answer for the whole session, and a phone app
@@ -15,7 +15,7 @@ void main() {
 
   String badgeLabel(WidgetTester tester) {
     final badge = tester.widget<Badge>(
-      find.descendant(of: find.byType(CartBadgeButton), matching: find.byType(Badge)),
+      find.descendant(of: find.byType(CartFab), matching: find.byType(Badge)),
     );
     return (badge.label! as Text).data!;
   }

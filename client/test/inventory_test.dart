@@ -64,25 +64,19 @@ Finder inCard(String name, Finder matching) => find.descendant(of: card(name), m
 
 /// The home button. `FilledButton.tonalIcon` is a private subclass, so an
 /// exact-type finder would miss it.
-Finder inventoryButton() => find.ancestor(
-  of: find.text('مخزوني'),
-  matching: find.byWidgetPredicate((w) => w is FilledButton),
-);
+Finder inventoryButton() => homeTile('inventory');
 
-Future<void> openInventory(WidgetTester tester) async {
-  await tester.tap(inventoryButton());
-  await tester.pumpAndSettle();
-}
+Future<void> openInventory(WidgetTester tester) => tapVisible(tester, inventoryButton());
 
 void main() {
   group('Home', () {
-    testWidgets('has a big «مخزوني» button that opens My Inventory', (tester) async {
+    testWidgets('has a big «مخزوني» tile that opens My Inventory', (tester) async {
       tallScreen(tester);
       await pumpSignedIn(tester, shelf());
 
       final button = inventoryButton();
       expect(button, findsOneWidget);
-      expect(tester.getSize(button).height, greaterThanOrEqualTo(56));
+      expect(tester.getSize(button).height, greaterThanOrEqualTo(96));
 
       await openInventory(tester);
 
@@ -257,6 +251,8 @@ void main() {
 
       await pumpSignedIn(tester, shelf(movements: pages));
       await openInventory(tester);
+      // Below the fold at this size: the bottom bar takes its share.
+      await tester.scrollUntilVisible(find.text('سرنجة 5 مل'), 200, scrollable: find.byType(Scrollable).first);
       await tester.tap(find.text('سرنجة 5 مل'));
       await tester.pumpAndSettle();
 

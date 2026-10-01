@@ -43,8 +43,7 @@ void tallScreen(WidgetTester tester) {
 
 Future<FakeApiBackend> openCount(WidgetTester tester, {List<Object?> count = const [201, countResult]}) async {
   final backend = await pumpSignedIn(tester, shelf(count: count));
-  await tester.tap(find.ancestor(of: find.text('مخزوني'), matching: find.byWidgetPredicate((w) => w is FilledButton)));
-  await tester.pumpAndSettle();
+  await tapVisible(tester, homeTile('inventory'));
   await tester.tap(find.text('جرد المخزون'));
   await tester.pumpAndSettle();
   return backend;

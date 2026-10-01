@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 /// Leaves for [route], after [confirm] agrees when there is one.
 Future<void> _leave(BuildContext context, String route, Future<bool> Function()? confirm) async {
@@ -47,10 +48,15 @@ class BackArrow extends StatelessWidget {
     return BackTo(
       route,
       confirm: confirm,
-      child: IconButton(
-        icon: const BackButtonIcon(),
-        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-        onPressed: () => _leave(context, route, confirm),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.only(start: 8),
+        // A soft round button, as in the design: easier to find than a bare arrow.
+        child: IconButton(
+          icon: const BackButtonIcon(),
+          style: IconButton.styleFrom(backgroundColor: context.appColors.chip),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: () => _leave(context, route, confirm),
+        ),
       ),
     );
   }

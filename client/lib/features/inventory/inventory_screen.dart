@@ -9,6 +9,7 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../catalog/item_card.dart';
 import 'inventory_entry_card.dart';
+import '../shell/app_bottom_bar.dart';
 
 /// My Inventory (مخزوني), the clinic's core screen: every item on its shelf,
 /// most urgent first, as the server sorts them.
@@ -25,6 +26,9 @@ class InventoryScreen extends ConsumerWidget {
         title: Text(l10n.myInventory),
         leading: const BackArrow(Routes.home),
       ),
+      bottomNavigationBar: const AppBottomBar(current: MainTab.inventory),
+      floatingActionButton: const CartFab(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(inventoryProvider),
         child: AsyncSection<Inventory>(

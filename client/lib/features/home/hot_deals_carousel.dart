@@ -30,7 +30,7 @@ import '../catalog/item_picture.dart';
 class HotDealsCarousel extends ConsumerStatefulWidget {
   const HotDealsCarousel({super.key});
 
-  static const height = 112.0;
+  static const height = 128.0;
 
   @override
   ConsumerState<HotDealsCarousel> createState() => _HotDealsCarouselState();
@@ -85,63 +85,99 @@ class _HotDealsCarouselState extends ConsumerState<HotDealsCarousel> {
 
     if (entries.isEmpty) return const SizedBox.shrink();
 
-    return SizedBox(
-      height: HotDealsCarousel.height,
-      child: Listener(
-        onPointerDown: (_) => _held = true,
-        onPointerUp: (_) => _held = false,
-        onPointerCancel: (_) => _held = false,
-        child: PageView.builder(
-          controller: _controller,
-          itemCount: entries.length,
-          itemBuilder: (context, i) => _DealCard(item: entries[i].item),
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: 16),
+      child: SizedBox(
+        height: HotDealsCarousel.height,
+        child: Listener(
+          onPointerDown: (_) => _held = true,
+          onPointerUp: (_) => _held = false,
+          onPointerCancel: (_) => _held = false,
+          child: PageView.builder(
+            controller: _controller,
+            itemCount: entries.length,
+            itemBuilder: (context, i) => _DealCard(entry: entries[i]),
+          ),
         ),
       ),
     );
   }
 }
 
+/// One deal: what kind it is, the item's name and price per box, and its
+/// picture in a circle with the big + on it.
 class _DealCard extends StatelessWidget {
-  const _DealCard({required this.item});
+  const _DealCard({required this.entry});
 
-  final Item item;
+  final HotDealEntry entry;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
     final colors = context.appColors;
+    final item = entry.item;
+    final tag = switch (entry.kind) {
+      HotDealKind.newItem => l10n.dealNew,
+      HotDealKind.frequent => l10n.dealFrequent,
+      _ => l10n.dealWeekly,
+    };
 
     return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 2),
       child: Card(
-        margin: EdgeInsetsDirectional.zero,
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
-          padding: const EdgeInsetsDirectional.all(12),
+          padding: const EdgeInsetsDirectional.fromSTEB(18, 10, 12, 10),
           child: Row(
             children: [
-              ItemPicture.thumb(item.imageUrl),
-              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item.displayName,
-                      style: text.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Container(
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 2),
+                      decoration: BoxDecoration(color: colors.tag, borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        tag,
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: colors.onTag),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.pricePerBox}: ${formatIqd(item.pricePerBox)}',
-                      style: text.bodySmall?.copyWith(color: colors.primary),
+                      item.displayName,
+                      style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      l10n.pricePerBoxValue(formatIqd(item.pricePerBox)),
+                      style: TextStyle(fontSize: 15, color: colors.textMuted),
                     ),
                   ],
                 ),
               ),
-              AddToCartButton(item: item, size: 48),
+              const SizedBox(width: 8),
+              SizedBox.square(
+                dimension: 100,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(color: colors.tileMint, shape: BoxShape.circle),
+                        child: Center(child: ItemPicture.thumb(item.imageUrl, size: 62)),
+                      ),
+                    ),
+                    PositionedDirectional(
+                      bottom: -4,
+                      end: -4,
+                      child: AddToCartButton(item: item, size: 48),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -137,6 +137,25 @@
     "description": "Phase 2 catalog: boxesShort"
   },
   "home": "الرئيسية",
+  "shop": "تسوّق",
+  "@shop": {
+    "description": "The home tile and page with the sections to order from"
+  },
+  "myAccount": "حسابي",
+  "hello": "مرحباً",
+  "@hello": {
+    "description": "Above the clinic's name on the home header"
+  },
+  "newItems": "أصناف جديدة",
+  "dealWeekly": "عرض الأسبوع",
+  "dealNew": "جديد",
+  "dealFrequent": "الأكثر طلباً",
+  "pricePerBoxValue": "{price} للعلبة",
+  "@pricePerBoxValue": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
   "@home": {
     "description": "Phase 2 catalog: home"
   },

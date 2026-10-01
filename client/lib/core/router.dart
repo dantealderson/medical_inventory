@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/account/account_screen.dart';
 import '../features/auth/delete_account_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pending_approval_screen.dart';
@@ -11,6 +12,7 @@ import '../features/cart/cart_screen.dart';
 import '../features/catalog/browse_screen.dart';
 import '../features/catalog/category_screen.dart';
 import '../features/catalog/item_detail_screen.dart';
+import '../features/catalog/shop_screen.dart';
 import '../features/inventory/inventory_item_screen.dart';
 import '../features/inventory/inventory_screen.dart';
 import '../features/inventory/stock_count_screen.dart';
@@ -34,6 +36,8 @@ abstract final class Routes {
   static String inventoryItem(String id) => '/inventory/item/$id';
   static const stockCount = '/inventory/count';
   static const notifications = '/notifications';
+  static const shop = '/shop';
+  static const account = '/account';
   static const deleteAccount = '/account/delete';
 }
 
@@ -97,6 +101,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.inventory, builder: (_, _) => const InventoryScreen()),
       GoRoute(path: Routes.stockCount, builder: (_, _) => const StockCountScreen()),
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: Routes.shop, builder: (_, _) => const ShopScreen()),
+      GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen()),
       GoRoute(path: Routes.deleteAccount, builder: (_, _) => const DeleteAccountScreen()),
       GoRoute(
         path: '/inventory/item/:id',

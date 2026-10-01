@@ -116,6 +116,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get home => 'الرئيسية';
 
   @override
+  String get shop => 'تسوّق';
+
+  @override
+  String get myAccount => 'حسابي';
+
+  @override
+  String get hello => 'مرحباً';
+
+  @override
+  String get newItems => 'أصناف جديدة';
+
+  @override
+  String get dealWeekly => 'عرض الأسبوع';
+
+  @override
+  String get dealNew => 'جديد';
+
+  @override
+  String get dealFrequent => 'الأكثر طلباً';
+
+  @override
+  String pricePerBoxValue(String price) {
+    return '$price للعلبة';
+  }
+
+  @override
   String get back => 'رجوع';
 
   @override

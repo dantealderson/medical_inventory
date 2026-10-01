@@ -304,6 +304,54 @@ abstract class AppLocalizations {
   /// **'الرئيسية'**
   String get home;
 
+  /// The home tile and page with the sections to order from
+  ///
+  /// In ar, this message translates to:
+  /// **'تسوّق'**
+  String get shop;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابي'**
+  String get myAccount;
+
+  /// Above the clinic's name on the home header
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحباً'**
+  String get hello;
+
+  /// No description provided for @newItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصناف جديدة'**
+  String get newItems;
+
+  /// No description provided for @dealWeekly.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض الأسبوع'**
+  String get dealWeekly;
+
+  /// No description provided for @dealNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'جديد'**
+  String get dealNew;
+
+  /// No description provided for @dealFrequent.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأكثر طلباً'**
+  String get dealFrequent;
+
+  /// No description provided for @pricePerBoxValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'{price} للعلبة'**
+  String pricePerBoxValue(String price);
+
   /// Phase 2 catalog: back
   ///
   /// In ar, this message translates to:

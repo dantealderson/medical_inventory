@@ -57,9 +57,10 @@ if (-not $NoTunnel) {
     & $devtunnel create $cfg.tunnelId --allow-anonymous; Must 'Creating the tunnel'
     & $devtunnel port create $cfg.tunnelId -p 3000; Must 'Opening port 3000 on the tunnel'
   }
-  $shown = & $devtunnel show $cfg.tunnelId 2>&1 | Out-String
-  $match = [regex]::Match($shown, 'https://[^\s"]*devtunnels\.ms[^\s"]*')
-  if ($match.Success) { $tunnelUrl = $match.Value.TrimEnd('/') }
+  # The address is random, not the tunnel's name, but fixed for the tunnel's life.
+  $shown = & $devtunnel show $cfg.tunnelId -j 2>$null | Out-String
+  $match = [regex]::Match($shown, '"portUri"\s*:\s*"(https://[^"]+)"')
+  if ($match.Success) { $tunnelUrl = $match.Groups[1].Value.TrimEnd('/') }
 }
 
 # --- The database ---------------------------------------------------------

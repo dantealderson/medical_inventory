@@ -2,7 +2,7 @@
 
 No card and no monthly cost. Your PC is the server, and a **Microsoft dev tunnel** gives it a fixed public address, so the app on your phone reaches it from anywhere, on Wi-Fi or mobile data. You sign in with your **GitHub** account; nothing else to sign up for. (ngrok is blocked in Iraq without a VPN, so it is not used.)
 
-- **One address for everything:** `https://YOUR-TUNNEL-3000.euw.devtunnels.ms/` is the admin website, and the phone app talks to the same address plus `/api/v1`.
+- **One address for everything:** `https://3mp6l17q-3000.euw.devtunnels.ms/` is the admin website, and the phone app talks to the same address plus `/api/v1`. It looks random, but it stays the same every time.
 - **The PC must be on**, with `start-online.cmd` running. Close its window and you are offline.
 - **Free limits:** 5 GB a month, plenty for testing. A tunnel unused for 30 days is deleted; the next start creates it again at the same address.
 - **Its own database** (`medinv_online`), filled with the demo data on the first start. Your development database is never touched.
@@ -22,7 +22,7 @@ Download the Firebase key: https://console.firebase.google.com/project/iq-medsup
 
 1. On GitHub, open the repository, then **Settings → Secrets and variables → Actions → Variables → New repository variable**:
    - Name: `API_BASE_URL`
-   - Value: the `app (API_BASE_URL)` address from the first start, ending in `/api/v1`
+   - Value: `https://3mp6l17q-3000.euw.devtunnels.ms/api/v1`
 2. **Settings → Pages**: set **Source: GitHub Actions** (the workflow publishes there too).
 3. **Actions → Build the apps → Run workflow**.
 4. On the phone, open and install:

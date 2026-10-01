@@ -71,7 +71,7 @@ export const envSchema = z.object({
   FIREBASE_SERVICE_ACCOUNT_JSON: z.string().min(1).optional(),
 
   // A built admin website (admin/build/web) to serve at "/", beside the API.
-  // Set by start-online.cmd, so one address carries both through the tunnel.
+  // Set by start-online.cmd, so one tunnel address carries both.
   // Hosts that serve the admin elsewhere (GitHub Pages) leave it unset.
   ADMIN_WEB_DIR: z.string().min(1).optional(),
 })

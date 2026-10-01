@@ -1,6 +1,7 @@
 # Puts this PC's server online for testing, free: the database (Docker), the
-# server with the admin website at "/", and an ngrok tunnel to your fixed
-# ngrok address. Close the window (or press Ctrl+C) to go offline.
+# server with the admin website at "/", and a Microsoft dev tunnel with a fixed
+# public address (sign in with GitHub, no card; ngrok is blocked in Iraq).
+# Close the window (or press Ctrl+C) to go offline.
 #
 # It uses its own database, medinv_online, filled with the demo data, so the
 # development database is never touched. Settings asked on the first run are
@@ -16,8 +17,7 @@ $backend = Join-Path $repo 'backend'
 $admin = Join-Path $repo 'admin'
 $configPath = Join-Path $repo 'online.local.json'
 $logPath = Join-Path $repo 'online-server.log'
-$ngrok = Join-Path $env:LOCALAPPDATA 'ngrok\ngrok.exe'
-$ngrokConfig = Join-Path $env:LOCALAPPDATA 'ngrok\ngrok.yml'
+$devtunnel = Join-Path $env:LOCALAPPDATA 'devtunnel\devtunnel.exe'
 $dockerBin = Join-Path $env:LOCALAPPDATA 'Programs\DockerDesktop\resources\bin'
 if (Test-Path $dockerBin) { $env:Path = "$dockerBin;$env:Path" }
 
@@ -27,12 +27,11 @@ function Must($what) { if ($LASTEXITCODE -ne 0) { Fail "$what failed (exit code 
 
 # --- Settings, asked once -------------------------------------------------
 $cfg = if (Test-Path $configPath) { Get-Content $configPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
-foreach ($name in 'domain', 'demoPassword', 'firebaseKey') {
+foreach ($name in 'tunnelId', 'demoPassword', 'firebaseKey') {
   if (-not ($cfg.PSObject.Properties.Name -contains $name)) { $cfg | Add-Member $name '' }
 }
-if (-not $NoTunnel -and -not $cfg.domain) {
-  $cfg.domain = ((Read-Host 'Your ngrok domain, from the ngrok dashboard (e.g. xxxx.ngrok-free.dev)').Trim() -replace '^https?://', '' -replace '/.*$', '')
-}
+# The tunnel's name is part of its fixed address, so it is chosen once.
+if (-not $cfg.tunnelId) { $cfg.tunnelId = 'medsupply-' + (Get-Random -Minimum 1000 -Maximum 9999) }
 while ($cfg.demoPassword.Length -lt 8) {
   $cfg.demoPassword = (Read-Host 'A password for the demo clinics (at least 8 characters)').Trim()
 }
@@ -44,12 +43,23 @@ if (-not $cfg.firebaseKey -or -not (Test-Path $cfg.firebaseKey)) {
 }
 $cfg | ConvertTo-Json | Set-Content -Encoding UTF8 $configPath
 
+# --- The tunnel: signed in, created once, open to anyone ------------------
+$tunnelUrl = $null
 if (-not $NoTunnel) {
-  if (-not (Test-Path $ngrok)) { Fail "ngrok is not installed at $ngrok." }
-  if (-not ((Test-Path $ngrokConfig) -and (Select-String -Path $ngrokConfig -Pattern 'authtoken' -Quiet))) {
-    Fail ("ngrok has no authtoken yet. Copy the command from the ngrok dashboard ('Your Authtoken') " +
-      "and run it in a Command Prompt, using `"$ngrok`" in place of 'ngrok'. Then start this again.")
+  if (-not (Test-Path $devtunnel)) { Fail "The dev tunnel tool is not installed at $devtunnel." }
+  if ((& $devtunnel user show 2>&1 | Out-String) -match 'Not logged in') {
+    Say 'Sign in with GitHub, in the browser window that opens (only the first time)'
+    & $devtunnel user login -g; Must 'Signing in to dev tunnels'
   }
+  & $devtunnel show $cfg.tunnelId *> $null
+  if ($LASTEXITCODE -ne 0) {
+    Say "Creating your tunnel, $($cfg.tunnelId) (only the first time)"
+    & $devtunnel create $cfg.tunnelId --allow-anonymous; Must 'Creating the tunnel'
+    & $devtunnel port create $cfg.tunnelId -p 3000; Must 'Opening port 3000 on the tunnel'
+  }
+  $shown = & $devtunnel show $cfg.tunnelId 2>&1 | Out-String
+  $match = [regex]::Match($shown, 'https://[^\s"]*devtunnels\.ms[^\s"]*')
+  if ($match.Success) { $tunnelUrl = $match.Value.TrimEnd('/') }
 }
 
 # --- The database ---------------------------------------------------------
@@ -129,9 +139,13 @@ try {
     Say 'Running at http://localhost:3000 (admin website) - press Ctrl+C to stop'
     Wait-Process -Id $server.Id
   } else {
-    Say "ONLINE - admin website: https://$($cfg.domain)/   app: https://$($cfg.domain)/api/v1"
+    if ($tunnelUrl) {
+      Say "ONLINE - admin website: $tunnelUrl/   app (API_BASE_URL): $tunnelUrl/api/v1"
+    } else {
+      Say 'ONLINE - the address is in the lines below (Connect via browser)'
+    }
     Write-Host 'Keep this window open while testing. Close it to go offline.' -ForegroundColor Yellow
-    & $ngrok http 3000 --url="https://$($cfg.domain)" --log=stdout --log-level=warn
+    & $devtunnel host $cfg.tunnelId
   }
 } finally {
   if (-not $server.HasExited) { Stop-Process -Id $server.Id -Force }

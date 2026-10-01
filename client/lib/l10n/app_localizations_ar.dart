@@ -128,6 +128,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newItems => 'أصناف جديدة';
 
   @override
+  String itemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صنف',
+      many: '$count صنفاً',
+      few: '$count أصناف',
+      two: 'صنفان',
+      one: 'صنف واحد',
+      zero: 'لا أصناف',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inCartCount(int count) {
+    return 'في السلة: $count';
+  }
+
+  @override
   String get dealWeekly => 'عرض الأسبوع';
 
   @override

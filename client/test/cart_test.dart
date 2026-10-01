@@ -64,7 +64,7 @@ void main() {
 
       await tester.tap(
         find.descendant(
-          of: find.widgetWithText(ItemCard, 'سرنجة 5 مل'),
+          of: find.widgetWithText(ItemGridCard, 'سرنجة 5 مل'),
           matching: find.byType(PlusButton),
         ),
       );
@@ -75,7 +75,7 @@ void main() {
       // One box, and never a units key: the server converts with the box size.
       expect(sent.body, {'itemId': 'i1', 'qtyBoxes': 1});
       // Still on the list. The + did not also open the item.
-      expect(find.byType(ItemCard), findsNWidgets(2));
+      expect(find.byType(ItemGridCard), findsNWidgets(2));
       expect(find.text('عدد الوحدات في العلبة'), findsNothing);
       expect(find.text('تمت إضافة سرنجة 5 مل إلى السلة'), findsOneWidget);
     });
@@ -97,7 +97,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final plus = find.descendant(
-        of: find.widgetWithText(ItemCard, 'سرنجة 5 مل'),
+        of: find.widgetWithText(ItemGridCard, 'سرنجة 5 مل'),
         matching: find.byType(PlusButton),
       );
       for (var i = 0; i < 5; i++) {

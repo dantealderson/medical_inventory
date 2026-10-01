@@ -16,6 +16,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'support/harness.dart';
+import 'package:client/features/catalog/shop_screen.dart';
+import 'package:client/features/account/account_screen.dart';
 
 /// The phone's back button. Every page is shown on its own (`context.go`), so
 /// the back button used to close the app from any screen. It must go to the
@@ -38,7 +40,9 @@ void main() {
     (Routes.cart, CartScreen, BrowseScreen),
     (Routes.orders, OrdersScreen, BrowseScreen),
     (Routes.order('o1'), OrderDetailScreen, OrdersScreen),
-    (Routes.category('c1'), CategoryScreen, BrowseScreen),
+    (Routes.shop, ShopScreen, BrowseScreen),
+    (Routes.category('c1'), CategoryScreen, ShopScreen),
+    (Routes.account, AccountScreen, BrowseScreen),
     (Routes.item('i1'), ItemDetailScreen, BrowseScreen),
     (Routes.inventory, InventoryScreen, BrowseScreen),
     (Routes.inventoryItem('i1'), InventoryItemScreen, InventoryScreen),

@@ -8,6 +8,7 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../cart/add_to_cart_button.dart';
 import 'item_picture.dart';
+import '../../core/orders_controller.dart';
 
 /// One item in a list.
 ///
@@ -62,6 +63,98 @@ class ItemCard extends StatelessWidget {
               AddToCartButton(item: item),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One item in a section's two-column grid, as in the chosen design: a big
+/// picture (with «في السلة: N» when it is already in the cart), the name, the
+/// box size, the price and the big **+**.
+class ItemGridCard extends ConsumerWidget {
+  const ItemGridCard({required this.item, super.key});
+
+  final Item item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
+    final lines = ref.watch(cartProvider).value?.lines ?? const <CartLine>[];
+    final inCart = lines.where((l) => l.itemId == item.id).fold(0, (sum, l) => sum + l.qtyBoxes);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.go(Routes.item(item.id)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 124,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: colors.pictureBackground,
+                      child: Center(child: ItemPicture.thumb(item.imageUrl, size: 96)),
+                    ),
+                  ),
+                  if (inCart > 0)
+                    PositionedDirectional(
+                      top: 10,
+                      start: 10,
+                      child: Container(
+                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 9, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          l10n.inCartCount(inCart),
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.onPrimary),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item.displayName, style: text.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      '${item.unitsPerBox} ${item.unitLabelAr} / ${l10n.boxesShort}',
+                      style: TextStyle(fontSize: 14, color: colors.textMuted),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              formatIqd(item.pricePerBox),
+                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.primary),
+                            ),
+                          ),
+                        ),
+                        AddToCartButton(item: item, size: 48),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

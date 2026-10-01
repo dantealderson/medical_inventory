@@ -328,6 +328,18 @@ abstract class AppLocalizations {
   /// **'أصناف جديدة'**
   String get newItems;
 
+  /// Above a section's items
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =0{لا أصناف} =1{صنف واحد} =2{صنفان} few{{count} أصناف} many{{count} صنفاً} other{{count} صنف}}'**
+  String itemCount(int count);
+
+  /// On an item's picture when boxes of it are already in the cart
+  ///
+  /// In ar, this message translates to:
+  /// **'في السلة: {count}'**
+  String inCartCount(int count);
+
   /// No description provided for @dealWeekly.
   ///
   /// In ar, this message translates to:

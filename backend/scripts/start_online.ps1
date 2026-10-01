@@ -27,7 +27,7 @@ function Must($what) { if ($LASTEXITCODE -ne 0) { Fail "$what failed (exit code 
 
 # --- Settings, asked once -------------------------------------------------
 $cfg = if (Test-Path $configPath) { Get-Content $configPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
-foreach ($name in 'tunnelId', 'demoPassword', 'firebaseKey') {
+foreach ($name in 'tunnelId', 'address', 'demoPassword', 'firebaseKey') {
   if (-not ($cfg.PSObject.Properties.Name -contains $name)) { $cfg | Add-Member $name '' }
 }
 # The tunnel's name is part of its fixed address, so it is chosen once.
@@ -61,6 +61,14 @@ if (-not $NoTunnel) {
   $shown = & $devtunnel show $cfg.tunnelId -j 2>$null | Out-String
   $match = [regex]::Match($shown, '"portUri"\s*:\s*"(https://[^"]+)"')
   if ($match.Success) { $tunnelUrl = $match.Groups[1].Value.TrimEnd('/') }
+  # A tunnel unused for 30 days is deleted, and a new one gets a new address:
+  # the phone app, built for the old one, must then be built again.
+  if ($tunnelUrl -and $cfg.address -and $cfg.address -ne $tunnelUrl) {
+    Write-Host ''
+    Write-Host "!! YOUR ADDRESS CHANGED to $tunnelUrl" -ForegroundColor Red
+    Write-Host "!! On GitHub, set API_BASE_URL to $tunnelUrl/api/v1 and run 'Build the apps' again." -ForegroundColor Red
+  }
+  if ($tunnelUrl) { $cfg.address = $tunnelUrl; $cfg | ConvertTo-Json | Set-Content -Encoding UTF8 $configPath }
 }
 
 # --- The database ---------------------------------------------------------

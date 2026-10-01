@@ -4,7 +4,8 @@ No card and no monthly cost. Your PC is the server, and a **Microsoft dev tunnel
 
 - **One address for everything:** `https://3mp6l17q-3000.euw.devtunnels.ms/` is the admin website, and the phone app talks to the same address plus `/api/v1`. It looks random, but it stays the same every time.
 - **The PC must be on**, with `start-online.cmd` running. Close its window and you are offline.
-- **Free limits:** 5 GB a month, plenty for testing. A tunnel unused for 30 days is deleted; the next start creates it again at the same address.
+- **Free limits:** 5 GB a month, plenty for testing.
+- **Use it at least once a month.** A tunnel unused for 30 days is deleted, and the next start creates one with a **new** address. The window then says so in red: set `API_BASE_URL` on GitHub to the new address and build the app again.
 - **Its own database** (`medinv_online`), filled with the demo data on the first start. Your development database is never touched.
 - The real hosting (`docs/HOSTING.md`, needs a card) can wait.
 

@@ -37,10 +37,11 @@ final accountsProvider = FutureProvider.autoDispose<List<SessionUser>>((ref) asy
 
 /// A single account, read from the loaded list so opening detail does not
 /// re-fetch what the queue already has.
-final accountProvider = Provider.autoDispose.family<SessionUser?, String>((ref, id) {
-  return ref
-      .watch(accountsProvider)
-      .whenOrNull(data: (users) => users.where((u) => u.id == id).firstOrNull);
+/// One account, read from the server. Not from the list on screen: that list
+/// is filtered, so an account suspended or approved from its page, or opened
+/// by a link, was not in it and the page spun forever.
+final accountProvider = FutureProvider.autoDispose.family<SessionUser, String>((ref, id) {
+  return ref.watch(adminUsersApiProvider).byId(id);
 });
 
 /// Actions on an account. Each refreshes the list so the queue reflects the
@@ -64,6 +65,7 @@ class AccountActions {
     await action;
     _ref
       ..invalidate(accountsProvider)
+      ..invalidate(accountProvider)
       // The sidebar's counter of accounts waiting for approval.
       ..invalidate(dashboardProvider);
   }

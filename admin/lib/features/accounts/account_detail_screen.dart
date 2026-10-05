@@ -30,9 +30,23 @@ class AccountDetailScreen extends ConsumerWidget {
           onPressed: () => context.go(Routes.accounts),
         ),
       ),
-      body: user == null
-          ? const Center(child: CircularProgressIndicator())
-          : _Body(user: user),
+      body: user.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(e is ApiException ? e.messageAr : l10n.retry, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () => ref.invalidate(accountProvider(userId)),
+                child: Text(l10n.retry),
+              ),
+            ],
+          ),
+        ),
+        data: (user) => _Body(user: user),
+      ),
     );
   }
 }
@@ -83,11 +97,11 @@ class _Body extends ConsumerWidget {
                       children: [
                         if (user.status == 'PENDING') ...[
                           FilledButton(
-                            onPressed: () => actions.approve(user.id),
+                            onPressed: () => _act(context, () => actions.approve(user.id)),
                             child: Text(l10n.approve),
                           ),
                           OutlinedButton(
-                            onPressed: () => actions.reject(user.id),
+                            onPressed: () => _act(context, () => actions.reject(user.id)),
                             child: Text(l10n.reject),
                           ),
                         ],
@@ -104,7 +118,7 @@ class _Body extends ConsumerWidget {
                         ],
                         if (user.status == 'SUSPENDED')
                           FilledButton(
-                            onPressed: () => actions.reactivate(user.id),
+                            onPressed: () => _act(context, () => actions.reactivate(user.id)),
                             child: Text(l10n.reactivate),
                           ),
                         OutlinedButton(
@@ -151,7 +165,19 @@ class _Body extends ConsumerWidget {
         ],
       ),
     );
-    if (ok ?? false) await ref.read(accountActionsProvider).suspend(id);
+    if (!(ok ?? false) || !context.mounted) return;
+    await _act(context, () => ref.read(accountActionsProvider).suspend(id));
+  }
+
+  /// Runs an account action; a refusal (another admin got there first, say)
+  /// is shown, never swallowed.
+  Future<void> _act(BuildContext context, Future<void> Function() action) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref, String id) async {

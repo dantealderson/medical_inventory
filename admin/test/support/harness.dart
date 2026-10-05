@@ -61,7 +61,7 @@ Future<FakeApiBackend> pumpAdmin(
   List<Override> overrides = const [],
 }) async {
   final client = ApiClient(baseUrl: 'http://test.local/api/v1');
-  final backend = FakeApiBackend((req, _) => handler(req))..attachTo(client);
+  final backend = FakeApiBackend((req, _) => _withAccountPages(handler)(req))..attachTo(client);
 
   await tester.pumpWidget(
     ProviderScope(
@@ -104,4 +104,20 @@ Future<void> openAccountsTab(WidgetTester tester) async {
   await tester.pumpAndSettle();
   await tester.tap(tab);
   await tester.pumpAndSettle();
+}
+
+/// A clinic's page reads `GET /admin/users/:id`. A test that only describes
+/// the list gets that answered from its own list, so each test need not
+/// spell out both.
+List<Object?> Function(SeenRequest) _withAccountPages(List<Object?> Function(SeenRequest) handler) {
+  final one = RegExp(r'^/admin/users/([^/]+)$');
+  return (req) {
+    final answer = handler(req);
+    final match = one.firstMatch(req.path);
+    if (match == null || req.method != 'GET' || (answer.isNotEmpty && answer.first != 404)) return answer;
+    final listed = handler(SeenRequest(method: 'GET', path: '/admin/users', headers: const {}, query: const {}, body: null));
+    final items = listed.length > 1 && listed[1] is Map ? ((listed[1] as Map)['items'] as List? ?? const []) : const [];
+    final found = items.cast<Map<String, dynamic>>().where((u) => u['id'] == match.group(1)).firstOrNull;
+    return found == null ? answer : [200, found];
+  };
 }

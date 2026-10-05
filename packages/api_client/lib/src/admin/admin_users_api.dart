@@ -43,6 +43,10 @@ class AdminUsersApi {
     );
   }
 
+  /// One clinic, whatever its status.
+  Future<SessionUser> byId(String userId) =>
+      _call(() => _dio.get<dynamic>('/admin/users/$userId'), (data) => SessionUser.fromJson(_asMap(data)));
+
   Future<SessionUser> approve(String userId) => _action(userId, 'approve');
   Future<SessionUser> reject(String userId) => _action(userId, 'reject');
   Future<SessionUser> suspend(String userId) => _action(userId, 'suspend');

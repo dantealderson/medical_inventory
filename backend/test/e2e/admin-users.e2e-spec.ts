@@ -183,6 +183,19 @@ describe('Admin account management (e2e)', () => {
       .expect(400);
   });
 
+  it('reads one clinic by id, whatever its status', async () => {
+    const id = await register('lab_one');
+    await prisma.user.update({ where: { id }, data: { status: UserStatus.SUSPENDED } });
+    const res = await asAdmin(http().get(`/api/v1/admin/users/${id}`)).expect(200);
+    expect(res.body).toMatchObject({ id, username: 'lab_one', status: 'SUSPENDED' });
+    expect(JSON.stringify(res.body)).not.toContain('$argon2id$');
+  });
+
+  it('reads no admin, and 404s for an unknown id', async () => {
+    await asAdmin(http().get(`/api/v1/admin/users/${adminId}`)).expect(404);
+    await asAdmin(http().get('/api/v1/admin/users/00000000-0000-0000-0000-000000000000')).expect(404);
+  });
+
   it('404s for an unknown user id', async () => {
     await asAdmin(
       http().post('/api/v1/admin/users/00000000-0000-0000-0000-000000000000/approve'),

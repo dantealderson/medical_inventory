@@ -24,6 +24,12 @@ export class AdminUsersController {
     return this.users.list(query);
   }
 
+  /** One clinic, whatever its status: its page must not depend on a filtered list. */
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<SessionUser> {
+    return this.users.findClinic(id);
+  }
+
   @Post(':id/approve')
   @HttpCode(HttpStatus.OK)
   approve(

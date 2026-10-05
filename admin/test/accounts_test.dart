@@ -180,6 +180,49 @@ void main() {
   });
 
   group('Approvals queue', () {
+    testWidgets("a clinic's page stays after suspending it, offering to reactivate", (tester) async {
+      var status = 'ACTIVE';
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users/u2/suspend') {
+          status = 'SUSPENDED';
+          return [200, account('u2', 'clinic_one', status, clinicName: 'عيادة النور')];
+        }
+        if (req.path == '/admin/users/u2') return [200, account('u2', 'clinic_one', status, clinicName: 'عيادة النور')];
+        if (req.path == '/admin/users') {
+          // The list on screen is the active one: once suspended, it is gone from it.
+          return [200, page(status == 'ACTIVE' ? [account('u2', 'clinic_one', 'ACTIVE', clinicName: 'عيادة النور')] : [])];
+        }
+        return [200, {'items': <Object>[], 'nextCursor': null}];
+      });
+      await openAccountsTab(tester);
+      await tester.tap(find.widgetWithText(ChoiceChip, 'النشطة'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('عيادة النور'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'إيقاف').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'تأكيد'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('عيادة النور'), findsOneWidget);
+      expect(find.text('إعادة التفعيل'), findsOneWidget);
+    });
+
+    testWidgets("a clinic's page opened by its address loads that clinic", (tester) async {
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/accounts/u9';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users/u9') return [200, account('u9', 'lab_far', 'REJECTED', clinicName: 'مختبر بعيد')];
+        if (req.path == '/admin/users') return [200, page([])];
+        return [200, {'items': <Object>[], 'nextCursor': null}];
+      });
+
+      expect(find.text('مختبر بعيد'), findsOneWidget);
+    });
+
     testWidgets('status chips reach every clinic, not just the ones waiting', (tester) async {
       final backend = await pumpSignedIn(tester, (req) {
         if (req.path == '/auth/me') return [200, adminUser];

@@ -56,6 +56,15 @@ export class UsersService {
     };
   }
 
+  /** A clinic's account; an admin's reads as not found, like the list. */
+  async findClinic(userId: string): Promise<SessionUser> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== Role.CLIENT) {
+      throw new AppException(HttpStatus.NOT_FOUND, 'NOT_FOUND', ERROR_CODES.NOT_FOUND);
+    }
+    return toSessionUser(user);
+  }
+
   async approve(adminId: string, userId: string): Promise<SessionUser> {
     // From REJECTED too: a clinic turned away by mistake can still be let in.
     const from = [UserStatus.PENDING, UserStatus.REJECTED];

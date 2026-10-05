@@ -42,6 +42,70 @@ void main() {
       await expectLater(store.readAccess(), completion(isNull));
     });
 
+    testWidgets('a clinic account is turned away at login, and its session ended', (tester) async {
+      final clinic = {...adminUser, 'username': 'clinic_one', 'role': 'CLIENT'};
+      final store = InMemoryTokenStore();
+      final backend = await pumpAdmin(tester, (req) {
+        if (req.path == '/auth/login') return [200, {'user': clinic, ...tokens}];
+        if (req.path == '/auth/logout') return [204, null];
+        return [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')];
+      }, store: store);
+
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'clinic_one');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'Clinic-123456');
+      await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('هذا الحساب ليس حساب إدارة'), findsOneWidget);
+      expect(find.byType(DashboardScreen), findsNothing);
+      expect(backend.callsTo('/auth/logout'), 1);
+      await expectLater(store.readAccess(), completion(isNull));
+    });
+
+    testWidgets('a saved clinic session is not let in', (tester) async {
+      final store = InMemoryTokenStore();
+      await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+      await pumpAdmin(tester, (req) {
+        if (req.path == '/auth/me') return [200, {...adminUser, 'role': 'CLIENT'}];
+        return [204, null];
+      }, store: store);
+
+      expect(find.text('اسم المستخدم'), findsOneWidget);
+      expect(find.byType(DashboardScreen), findsNothing);
+      await expectLater(store.readAccess(), completion(isNull));
+    });
+
+    testWidgets('a reload keeps the page: the saved session lands where the address says', (tester) async {
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/catalog/batches';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/batches') return [200, {'items': <Object>[], 'nextCursor': null}];
+        return [404, null];
+      });
+
+      expect(find.byType(DashboardScreen), findsNothing);
+      expect(find.text('استلام تشغيلة'), findsWidgets);
+    });
+
+    testWidgets('signing in from a bookmarked page lands on that page', (tester) async {
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/settings';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+      await pumpAdmin(tester, (req) {
+        if (req.path == '/auth/login') return [200, {'user': adminUser, ...tokens}];
+        if (req.path == '/auth/me') return [200, adminUser];
+        return [404, null];
+      });
+
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'admin');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'any-admin-password');
+      await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DashboardScreen), findsNothing);
+      expect(find.text('الإعدادات'), findsWidgets);
+    });
+
     testWidgets('an unauthenticated launch lands on the login screen', (tester) async {
       await pumpAdmin(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
 

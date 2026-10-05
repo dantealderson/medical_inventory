@@ -90,7 +90,14 @@ class AuthController extends Notifier<AuthState> {
       // Ask the server rather than trusting the stored token: the account may
       // have been suspended since it was issued. The refresh interceptor
       // transparently renews an expired access token here.
-      state = AuthAuthenticated(await _api.me());
+      final user = await _api.me();
+      if (user.isAdmin) {
+        // An admin's saved session: this app is for clinics only.
+        await _api.logout();
+        state = const AuthLoggedOut();
+        return;
+      }
+      state = AuthAuthenticated(user);
     } on ApiException catch (e) {
       // Only the server refusing the session ends it. No signal, or a server
       // that is down, must not sign the clinic out: it keeps its session and
@@ -111,7 +118,8 @@ class AuthController extends Notifier<AuthState> {
   }
 
   /// Throws [ApiException] so the screen can display `messageAr` and branch on
-  /// `code` — notably ACCOUNT_PENDING, which is a route, not an error.
+  /// `code` — notably ACCOUNT_PENDING, which is a route, not an error. An
+  /// admin account is refused with NOT_A_CLINIC.
   ///
   /// [remember] is «keep me signed in»: false keeps the tokens in memory only.
   Future<SessionUser> login({
@@ -121,6 +129,16 @@ class AuthController extends Notifier<AuthState> {
   }) async {
     _store.remember = remember;
     final result = await _api.login(username: username, password: password);
+    if (result.user.isAdmin) {
+      // Admins sign in with the same endpoint, but every clinic screen would
+      // refuse them. Their new session is ended.
+      await _api.logout();
+      throw const ApiException(
+        statusCode: 403,
+        code: 'NOT_A_CLINIC',
+        messageAr: 'هذا حساب إدارة، استخدم لوحة الإدارة',
+      );
+    }
     state = AuthAuthenticated(result.user);
     return result.user;
   }

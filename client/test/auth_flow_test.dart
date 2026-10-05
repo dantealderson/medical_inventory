@@ -117,6 +117,38 @@ void main() {
       expect(find.text('اسم المستخدم أو كلمة المرور غير صحيحة'), findsOneWidget);
     });
 
+    testWidgets('an admin account is turned away, and its session ended', (tester) async {
+      final admin = {...activeUser, 'username': 'admin', 'role': 'ADMIN', 'clinicName': null};
+      final store = InMemoryTokenStore();
+      final backend = await pumpApp(tester, (req) {
+        if (req.path == '/auth/login') return [200, {'user': admin, ...tokens}];
+        if (req.path == '/auth/logout') return [204, null];
+        return [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')];
+      }, store: store);
+
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'admin');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
+      await tester.tap(find.widgetWithText(FilledButton, 'تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('هذا حساب إدارة، استخدم لوحة الإدارة'), findsOneWidget);
+      expect(find.text('اسم المستخدم'), findsOneWidget);
+      expect(backend.callsTo('/auth/logout'), 1);
+      await expectLater(store.readAccess(), completion(isNull));
+    });
+
+    testWidgets('a saved admin session is not let in', (tester) async {
+      final store = InMemoryTokenStore();
+      await store.save(const AuthTokens(accessToken: 'a', refreshToken: 'r', expiresIn: 900));
+      await pumpApp(tester, (req) {
+        if (req.path == '/auth/me') return [200, {...activeUser, 'role': 'ADMIN'}];
+        return [204, null];
+      }, store: store);
+
+      expect(find.text('اسم المستخدم'), findsOneWidget);
+      await expectLater(store.readAccess(), completion(isNull));
+    });
+
     testWidgets('ACCOUNT_PENDING routes to the waiting screen, not an error', (tester) async {
       await pumpApp(tester, (req) {
         if (req.path == '/auth/login') {

@@ -66,7 +66,14 @@ class AuthController extends Notifier<AuthState> {
       return;
     }
     try {
-      state = AuthAuthenticated(await _api.me());
+      final user = await _api.me();
+      if (!user.isAdmin) {
+        // A clinic's saved session, e.g. on a shared computer.
+        await _api.logout();
+        state = const AuthLoggedOut();
+        return;
+      }
+      state = AuthAuthenticated(user);
     } on ApiException catch (e) {
       // Only the server refusing the session ends it. A server that is down
       // (it restarts often while testing) keeps the session, with a retry.
@@ -85,8 +92,18 @@ class AuthController extends Notifier<AuthState> {
     await restore();
   }
 
+  /// Clinics sign in with the same endpoint, so the role is checked here: a
+  /// clinic let in would see every screen fail. Its new session is ended.
   Future<SessionUser> login({required String username, required String password}) async {
     final result = await _api.login(username: username, password: password);
+    if (!result.user.isAdmin) {
+      await _api.logout();
+      throw const ApiException(
+        statusCode: 403,
+        code: 'NOT_AN_ADMIN',
+        messageAr: 'هذا الحساب ليس حساب إدارة',
+      );
+    }
     state = AuthAuthenticated(result.user);
     return result.user;
   }

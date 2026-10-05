@@ -53,14 +53,22 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final auth = ref.read(authControllerProvider);
       final location = state.matchedLocation;
+      final atGate = location == Routes.splash || location == Routes.login;
+
+      // Where the admin was going, carried through the splash and the login,
+      // so a reload (F5) or a bookmark opens that page, not the dashboard.
+      final asked = atGate ? state.uri.queryParameters['from'] : state.uri.toString();
+      final from = asked != null && asked.startsWith('/') && !asked.startsWith('//') ? asked : null;
+      String gate(String path) =>
+          from == null || from == Routes.dashboard ? path : Uri(path: path, queryParameters: {'from': from}).toString();
 
       switch (auth) {
         case AuthUnknown() || AuthUnreachable():
-          return location == Routes.splash ? null : Routes.splash;
+          return location == Routes.splash ? null : gate(Routes.splash);
         case AuthLoggedOut():
-          return location == Routes.login ? null : Routes.login;
+          return location == Routes.login ? null : gate(Routes.login);
         case AuthAuthenticated():
-          return location == Routes.login || location == Routes.splash ? Routes.dashboard : null;
+          return atGate ? (from ?? Routes.dashboard) : null;
       }
     },
 

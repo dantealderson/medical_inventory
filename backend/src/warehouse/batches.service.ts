@@ -13,6 +13,9 @@ import type { ListBatchesDto } from './dto/list-batches.dto';
 export interface BatchView {
   id: string;
   itemId: string;
+  /** The item's names, so a list of batches reads without knowing lot numbers. */
+  itemNameAr: string | null;
+  itemNameEn: string | null;
   batchNumber: string;
   /** ISO calendar date, e.g. "2027-06-30". Never a timestamp. */
   expiryDate: string;
@@ -115,7 +118,7 @@ export class BatchesService {
         },
       });
 
-      return this.toView(created, item.unitsPerBox);
+      return this.toView(created, item);
     } catch (e) {
       // Uniqueness is (itemId, batchNumber, expiryDate): batch numbers belong
       // to the supplier, so the same lot can legitimately arrive twice with
@@ -140,10 +143,10 @@ export class BatchesService {
       where: { itemId: query.itemId, expiryDate: { lte: cutoff } },
       // Earliest expiry first — the same ordering Phase 3's FEFO will use.
       orderBy: [{ expiryDate: 'asc' }, { receivedAt: 'asc' }],
-      include: { item: { select: { unitsPerBox: true } } },
+      include: { item: { select: { unitsPerBox: true, nameAr: true, nameEn: true } } },
     });
 
-    return { batches: rows.map((r) => this.toView(r, r.item.unitsPerBox)) };
+    return { batches: rows.map((r) => this.toView(r, r.item)) };
   }
 
   async stockFor(itemId: string): Promise<ItemStock> {
@@ -175,11 +178,16 @@ export class BatchesService {
     return d.toISOString().slice(0, 10);
   }
 
-  private toView(row: WarehouseBatch, unitsPerBox: number): BatchView {
-    const { boxes, remainder } = unitsToBoxes(row.qtyUnitsRemaining, unitsPerBox);
+  private toView(
+    row: WarehouseBatch,
+    item: { unitsPerBox: number; nameAr: string | null; nameEn: string | null },
+  ): BatchView {
+    const { boxes, remainder } = unitsToBoxes(row.qtyUnitsRemaining, item.unitsPerBox);
     return {
       id: row.id,
       itemId: row.itemId,
+      itemNameAr: item.nameAr,
+      itemNameEn: item.nameEn,
       batchNumber: row.batchNumber,
       expiryDate: this.dateOnly(row.expiryDate),
       qtyUnitsReceived: row.qtyUnitsReceived,

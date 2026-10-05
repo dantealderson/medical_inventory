@@ -275,6 +275,16 @@ void main() {
       );
       expect(find.textContaining('المتوفر: 3'), findsOneWidget);
     });
+
+    testWidgets("each batch is titled with its item's name, its number below", (tester) async {
+      await openCatalog(
+        tester,
+        'التشغيلات',
+        routes(batches: [{...batch('b1', 'A2391', inDays(300)), 'itemNameAr': 'سرنجة 5 مل'}]),
+      );
+      expect(find.text('سرنجة 5 مل'), findsOneWidget);
+      expect(find.text('رقم التشغيلة: A2391'), findsOneWidget);
+    });
   });
 
   group('Responsive', () {

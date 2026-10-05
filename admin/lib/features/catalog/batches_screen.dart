@@ -75,7 +75,7 @@ class _BatchCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    batch.batchNumber,
+                    batch.itemName ?? batch.batchNumber,
                     style: text.titleMedium,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -98,6 +98,7 @@ class _BatchCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
+            if (batch.itemName != null) Text('${l10n.batchNumber}: ${batch.batchNumber}', style: text.bodySmall),
             Text(
               '${l10n.expiryDate}: ${batch.expiryDate.toIso8601String().substring(0, 10)}',
               style: text.bodySmall,

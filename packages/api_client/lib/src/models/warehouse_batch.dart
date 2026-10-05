@@ -10,11 +10,19 @@ class WarehouseBatch {
     required this.qtyBoxesRemaining,
     required this.remainderUnits,
     required this.isExpired,
+    this.itemNameAr,
+    this.itemNameEn,
     this.note,
   });
 
   final String id;
   final String itemId;
+
+  /// The item's names, so a list of batches reads without knowing lot numbers.
+  final String? itemNameAr;
+  final String? itemNameEn;
+  String? get itemName => itemNameAr ?? itemNameEn;
+
   final String batchNumber;
 
   /// A calendar date. The server sends YYYY-MM-DD precisely so that a
@@ -36,6 +44,8 @@ class WarehouseBatch {
   factory WarehouseBatch.fromJson(Map<String, dynamic> json) => WarehouseBatch(
     id: json['id'] as String,
     itemId: json['itemId'] as String,
+    itemNameAr: json['itemNameAr'] as String?,
+    itemNameEn: json['itemNameEn'] as String?,
     batchNumber: json['batchNumber'] as String,
     expiryDate: DateTime.parse(json['expiryDate'] as String),
     qtyUnitsReceived: (json['qtyUnitsReceived'] as num).toInt(),

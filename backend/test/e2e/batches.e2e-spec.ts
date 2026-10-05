@@ -255,6 +255,13 @@ describe('Warehouse batches (e2e)', () => {
     expect(res.body.batches.map((b: { batchNumber: string }) => b.batchNumber)).toEqual(['SOON']);
   });
 
+  it("names each batch's item, so the list reads without knowing lot numbers", async () => {
+    await createBatch({ itemId, batchNumber: 'A2391', expiryDate: inDays(100), qtyBoxes: 1 }).expect(201);
+
+    const res = await asAdmin(http().get('/api/v1/admin/batches?expiringWithinDays=3650')).expect(200);
+    expect(res.body.batches[0]).toMatchObject({ batchNumber: 'A2391', itemNameAr: 'سرنجة' });
+  });
+
   it('orders by expiry ascending — the ordering Phase 3 FEFO will use', async () => {
     await createBatch({ itemId, batchNumber: 'LATE', expiryDate: inDays(300), qtyBoxes: 1 }).expect(201);
     await createBatch({ itemId, batchNumber: 'EARLY', expiryDate: inDays(30), qtyBoxes: 1 }).expect(201);

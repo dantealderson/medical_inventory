@@ -1,20 +1,25 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
-  IsBoolean, IsInt, IsNumberString, IsOptional, IsString, IsUUID, Length, Matches, Min,
+  IsBoolean, IsInt, IsNumberString, IsOptional, IsString, IsUUID, Length, Matches, Max, Min,
   ValidateIf,
 } from 'class-validator';
+
+import { trim, trimOrOmit } from '../../common/dto-input';
 
 export class CreateItemDto {
   // At least one name is required. ValidateIf makes nameAr mandatory only when
   // nameEn is absent and vice versa — so either alone is accepted and neither
   // is not. A CHECK constraint backs this at the database level.
   @ApiPropertyOptional()
+  @Transform(trimOrOmit)
   @ValidateIf((o: CreateItemDto) => !o.nameEn)
   @IsString()
   @Length(1, 200)
   nameAr?: string;
 
   @ApiPropertyOptional()
+  @Transform(trimOrOmit)
   @ValidateIf((o: CreateItemDto) => !o.nameAr)
   @IsString()
   @Length(1, 200)
@@ -33,14 +38,19 @@ export class CreateItemDto {
   @ApiProperty({ description: 'Base units in one box, e.g. 100 syringes' })
   @IsInt()
   @Min(1)
+  // With the minimum's and a delivery's limits, every units figure stays
+  // inside PostgreSQL's integer instead of overflowing into a 500.
+  @Max(10_000)
   unitsPerBox!: number;
 
   @ApiProperty({ example: 'سرنجة', description: 'What one base unit is called' })
+  @Transform(trim)
   @IsString()
   @Length(1, 60)
   unitLabelAr!: string;
 
   @ApiPropertyOptional()
+  @Transform(trimOrOmit)
   @IsOptional()
   @IsString()
   @Length(1, 60)
@@ -64,6 +74,7 @@ export class CreateItemDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Max(99_999)
   minQtyBoxes?: number;
 
   @ApiPropertyOptional({ default: true })

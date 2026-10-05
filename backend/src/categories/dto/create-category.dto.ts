@@ -1,13 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, Length, Min } from 'class-validator';
+
+import { trim, trimOrOmit } from '../../common/dto-input';
 
 export class CreateCategoryDto {
   @ApiProperty()
+  @Transform(trim)
   @IsString()
   @Length(1, 120)
   nameAr!: string;
 
   @ApiPropertyOptional()
+  @Transform(trimOrOmit)
   @IsOptional()
   @IsString()
   @Length(1, 120)

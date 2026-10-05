@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UserStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class ListUsersDto {
@@ -15,6 +16,8 @@ export class ListUsersDto {
 
   @ApiPropertyOptional({ default: 50, maximum: 100 })
   @IsOptional()
+  // Query strings arrive as text; without this every ?limit= was refused.
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(100)

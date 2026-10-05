@@ -241,7 +241,7 @@ abstract class AppLocalizations {
   /// Reactivate a suspended account
   ///
   /// In ar, this message translates to:
-  /// **'إعادة تفعيل'**
+  /// **'إعادة التفعيل'**
   String get reactivate;
 
   /// Reset a client's password
@@ -651,6 +651,48 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم حفظ القسم'**
   String get categorySaved;
+
+  /// No description provided for @categoryDeleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف القسم'**
+  String get categoryDeleted;
+
+  /// No description provided for @confirmDeleteCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد حذف القسم «{name}»؟'**
+  String confirmDeleteCategory(String name);
+
+  /// No description provided for @editCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل القسم'**
+  String get editCategory;
+
+  /// No description provided for @editItem.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الصنف'**
+  String get editItem;
+
+  /// No description provided for @inactive.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير مفعّل'**
+  String get inactive;
+
+  /// No description provided for @confirmDeactivateItem.
+  ///
+  /// In ar, this message translates to:
+  /// **'لن تراه العيادات ولن تستطيع طلبه حتى تعيد تفعيله. هل تريد إلغاء تفعيل «{name}»؟'**
+  String confirmDeactivateItem(String name);
+
+  /// No description provided for @wholeBoxesOrEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل عدداً صحيحاً من العلب، أو اتركه فارغاً'**
+  String get wholeBoxesOrEmpty;
 
   /// Phase 2 catalog: batchReceived
   ///

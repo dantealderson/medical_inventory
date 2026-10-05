@@ -41,8 +41,7 @@ final itemsProvider = FutureProvider.autoDispose<List<Item>>((ref) async {
   final categoryId = ref.watch(itemFilterProvider);
   // Admins see deactivated items too, so a mistakenly deactivated item can be
   // found and reactivated rather than becoming invisible.
-  final page = await api.list(categoryId: categoryId);
-  return page.items;
+  return api.listAll(categoryId: categoryId, includeInactive: true);
 });
 
 /// Batches expiring within the configured warning window, earliest first.
@@ -72,6 +71,12 @@ class CatalogActions {
     _ref.invalidate(categoryTreeProvider);
   }
 
+  /// Only the names: the parent is fixed once created (the server's rule).
+  Future<void> updateCategory(String id, Map<String, dynamic> changes) async {
+    await _ref.read(categoriesApiProvider).update(id, changes);
+    _ref.invalidate(categoryTreeProvider);
+  }
+
   Future<void> deleteCategory(String id) async {
     await _ref.read(categoriesApiProvider).delete(id);
     _ref.invalidate(categoryTreeProvider);
@@ -98,6 +103,15 @@ class CatalogActions {
     );
     _ref.invalidate(itemsProvider);
   }
+
+  /// Sends only what changed: the box size is frozen once stock exists, so
+  /// resending it unchanged must not be read as an attempt to change it.
+  Future<void> updateItem(String id, Map<String, dynamic> changes) async {
+    await _ref.read(itemsApiProvider).update(id, changes);
+    _ref.invalidate(itemsProvider);
+  }
+
+  Future<void> reactivateItem(String id) => updateItem(id, {'isActive': true});
 
   Future<void> deactivateItem(String id) async {
     await _ref.read(itemsApiProvider).deactivate(id);

@@ -91,17 +91,33 @@ class CategoriesApi extends _CatalogApiBase {
 class ItemsApi extends _CatalogApiBase {
   ItemsApi(super.client);
 
-  Future<ItemPage> list({String? categoryId, String? cursor, int? limit}) => call(
+  /// [includeInactive] is honoured for admins only; clinics always get
+  /// active items.
+  Future<ItemPage> list({String? categoryId, String? cursor, int? limit, bool includeInactive = false}) => call(
     () => dio.get<dynamic>(
       '/items',
       queryParameters: {
         if (categoryId != null) 'categoryId': categoryId,
         if (cursor != null) 'cursor': cursor,
         if (limit != null) 'limit': limit,
+        if (includeInactive) 'includeInactive': 'true',
       },
     ),
     (data) => ItemPage.fromJson(asMap(data)),
   );
+
+  /// Every page of [list], for screens with no «load more».
+  Future<List<Item>> listAll({String? categoryId, bool includeInactive = false}) async {
+    final items = <Item>[];
+    String? cursor;
+    do {
+      // 100 is the server's maximum page size.
+      final page = await list(categoryId: categoryId, cursor: cursor, limit: 100, includeInactive: includeInactive);
+      items.addAll(page.items);
+      cursor = page.nextCursor;
+    } while (cursor != null);
+    return items;
+  }
 
   Future<Item> byId(String id) =>
       call(() => dio.get<dynamic>('/items/$id'), (data) => Item.fromJson(asMap(data)));

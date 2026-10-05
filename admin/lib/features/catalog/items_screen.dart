@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/catalog_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
+import '../shell/confirm_action.dart';
 import 'catalog_picture.dart';
 
 /// Mirrors the server's Decimal(12,2): at most two decimals, so a third is
@@ -75,7 +76,7 @@ class _ItemCard extends ConsumerWidget {
                   ),
                 ),
                 if (!item.isActive)
-                  Text(l10n.deactivate, style: text.labelSmall?.copyWith(color: colors.stockRed)),
+                  Text(l10n.inactive, style: text.labelSmall?.copyWith(color: colors.stockRed)),
               ],
             ),
             const SizedBox(height: 4),
@@ -92,6 +93,10 @@ class _ItemCard extends ConsumerWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
+                OutlinedButton(
+                  onPressed: () => _openItemEditor(context, ref, existing: item),
+                  child: Text(l10n.edit),
+                ),
                 ...pictureButtons(
                   context,
                   ref,
@@ -104,6 +109,13 @@ class _ItemCard extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: () async {
                       final messenger = ScaffoldMessenger.of(context);
+                      // Asked first: the clinics stop seeing it at once.
+                      final sure = await confirmAction(
+                        context,
+                        message: l10n.confirmDeactivateItem(item.displayName),
+                        action: l10n.deactivate,
+                      );
+                      if (!sure) return;
                       try {
                         await ref.read(catalogActionsProvider).deactivateItem(item.id);
                       } on ApiException catch (e) {
@@ -111,6 +123,18 @@ class _ItemCard extends ConsumerWidget {
                       }
                     },
                     child: Text(l10n.deactivate),
+                  )
+                else
+                  OutlinedButton(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      try {
+                        await ref.read(catalogActionsProvider).reactivateItem(item.id);
+                      } on ApiException catch (e) {
+                        messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+                      }
+                    },
+                    child: Text(l10n.reactivate),
                   ),
               ],
             ),
@@ -121,7 +145,8 @@ class _ItemCard extends ConsumerWidget {
   }
 }
 
-Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
+/// Adds an item, or edits [existing].
+Future<void> _openItemEditor(BuildContext context, WidgetRef ref, {Item? existing}) async {
   final l10n = AppLocalizations.of(context)!;
   final messenger = ScaffoldMessenger.of(context);
 
@@ -153,18 +178,20 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
   }
 
   final formKey = GlobalKey<FormState>();
-  final nameAr = TextEditingController();
-  final nameEn = TextEditingController();
-  final unitsPerBox = TextEditingController(text: '100');
-  final unitLabel = TextEditingController();
-  final price = TextEditingController();
-  final minBoxes = TextEditingController();
-  var categoryId = options.first.id;
+  final nameAr = TextEditingController(text: existing?.nameAr ?? '');
+  final nameEn = TextEditingController(text: existing?.nameEn ?? '');
+  final unitsPerBox = TextEditingController(text: '${existing?.unitsPerBox ?? 100}');
+  final unitLabel = TextEditingController(text: existing?.unitLabelAr ?? '');
+  final price = TextEditingController(text: existing == null ? '' : _plainPrice(existing.pricePerBox));
+  final minBoxes = TextEditingController(text: existing?.minQtyBoxes?.toString() ?? '');
+  var categoryId = existing != null && options.any((c) => c.id == existing.categoryId)
+      ? existing.categoryId
+      : options.first.id;
 
   final saved = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text(l10n.addItem),
+      title: Text(existing == null ? l10n.addItem : l10n.editItem),
       content: SizedBox(
         width: 400,
         child: SingleChildScrollView(
@@ -232,6 +259,12 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
                   // there, using this item's box size.
                   decoration: InputDecoration(labelText: l10n.minStockBoxes),
                   keyboardType: TextInputType.number,
+                  validator: (v) {
+                    final t = (v ?? '').trim();
+                    if (t.isEmpty) return null;
+                    final n = int.tryParse(t);
+                    return n == null || n < 0 ? l10n.wholeBoxesOrEmpty : null;
+                  },
                 ),
               ],
             ),
@@ -271,6 +304,28 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
 
   if (saved != true || !context.mounted) return;
 
+  if (existing != null) {
+    // Only what changed: an unchanged box size resent would still be refused
+    // once stock exists.
+    final changes = <String, dynamic>{
+      if (values.nameAr != (existing.nameAr ?? '') && values.nameAr.isNotEmpty) 'nameAr': values.nameAr,
+      if (values.nameEn != (existing.nameEn ?? '') && values.nameEn.isNotEmpty) 'nameEn': values.nameEn,
+      if (categoryId != existing.categoryId) 'categoryId': categoryId,
+      if (values.unitsPerBox != existing.unitsPerBox) 'unitsPerBox': values.unitsPerBox,
+      if (values.unitLabel != existing.unitLabelAr) 'unitLabelAr': values.unitLabel,
+      if (values.price != _plainPrice(existing.pricePerBox)) 'pricePerBox': values.price,
+      if (values.minBoxes != null && values.minBoxes != existing.minQtyBoxes) 'minQtyBoxes': values.minBoxes,
+    };
+    if (changes.isEmpty) return;
+    try {
+      await ref.read(catalogActionsProvider).updateItem(existing.id, changes);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.itemSaved)));
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    }
+    return;
+  }
+
   try {
     await ref.read(catalogActionsProvider).createItem(
       categoryId: categoryId,
@@ -286,3 +341,7 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref) async {
     messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
   }
 }
+
+/// "12500.00" as typed: "12500". Keeps real fils ("12500.50").
+String _plainPrice(String price) =>
+    price.contains('.') ? price.replaceFirst(RegExp(r'\.?0+$'), '') : price;

@@ -345,6 +345,25 @@
     "description": "Phase 2 catalog: itemSaved"
   },
   "categorySaved": "تم حفظ القسم",
+  "categoryDeleted": "تم حذف القسم",
+  "confirmDeleteCategory": "هل تريد حذف القسم «{name}»؟",
+  "@confirmDeleteCategory": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "editCategory": "تعديل القسم",
+  "edit": "تعديل",
+  "editItem": "تعديل الصنف",
+  "reactivate": "إعادة التفعيل",
+  "inactive": "غير مفعّل",
+  "confirmDeactivateItem": "لن تراه العيادات ولن تستطيع طلبه حتى تعيد تفعيله. هل تريد إلغاء تفعيل «{name}»؟",
+  "@confirmDeactivateItem": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "wholeBoxesOrEmpty": "أدخل عدداً صحيحاً من العلب، أو اتركه فارغاً",
   "@categorySaved": {
     "description": "Phase 2 catalog: categorySaved"
   },

@@ -81,7 +81,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get suspend => 'إيقاف';
 
   @override
-  String get reactivate => 'إعادة تفعيل';
+  String get reactivate => 'إعادة التفعيل';
 
   @override
   String get resetPassword => 'إعادة تعيين كلمة المرور';
@@ -294,6 +294,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get categorySaved => 'تم حفظ القسم';
+
+  @override
+  String get categoryDeleted => 'تم حذف القسم';
+
+  @override
+  String confirmDeleteCategory(String name) {
+    return 'هل تريد حذف القسم «$name»؟';
+  }
+
+  @override
+  String get editCategory => 'تعديل القسم';
+
+  @override
+  String get editItem => 'تعديل الصنف';
+
+  @override
+  String get inactive => 'غير مفعّل';
+
+  @override
+  String confirmDeactivateItem(String name) {
+    return 'لن تراه العيادات ولن تستطيع طلبه حتى تعيد تفعيله. هل تريد إلغاء تفعيل «$name»؟';
+  }
+
+  @override
+  String get wholeBoxesOrEmpty => 'أدخل عدداً صحيحاً من العلب، أو اتركه فارغاً';
 
   @override
   String get batchReceived => 'تم تسجيل التشغيلة';

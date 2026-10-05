@@ -124,7 +124,7 @@ Future<void> _openIntake(BuildContext context, WidgetRef ref) async {
   // offered only the category it was last filtered to.
   final List<Item> items;
   try {
-    items = (await ref.read(itemsApiProvider).list()).items;
+    items = await ref.read(itemsApiProvider).listAll();
   } on ApiException catch (e) {
     messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
     return;

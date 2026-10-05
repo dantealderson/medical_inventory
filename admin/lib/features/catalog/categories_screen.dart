@@ -6,6 +6,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/catalog_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
+import '../shell/confirm_action.dart';
 import 'catalog_picture.dart';
 
 class CategoriesScreen extends ConsumerWidget {
@@ -95,6 +96,10 @@ class _CategoryTile extends ConsumerWidget {
                         remove: () =>
                             ref.read(catalogActionsProvider).removeCategoryPicture(category.id),
                       ),
+                      OutlinedButton(
+                        onPressed: () => _openEditor(context, ref, existing: category),
+                        child: Text(l10n.edit),
+                      ),
                       // A level-3 category cannot have children, so the action
                       // is hidden rather than offered and then rejected.
                       if (category.canHaveChildren)
@@ -122,6 +127,12 @@ class _CategoryTile extends ConsumerWidget {
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref, Category category) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    final sure = await confirmAction(
+      context,
+      message: l10n.confirmDeleteCategory(category.displayName),
+      action: l10n.delete,
+    );
+    if (!sure) return;
     try {
       await ref.read(catalogActionsProvider).deleteCategory(category.id);
     } on ApiException catch (e) {
@@ -130,30 +141,33 @@ class _CategoryTile extends ConsumerWidget {
       messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
       return;
     }
-    messenger.showSnackBar(SnackBar(content: Text(l10n.categorySaved)));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.categoryDeleted)));
   }
 }
 
-Future<void> _openEditor(BuildContext context, WidgetRef ref, {Category? parent}) async {
+/// Adds a category under [parent], or renames [existing].
+Future<void> _openEditor(BuildContext context, WidgetRef ref, {Category? parent, Category? existing}) async {
   final l10n = AppLocalizations.of(context)!;
   final formKey = GlobalKey<FormState>();
-  final nameAr = TextEditingController();
-  final nameEn = TextEditingController();
+  final nameAr = TextEditingController(text: existing?.nameAr ?? '');
+  final nameEn = TextEditingController(text: existing?.nameEn ?? '');
 
   final saved = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text(parent == null ? l10n.addCategory : l10n.addSubCategory),
+      title: Text(existing != null ? l10n.editCategory : parent == null ? l10n.addCategory : l10n.addSubCategory),
       content: Form(
         key: formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              parent == null ? l10n.noParent : parent.displayName,
-              style: Theme.of(dialogContext).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 12),
+            if (existing == null) ...[
+              Text(
+                parent == null ? l10n.noParent : parent.displayName,
+                style: Theme.of(dialogContext).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+            ],
             TextFormField(
               controller: nameAr,
               decoration: InputDecoration(labelText: l10n.nameArLabel),
@@ -165,8 +179,10 @@ Future<void> _openEditor(BuildContext context, WidgetRef ref, {Category? parent}
               controller: nameEn,
               decoration: InputDecoration(labelText: l10n.nameEnLabel),
             ),
-            const SizedBox(height: 8),
-            Text(l10n.categoryDepthHint, style: Theme.of(dialogContext).textTheme.bodySmall),
+            if (existing == null) ...[
+              const SizedBox(height: 8),
+              Text(l10n.categoryDepthHint, style: Theme.of(dialogContext).textTheme.bodySmall),
+            ],
           ],
         ),
       ),
@@ -198,6 +214,20 @@ Future<void> _openEditor(BuildContext context, WidgetRef ref, {Category? parent}
   if (saved != true || !context.mounted) return;
 
   final messenger = ScaffoldMessenger.of(context);
+  if (existing != null) {
+    final changes = <String, dynamic>{
+      if (ar != existing.nameAr) 'nameAr': ar,
+      if (en.isNotEmpty && en != (existing.nameEn ?? '')) 'nameEn': en,
+    };
+    if (changes.isEmpty) return;
+    try {
+      await ref.read(catalogActionsProvider).updateCategory(existing.id, changes);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.categorySaved)));
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+    }
+    return;
+  }
   try {
     await ref.read(catalogActionsProvider).createCategory(
       nameAr: ar,

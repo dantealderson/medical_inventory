@@ -183,7 +183,52 @@ void main() {
 
       await tester.tap(find.text('حذف'));
       await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'حذف'));
+      await tester.pumpAndSettle();
       expect(find.text('لا يمكن حذف قسم يحتوي على أصناف'), findsOneWidget);
+    });
+
+    testWidgets('«حذف» asks first; «إلغاء» deletes nothing', (tester) async {
+      final backend = await openCatalog(tester, 'الأقسام', routes(categories: [category('c1', 'مستهلكات', 1)]));
+
+      await tester.tap(find.text('حذف'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'إلغاء'));
+      await tester.pumpAndSettle();
+
+      expect(backend.callsTo('/admin/categories/c1'), 0);
+    });
+
+    testWidgets('a deleted category says so, not «saved»', (tester) async {
+      await openCatalog(tester, 'الأقسام', (req) {
+        if (req.path == '/admin/categories/c1') return [204, null];
+        return routes(categories: [category('c1', 'مستهلكات', 1)])(req);
+      });
+
+      await tester.tap(find.text('حذف'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'حذف'));
+      await tester.pumpAndSettle();
+      expect(find.text('تم حذف القسم'), findsOneWidget);
+    });
+
+    testWidgets('«تعديل» renames a category', (tester) async {
+      final backend = await openCatalog(tester, 'الأقسام', (req) {
+        if (req.path == '/admin/categories/c1') return [200, category('c1', 'مستهلكات طبية', 1)];
+        return routes(categories: [category('c1', 'مستهلكات', 1)])(req);
+      });
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'تعديل'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(TextFormField, 'مستهلكات'), findsOneWidget);
+      await tester.enterText(fieldWithLabel('الاسم بالعربية'), 'مستهلكات طبية');
+      await tester.tap(find.widgetWithText(FilledButton, 'حفظ'));
+      await tester.pumpAndSettle();
+
+      final sent = backend.lastTo('/admin/categories/c1');
+      expect(sent.method, 'PATCH');
+      expect(sent.body, {'nameAr': 'مستهلكات طبية'});
     });
   });
 
@@ -235,6 +280,96 @@ void main() {
     testWidgets('shows an empty state', (tester) async {
       await openCatalog(tester, 'الأصناف', routes());
       expect(find.text('لا توجد أصناف بعد'), findsOneWidget);
+    });
+
+    testWidgets('lists deactivated items too, and «إعادة التفعيل» brings one back', (tester) async {
+      final backend = await openCatalog(tester, 'الأصناف', (req) {
+        if (req.path == '/admin/items/i1') return [200, item('i1', 'شاش')];
+        return routes(items: [item('i1', 'شاش', isActive: false)])(req);
+      });
+
+      expect(backend.lastTo('/items').query['includeInactive'], 'true');
+      expect(find.text('غير مفعّل'), findsOneWidget);
+      await tester.tap(find.widgetWithText(OutlinedButton, 'إعادة التفعيل'));
+      await tester.pumpAndSettle();
+
+      final sent = backend.lastTo('/admin/items/i1');
+      expect(sent.method, 'PATCH');
+      expect(sent.body, {'isActive': true});
+    });
+
+    testWidgets('«إلغاء التفعيل» asks first', (tester) async {
+      final backend = await openCatalog(tester, 'الأصناف', routes(items: [item('i1', 'شاش')]));
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'إلغاء التفعيل'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'إلغاء'));
+      await tester.pumpAndSettle();
+      expect(backend.callsTo('/admin/items/i1'), 0);
+    });
+
+    testWidgets('«تعديل» opens the item filled in, and sends only what changed', (tester) async {
+      final backend = await openCatalog(tester, 'الأصناف', (req) {
+        if (req.path == '/admin/items/i1') return [200, item('i1', 'شاش', price: '15000.00')];
+        return routes(categories: [category('c1', 'مستهلكات', 1)], items: [item('i1', 'شاش')])(req);
+      });
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'تعديل'));
+      await tester.pumpAndSettle();
+      expect(find.text('تعديل الصنف'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'شاش'), findsOneWidget);
+      await tester.enterText(fieldWithLabel('سعر العلبة'), '15000');
+      await tester.tap(find.widgetWithText(FilledButton, 'حفظ'));
+      await tester.pumpAndSettle();
+
+      final sent = backend.lastTo('/admin/items/i1');
+      expect(sent.method, 'PATCH');
+      expect(sent.body, {'pricePerBox': '15000'});
+    });
+
+    testWidgets('a minimum that is not a whole number of boxes is refused in the form', (tester) async {
+      final backend = await openCatalog(tester, 'الأصناف', routes(categories: [category('c1', 'مستهلكات', 1)]));
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'إضافة صنف'));
+      await tester.pumpAndSettle();
+      await tester.enterText(fieldWithLabel('الاسم بالعربية'), 'شاش');
+      await tester.enterText(fieldWithLabel('اسم الوحدة'), 'قطعة');
+      await tester.enterText(fieldWithLabel('سعر العلبة'), '1000');
+      await tester.enterText(fieldWithLabel('الحد الأدنى (علب)'), 'خمسة');
+      await tester.tap(find.widgetWithText(FilledButton, 'حفظ'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(backend.callsTo('/admin/items'), 0);
+    });
+
+    testWidgets('every page of items is listed, not only the first fifty', (tester) async {
+      await openCatalog(tester, 'الأصناف', (req) {
+        if (req.path == '/items') {
+          return req.query['cursor'] == null
+              ? [200, {'items': [item('i1', 'الأول')], 'nextCursor': 'i1'}]
+              : [200, {'items': [item('i2', 'الثاني')], 'nextCursor': null}];
+        }
+        return routes()(req);
+      });
+      expect(find.text('الأول'), findsOneWidget);
+      expect(find.text('الثاني'), findsOneWidget);
+    });
+
+    testWidgets('the receive-batch form offers items past the first page', (tester) async {
+      await openCatalog(tester, 'التشغيلات', (req) {
+        if (req.path == '/items') {
+          return req.query['cursor'] == null
+              ? [200, {'items': [item('i1', 'الأول')], 'nextCursor': 'i1'}]
+              : [200, {'items': [item('i2', 'الثاني')], 'nextCursor': null}];
+        }
+        return routes()(req);
+      });
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'استلام تشغيلة'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('الأول').last);
+      await tester.pumpAndSettle();
+      expect(find.text('الثاني'), findsWidgets);
     });
   });
 

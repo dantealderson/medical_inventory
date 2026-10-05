@@ -47,8 +47,8 @@ $cfg | ConvertTo-Json | Set-Content -Encoding UTF8 $configPath
 $tunnelUrl = $null
 if (-not $NoTunnel) {
   if (-not (Test-Path $devtunnel)) { Fail "The dev tunnel tool is not installed at $devtunnel." }
-  if ((& $devtunnel user show 2>&1 | Out-String) -match 'Not logged in') {
-    Say 'Sign in with GitHub, in the browser window that opens (only the first time)'
+  if ((& $devtunnel user show 2>&1 | Out-String) -match 'Not logged in|expired') {
+    Say 'Sign in with GitHub, in the browser window that opens (the first time, and when the sign-in expires)'
     & $devtunnel user login -g; Must 'Signing in to dev tunnels'
   }
   & $devtunnel show $cfg.tunnelId *> $null

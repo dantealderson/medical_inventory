@@ -77,22 +77,35 @@ class AccountScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-            onPressed: () => _confirmLogout(context, ref),
-            icon: const Icon(Icons.logout),
-            label: Text(l10n.logout),
-          ),
-          const SizedBox(height: 12),
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              foregroundColor: colors.danger,
-              minimumSize: const Size.fromHeight(56),
+          const SizedBox(height: 16),
+          // The account's two actions as rows of one card, like a phone's
+          // settings: big targets, icon and words, the destructive one red.
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                ListTile(
+                  minTileHeight: 64,
+                  contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+                  leading: Icon(Icons.logout, color: colors.primary),
+                  title: Text(l10n.logout, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                  trailing: Icon(Icons.chevron_left_rounded, color: colors.textMuted),
+                  onTap: () => _confirmLogout(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  minTileHeight: 64,
+                  contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+                  leading: Icon(Icons.person_remove_outlined, color: colors.danger),
+                  title: Text(
+                    l10n.deleteAccount,
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: colors.danger),
+                  ),
+                  trailing: Icon(Icons.chevron_left_rounded, color: colors.textMuted),
+                  onTap: () => context.go(Routes.deleteAccount),
+                ),
+              ],
             ),
-            onPressed: () => context.go(Routes.deleteAccount),
-            icon: const Icon(Icons.person_remove_outlined),
-            label: Text(l10n.deleteAccount),
           ),
         ],
       ),

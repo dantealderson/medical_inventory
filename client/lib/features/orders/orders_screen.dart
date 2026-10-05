@@ -58,17 +58,38 @@ class _OrderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
 
+    // The amount first, its date and size under it, its status as a
+    // coloured pill: the list is told apart at a glance.
     return Card(
-      margin: const EdgeInsetsDirectional.only(bottom: 12),
-      child: ListTile(
-        title: Text(orderStatusLabel(l10n, order.status)),
-        subtitle: Text(
-          '${formatInstantDate(order.placedAt)} · ${l10n.orderLineCount(order.lineCount)}',
-        ),
-        trailing: Text(formatIqd(order.totalAmount), style: text.titleSmall),
+      margin: const EdgeInsetsDirectional.only(bottom: 10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: () => context.go(Routes.order(order.id)),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 14, 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(formatIqd(order.totalAmount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${formatInstantDate(order.placedAt)} · ${l10n.orderLineCount(order.lineCount)}',
+                      style: TextStyle(fontSize: 15, color: colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Pill(label: orderStatusLabel(l10n, order.status), tone: orderStatusTone(order.status)),
+              Icon(Icons.chevron_left_rounded, color: colors.textMuted),
+            ],
+          ),
+        ),
       ),
     );
   }

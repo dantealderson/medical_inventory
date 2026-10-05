@@ -1,6 +1,7 @@
 import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ui_kit/ui_kit.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/auth_controller.dart';
@@ -137,7 +138,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              // The account above, the clinic below: two short groups read
+              // easier than seven fields in a row.
+              const SizedBox(height: 22),
+              const Divider(),
+              SectionTitle(l10n.clinicDetails, padding: const EdgeInsetsDirectional.only(top: 14, bottom: 12)),
               TextFormField(
                 controller: _clinicName,
                 decoration: InputDecoration(labelText: l10n.clinicName),

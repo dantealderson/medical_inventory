@@ -76,6 +76,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirmPassword => 'تأكيد كلمة المرور';
 
   @override
+  String get clinicDetails => 'بيانات العيادة';
+
+  @override
   String get confirmPasswordRequired => 'أعد كتابة كلمة المرور';
 
   @override

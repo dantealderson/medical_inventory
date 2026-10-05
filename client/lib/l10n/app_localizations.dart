@@ -226,6 +226,12 @@ abstract class AppLocalizations {
   /// **'تأكيد كلمة المرور'**
   String get confirmPassword;
 
+  /// No description provided for @clinicDetails.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات العيادة'**
+  String get clinicDetails;
+
   /// No description provided for @confirmPasswordRequired.
   ///
   /// In ar, this message translates to:

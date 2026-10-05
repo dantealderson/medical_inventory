@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../core/back_to.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import 'auth_scaffold.dart';
 
 /// Shown after registering, and whenever a login returns ACCOUNT_PENDING.
 ///
@@ -17,43 +17,32 @@ class PendingApprovalScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.appColors;
-    final text = Theme.of(context).textTheme;
 
-    return Scaffold(
-      appBar: AppBar(leading: const BackArrow(Routes.login), title: Text(l10n.appTitle)),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.hourglass_top, size: 64, color: colors.stockYellow),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.pendingTitle,
-                    style: text.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.pendingBody,
-                    style: text.bodyMedium?.copyWith(color: colors.onSurface),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  OutlinedButton(
-                    onPressed: () => context.go(Routes.login),
-                    child: Text(l10n.backToLogin),
-                  ),
-                ],
-              ),
-            ),
+    // The same frame as login and register: the clinic is still at the door.
+    return AuthScaffold(
+      title: l10n.pendingTitle,
+      backTo: Routes.login,
+      children: [
+        Center(
+          child: Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(color: colors.tileCream, shape: BoxShape.circle),
+            child: Icon(Icons.schedule_rounded, size: 38, color: colors.stockYellowInk),
           ),
         ),
-      ),
+        const SizedBox(height: 18),
+        Text(
+          l10n.pendingBody,
+          style: TextStyle(fontSize: 17, height: 1.6, color: colors.onSurface),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        OutlinedButton(
+          onPressed: () => context.go(Routes.login),
+          child: Text(l10n.backToLogin),
+        ),
+      ],
     );
   }
 }

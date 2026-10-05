@@ -64,25 +64,27 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
 
     return Card(
       margin: EdgeInsetsDirectional.zero,
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
+        padding: const EdgeInsetsDirectional.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(orderStatusLabel(l10n, order.status), style: text.titleLarge),
-            const SizedBox(height: 4),
-            Text(formatInstantDate(order.placedAt), style: text.bodySmall),
-            const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(child: Text(l10n.orderTotal, style: text.titleSmall)),
-                Text(formatIqd(order.totalAmount), style: text.titleLarge),
+                Pill(label: orderStatusLabel(l10n, order.status), tone: orderStatusTone(order.status)),
+                const Spacer(),
+                Text(formatInstantDate(order.placedAt), style: TextStyle(fontSize: 15, color: colors.textMuted)),
               ],
+            ),
+            const SizedBox(height: 16),
+            Text(l10n.orderTotal, style: TextStyle(fontSize: 15, color: colors.textMuted)),
+            Text(
+              formatIqd(order.totalAmount),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: colors.primaryDark),
             ),
           ],
         ),

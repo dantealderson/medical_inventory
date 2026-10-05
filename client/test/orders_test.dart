@@ -1,3 +1,4 @@
+import 'package:ui_kit/ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -55,7 +56,7 @@ Future<FakeApiBackend> openOrder(
   );
   await tester.tap(find.byTooltip('طلباتي'));
   await tester.pumpAndSettle();
-  await tester.tap(find.byType(ListTile).first);
+  await tester.tap(find.byType(Pill).first);
   await tester.pumpAndSettle();
   return backend;
 }
@@ -225,14 +226,14 @@ void main() {
       });
       await tester.tap(find.byTooltip('طلباتي'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(ListTile).first);
+      await tester.tap(find.byType(Pill).first);
       await tester.pumpAndSettle();
       expect(find.text('إلغاء الطلب'), findsOneWidget);
 
       current = orderJson(status: 'CONFIRMED', confirmedAt: '2026-09-02T13:00:00.000Z');
       await tester.tap(find.byType(BackButtonIcon));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(ListTile).first);
+      await tester.tap(find.byType(Pill).first);
       await tester.pumpAndSettle();
 
       expect(backend.callsTo('/orders/o1'), 2);

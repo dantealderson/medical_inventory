@@ -59,6 +59,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: Routes.splash,
     refreshListenable: refresh,
 
+    // An address that matches no page (a typo, an old bookmark) opens the
+    // home page instead of go_router's English error page.
+    onException: (_, _, router) => router.go(Routes.home),
+
     // The entire auth gate, in one place. Scattering this across individual
     // screens is how you end up with a route that forgets to check.
     redirect: (context, state) {

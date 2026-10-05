@@ -149,6 +149,18 @@ void main() {
       await expectLater(store.readAccess(), completion(isNull));
     });
 
+    testWidgets('an address that matches no page opens home, not an error page', (tester) async {
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/no-such-page';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, activeUser];
+        return [200, <dynamic>[]];
+      });
+
+      expect(find.textContaining('GoException'), findsNothing);
+      expect(find.byKey(const ValueKey('home-tile-shop')), findsOneWidget);
+    });
+
     testWidgets('ACCOUNT_PENDING routes to the waiting screen, not an error', (tester) async {
       await pumpApp(tester, (req) {
         if (req.path == '/auth/login') {

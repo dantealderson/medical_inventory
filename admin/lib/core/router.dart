@@ -48,6 +48,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: Routes.splash,
     refreshListenable: refresh,
 
+    // An address that matches no page (a typo, an old bookmark) opens the
+    // home page instead of go_router's English error page.
+    onException: (_, _, router) => router.go(Routes.dashboard),
+
     // The entire auth gate, in one place. There is no registration route:
     // admins are seeded, never self-registered.
     redirect: (context, state) {

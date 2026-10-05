@@ -106,6 +106,18 @@ void main() {
       expect(find.text('الإعدادات'), findsWidgets);
     });
 
+    testWidgets('an address that matches no page opens the dashboard, not an error page', (tester) async {
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/no-such-page';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        return [404, null];
+      });
+
+      expect(find.byType(DashboardScreen), findsOneWidget);
+      expect(find.textContaining('GoException'), findsNothing);
+    });
+
     testWidgets('an unauthenticated launch lands on the login screen', (tester) async {
       await pumpAdmin(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
 

@@ -50,6 +50,7 @@ List<Object?> Function(SeenRequest) adminWorld({List<Object?>? broadcast}) {
 }
 
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) await openMenuIfNarrow(tester);
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
   await tester.tap(finder);

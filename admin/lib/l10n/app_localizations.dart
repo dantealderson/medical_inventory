@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// Admin application title
   ///
   /// In ar, this message translates to:
-  /// **'إدارة المخزون الطبي'**
+  /// **'إدارة مخزون العيادة'**
   String get appTitle;
 
   /// Generic loading indicator label
@@ -151,8 +151,38 @@ abstract class AppLocalizations {
   /// Pending approvals screen title
   ///
   /// In ar, this message translates to:
-  /// **'طلبات الحسابات'**
+  /// **'العيادات'**
   String get pendingAccounts;
+
+  /// No description provided for @menu.
+  ///
+  /// In ar, this message translates to:
+  /// **'القائمة'**
+  String get menu;
+
+  /// No description provided for @brandName.
+  ///
+  /// In ar, this message translates to:
+  /// **'مخزون العيادة'**
+  String get brandName;
+
+  /// No description provided for @adminPanel.
+  ///
+  /// In ar, this message translates to:
+  /// **'لوحة الإدارة'**
+  String get adminPanel;
+
+  /// No description provided for @catalogGroup.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكتالوج'**
+  String get catalogGroup;
+
+  /// No description provided for @systemGroup.
+  ///
+  /// In ar, this message translates to:
+  /// **'النظام'**
+  String get systemGroup;
 
   /// Empty state for the approvals queue
   ///

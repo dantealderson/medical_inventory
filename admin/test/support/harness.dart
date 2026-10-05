@@ -87,10 +87,19 @@ void useScreenSize(WidgetTester tester, Size logical, {double dpr = 3.0}) {
 Finder fieldWithLabel(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(TextFormField));
 
-/// The accounts queue, reached through its tab: since Phase 6 the admin lands
-/// on the dashboard.
+/// Opens the phone-width menu, if this screen has one.
+Future<void> openMenuIfNarrow(WidgetTester tester) async {
+  final menu = find.byTooltip('القائمة');
+  if (menu.evaluate().isEmpty) return;
+  await tester.tap(menu);
+  await tester.pumpAndSettle();
+}
+
+/// The clinics («العيادات»), reached through the sidebar: since Phase 6 the
+/// admin lands on the dashboard.
 Future<void> openAccountsTab(WidgetTester tester) async {
-  final tab = find.text('طلبات الحسابات');
+  await openMenuIfNarrow(tester);
+  final tab = find.text('العيادات');
   await tester.ensureVisible(tab);
   await tester.pumpAndSettle();
   await tester.tap(tab);

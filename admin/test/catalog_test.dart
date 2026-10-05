@@ -76,6 +76,7 @@ void main() {
     List<Object?> Function(SeenRequest req) handler,
   ) async {
     final backend = await pumpSignedIn(tester, handler);
+    await openMenuIfNarrow(tester);
     await tester.tap(find.text(tabLabel));
     await tester.pumpAndSettle();
     return backend;
@@ -314,10 +315,23 @@ void main() {
       expectFitsHorizontally(tester, find.byType(Card), 390);
     });
 
-    testWidgets('the catalog tabs scroll rather than overflow at 390px', (tester) async {
-      // Four fixed tabs do not fit at phone width; they scroll instead.
+    testWidgets('at 390px the sections sit behind the menu, which fits and reaches them all', (tester) async {
       useScreenSize(tester, const Size(390, 844));
-      await openCatalog(tester, 'الأصناف', routes());
+      await pumpSignedIn(tester, routes());
+      // No sidebar beside the page at phone width.
+      expect(find.text('الأصناف'), findsNothing);
+
+      await openMenuIfNarrow(tester);
+      expect(tester.takeException(), isNull);
+      for (final section in ['الرئيسية', 'الطلبات', 'العيادات', 'الأصناف', 'الأقسام', 'التشغيلات', 'الإعدادات']) {
+        expect(find.text(section), findsWidgets, reason: section);
+      }
+
+      // Choosing one closes the menu and opens it.
+      await tester.tap(find.text('الأصناف'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Drawer), findsNothing);
+      expect(find.text('الأصناف'), findsOneWidget); // the page title
       expect(tester.takeException(), isNull);
     });
 

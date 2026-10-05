@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'auth_controller.dart';
+import 'dashboard_controller.dart';
 
 /// Depends on authApiProvider so the AuthInterceptor is installed before the
 /// first order call goes out — otherwise it leaves without a bearer token and
@@ -110,6 +111,8 @@ class OrderActions {
       // instead of offering the same stale buttons again.
       _ref.invalidate(orderDetailProvider(id));
       _ref.invalidate(ordersQueueProvider);
+      // The sidebar's counter of orders waiting for confirmation.
+      _ref.invalidate(dashboardProvider);
     }
   }
 }

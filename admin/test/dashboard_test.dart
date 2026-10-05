@@ -95,6 +95,7 @@ List<Object?> Function(SeenRequest) world({
 }
 
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) await openMenuIfNarrow(tester);
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
   await tester.tap(finder);
@@ -102,14 +103,40 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  testWidgets("the sidebar's counter follows an approval at once", (tester) async {
+    useScreenSize(tester, const Size(1280, 1000), dpr: 1);
+    var approved = false;
+    await pumpSignedIn(tester, (req) {
+      if (req.path == '/auth/me') return [200, adminUser];
+      if (req.path == '/admin/dashboard') {
+        return [200, {...dashboardJson(), 'pendingAccounts': approved ? 0 : 7}];
+      }
+      if (req.path == '/admin/users/u1/approve') {
+        approved = true;
+        return [200, account('u1', 'lab_one', 'ACTIVE')];
+      }
+      if (req.path == '/admin/users') {
+        return [200, page(approved ? [] : [account('u1', 'lab_one', 'PENDING')])];
+      }
+      return [404, null];
+    });
+    await openAccountsTab(tester);
+    expect(find.text('7'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'موافقة'));
+    await tester.pumpAndSettle();
+    expect(find.text('7'), findsNothing);
+  });
+
   testWidgets('lands on the dashboard after sign-in; a count opens its list', (tester) async {
     useScreenSize(tester, const Size(1280, 1400), dpr: 1);
     final backend = await pumpSignedIn(tester, world());
 
     expect(find.text('حسابات بانتظار الموافقة'), findsOneWidget);
     expect(find.text('طلبات بانتظار التأكيد'), findsOneWidget);
-    expect(find.text('2'), findsOneWidget);
-    expect(find.text('3'), findsOneWidget);
+    // Each count twice: on its card, and as the sidebar's counter.
+    expect(find.text('2'), findsNWidgets(2));
+    expect(find.text('3'), findsNWidgets(2));
 
     await tapVisible(tester, find.text('طلبات بانتظار التأكيد'));
     expect(backend.lastTo('/admin/orders').query['status'], 'PLACED');

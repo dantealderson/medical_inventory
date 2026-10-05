@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appTitle": "إدارة المخزون الطبي",
+  "appTitle": "إدارة مخزون العيادة",
   "@appTitle": {
     "description": "Admin application title"
   },
@@ -36,7 +36,12 @@
   "@passwordTooShort": {
     "description": "Validation: password under 8 chars"
   },
-  "pendingAccounts": "طلبات الحسابات",
+  "pendingAccounts": "العيادات",
+  "menu": "القائمة",
+  "brandName": "مخزون العيادة",
+  "adminPanel": "لوحة الإدارة",
+  "catalogGroup": "الكتالوج",
+  "systemGroup": "النظام",
   "@pendingAccounts": {
     "description": "Pending approvals screen title"
   },

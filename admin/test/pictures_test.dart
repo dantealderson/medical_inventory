@@ -42,6 +42,7 @@ void main() {
 
   Future<void> openTab(WidgetTester tester, String label) async {
     final tab = find.text(label);
+    if (tab.evaluate().isEmpty) await openMenuIfNarrow(tester);
     await tester.ensureVisible(tab);
     await tester.pumpAndSettle();
     await tester.tap(tab);

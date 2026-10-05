@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'auth_controller.dart';
+import 'dashboard_controller.dart';
 
 /// Which accounts the queue is showing. `null` means every status.
 ///
@@ -54,7 +55,10 @@ class AccountActions {
 
   Future<void> _then(Future<void> action) async {
     await action;
-    _ref.invalidate(accountsProvider);
+    _ref
+      ..invalidate(accountsProvider)
+      // The sidebar's counter of accounts waiting for approval.
+      ..invalidate(dashboardProvider);
   }
 }
 

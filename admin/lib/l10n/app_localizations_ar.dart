@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'إدارة المخزون الطبي';
+  String get appTitle => 'إدارة مخزون العيادة';
 
   @override
   String get loading => 'جارٍ التحميل...';
@@ -36,7 +36,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordTooShort => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
 
   @override
-  String get pendingAccounts => 'طلبات الحسابات';
+  String get pendingAccounts => 'العيادات';
+
+  @override
+  String get menu => 'القائمة';
+
+  @override
+  String get brandName => 'مخزون العيادة';
+
+  @override
+  String get adminPanel => 'لوحة الإدارة';
+
+  @override
+  String get catalogGroup => 'الكتالوج';
+
+  @override
+  String get systemGroup => 'النظام';
 
   @override
   String get noPendingAccounts => 'لا توجد طلبات جديدة';

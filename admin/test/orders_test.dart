@@ -203,6 +203,7 @@ void main() {
   /// Scrolls [finder] into view, taps it and settles. The detail screen
   /// scrolls, and at 800×600 its action row starts below the fold.
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+    if (finder.evaluate().isEmpty) await openMenuIfNarrow(tester);
     await tester.ensureVisible(finder);
     await tester.pumpAndSettle();
     await tester.tap(finder);

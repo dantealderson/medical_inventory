@@ -96,9 +96,9 @@ void main() {
       // Since Phase 6 the admin lands on the dashboard (title and tab).
       expect(find.text('الرئيسية'), findsWidgets);
       await openAccountsTab(tester);
-      // Appears twice now: as the screen title and as its nav tab in
-      // AdminShell, which every admin screen shares.
-      expect(find.text('طلبات الحسابات'), findsWidgets);
+      // Appears twice: as the screen title and in AdminShell's sidebar, which
+      // every admin screen shares.
+      expect(find.text('العيادات'), findsWidgets);
       expect(find.text('مختبر النور'), findsOneWidget);
     });
   });

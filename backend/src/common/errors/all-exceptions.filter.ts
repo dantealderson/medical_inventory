@@ -15,7 +15,13 @@ const STATUS_TO_CODE: Record<number, keyof typeof ERROR_CODES> = {
   403: 'FORBIDDEN',
   404: 'NOT_FOUND',
   409: 'CONFLICT',
+  413: 'PAYLOAD_TOO_LARGE',
 };
+
+/** body-parser's own error for a body over its limit: not an HttpException. */
+function isTooLarge(exception: unknown): boolean {
+  return (exception as { type?: unknown })?.type === 'entity.too.large';
+}
 
 interface ResponseLike {
   status: (code: number) => { json: (body: unknown) => void };
@@ -31,6 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
   }
 
   private statusOf(exception: unknown): number {
+    if (isTooLarge(exception)) return HttpStatus.PAYLOAD_TOO_LARGE;
     return exception instanceof HttpException
       ? exception.getStatus()
       : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -54,6 +61,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const details = this.validationDetails(exception);
       if (details !== undefined) body.details = details;
       return body;
+    }
+
+    if (isTooLarge(exception)) {
+      return {
+        statusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+        code: 'PAYLOAD_TOO_LARGE',
+        messageAr: ERROR_CODES.PAYLOAD_TOO_LARGE,
+      };
     }
 
     // Unknown throwable: log it server-side in full, tell the client nothing.

@@ -121,6 +121,46 @@ describe('Input limits (e2e)', () => {
     });
   });
 
+  describe('null in an edit is refused, not a 500', () => {
+    it.each(['unitLabelAr', 'pricePerBox', 'categoryId', 'unitsPerBox', 'isActive'])("an item's %s", async (field) => {
+      await admin.patch(`/api/v1/admin/items/${itemId}`).send({ [field]: null }).expect(400);
+    });
+
+    it("an item's only name", async () => {
+      await admin.patch(`/api/v1/admin/items/${itemId}`).send({ nameAr: null }).expect(400);
+    });
+
+    it('one of two names may go', async () => {
+      await admin.patch(`/api/v1/admin/items/${itemId}`).send({ nameEn: 'Syringe' }).expect(200);
+      const res = await admin.patch(`/api/v1/admin/items/${itemId}`).send({ nameAr: null }).expect(200);
+      expect(res.body).toMatchObject({ nameAr: null, nameEn: 'Syringe' });
+    });
+
+    it('a null minimum clears it', async () => {
+      await admin.patch(`/api/v1/admin/items/${itemId}`).send({ minQtyBoxes: 3 }).expect(200);
+      const res = await admin.patch(`/api/v1/admin/items/${itemId}`).send({ minQtyBoxes: null }).expect(200);
+      expect(res.body.minQtyBoxes).toBeNull();
+    });
+
+    it("a category's name", async () => {
+      await admin.patch(`/api/v1/admin/categories/${categoryId}`).send({ nameAr: null }).expect(400);
+    });
+  });
+
+  it('a body too large is 413 with a message, not a 500', async () => {
+    const res = await admin.post('/api/v1/admin/items').send(item({ description: 'x'.repeat(2_000_000) })).expect(413);
+    expect(res.body.code).toBe('PAYLOAD_TOO_LARGE');
+    expect(res.body.messageAr).toBeTruthy();
+  });
+
+  it('search treats % and _ as letters, not wildcards', async () => {
+    const clinic = authed(app, (await makeUser(app, prisma, 'clinic_one', Role.CLIENT)).token);
+    for (const q of ['%', '_', '%_%', '__', '\\', '\\%']) {
+      const res = await clinic.get(`/api/v1/search?q=${encodeURIComponent(q)}`).expect(200);
+      expect(res.body.items, q).toEqual([]);
+    }
+  });
+
   it('lists accounts with a page size, as the broadcast form asks', async () => {
     const res = await admin.get('/api/v1/admin/users?status=ACTIVE&limit=100').expect(200);
     expect(res.body.items).toBeInstanceOf(Array);

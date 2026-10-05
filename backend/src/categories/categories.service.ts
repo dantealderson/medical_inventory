@@ -4,6 +4,7 @@ import type { Category } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
+import { refuseNulls } from '../common/dto-input';
 import { MediaService } from '../media/media.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateCategoryDto } from './dto/create-category.dto';
@@ -91,6 +92,7 @@ export class CategoriesService {
   }
 
   async update(actorUserId: string, id: string, dto: UpdateCategoryDto): Promise<CategoryNode> {
+    refuseNulls(dto, ['nameAr', 'sortOrder', 'isActive']);
     const before = await this.prisma.category.findUnique({ where: { id } });
     if (!before) {
       throw new AppException(HttpStatus.NOT_FOUND, 'NOT_FOUND', ERROR_CODES.NOT_FOUND);

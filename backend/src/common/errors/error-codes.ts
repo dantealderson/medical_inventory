@@ -9,6 +9,7 @@ export const ERROR_CODES = Object.freeze({
   FORBIDDEN: 'ليس لديك صلاحية لهذا الإجراء',
   CONFLICT: 'تعارض في البيانات',
   INTERNAL_ERROR: 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً',
+  PAYLOAD_TOO_LARGE: 'البيانات المرسلة كبيرة جداً',
 
   // --- Auth (Phase 1) ---
   USERNAME_TAKEN: 'اسم المستخدم مستخدم بالفعل',

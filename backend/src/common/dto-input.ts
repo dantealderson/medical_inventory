@@ -1,4 +1,8 @@
+import { HttpStatus } from '@nestjs/common';
 import { registerDecorator, type ValidationOptions } from 'class-validator';
+
+import { AppException } from './errors/app.exception';
+import { ERROR_CODES } from './errors/error-codes';
 
 /** Trims a string, so a name of spaces fails its length check. */
 export const trim = ({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.trim() : value);
@@ -35,4 +39,21 @@ export function IsCalendarDate(options?: ValidationOptions): PropertyDecorator {
         },
       },
     });
+}
+
+/**
+ * An edit may leave a field out, and the validation of a PartialType DTO
+ * then skips null as well: a null for a required column reached the
+ * database and came back as a 500. Refuses it as the bad input it is.
+ */
+export function refuseNulls(dto: object, keys: readonly string[]): void {
+  const nulls = keys.filter((k) => (dto as Record<string, unknown>)[k] === null);
+  if (nulls.length > 0) {
+    throw new AppException(
+      HttpStatus.BAD_REQUEST,
+      'VALIDATION_FAILED',
+      ERROR_CODES.VALIDATION_FAILED,
+      nulls.map((k) => `${k} must not be null`),
+    );
+  }
 }

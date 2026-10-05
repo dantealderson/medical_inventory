@@ -4,6 +4,7 @@ import { Role, type Item } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { AppException } from '../common/errors/app.exception';
 import { ERROR_CODES } from '../common/errors/error-codes';
+import { refuseNulls } from '../common/dto-input';
 import { boxesToUnits, unitsToBoxes } from '../common/units';
 import { MediaService } from '../media/media.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -127,9 +128,18 @@ export class ItemsService {
   }
 
   async update(actorUserId: string, id: string, dto: UpdateItemDto): Promise<ItemView> {
+    refuseNulls(dto, ['categoryId', 'unitsPerBox', 'unitLabelAr', 'pricePerBox', 'isActive']);
     const before = await this.prisma.item.findUnique({ where: { id } });
     if (!before) {
       throw new AppException(HttpStatus.NOT_FOUND, 'ITEM_NOT_FOUND', ERROR_CODES.ITEM_NOT_FOUND);
+    }
+    // One name may go, not both: the CHECK constraint would answer with a 500.
+    const nameAr = dto.nameAr === undefined ? before.nameAr : dto.nameAr;
+    const nameEn = dto.nameEn === undefined ? before.nameEn : dto.nameEn;
+    if (!nameAr && !nameEn) {
+      throw new AppException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', ERROR_CODES.VALIDATION_FAILED, [
+        'nameAr or nameEn is required',
+      ]);
     }
     if (dto.categoryId) await this.assertCategoryExists(dto.categoryId);
 
@@ -156,8 +166,13 @@ export class ItemsService {
       where: { id },
       data: {
         ...rest,
+        // null clears the minimum.
         minQtyUnits:
-          minQtyBoxes === undefined ? undefined : boxesToUnits(minQtyBoxes, unitsPerBox),
+          minQtyBoxes === undefined
+            ? undefined
+            : minQtyBoxes === null
+              ? null
+              : boxesToUnits(minQtyBoxes, unitsPerBox),
       },
     });
 

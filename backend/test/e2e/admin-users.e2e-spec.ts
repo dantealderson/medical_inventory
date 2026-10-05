@@ -188,4 +188,58 @@ describe('Admin account management (e2e)', () => {
       http().post('/api/v1/admin/users/00000000-0000-0000-0000-000000000000/approve'),
     ).expect(404);
   });
+
+  describe('admin accounts are not clinics', () => {
+    it('the clinics list holds no admin', async () => {
+      await register('lab_one');
+      const res = await asAdmin(http().get('/api/v1/admin/users')).expect(200);
+      expect((res.body.items as { username: string }[]).map((u) => u.username)).toEqual(['lab_one']);
+    });
+
+    // One mis-tap on its own row locked the business out: no admin left to
+    // undo it, short of editing the database.
+    it.each(['suspend', 'reject', 'approve', 'reactivate'])('refuses to %s an admin, itself included', async (action) => {
+      await asAdmin(http().post(`/api/v1/admin/users/${adminId}/${action}`)).expect(403);
+      const me = await prisma.user.findUniqueOrThrow({ where: { id: adminId } });
+      expect(me.status).toBe(UserStatus.ACTIVE);
+    });
+
+    it("refuses to reset an admin's password", async () => {
+      await asAdmin(http().post(`/api/v1/admin/users/${adminId}/reset-password`))
+        .send({ newPassword: 'another-pass1' })
+        .expect(403);
+      await login('the_admin').expect(200);
+    });
+  });
+
+  describe('only sensible status changes', () => {
+    async function withStatus(username: string, status: UserStatus): Promise<string> {
+      const id = await register(username);
+      await prisma.user.update({ where: { id }, data: { status } });
+      return id;
+    }
+
+    it.each([
+      ['approve', UserStatus.ACTIVE],
+      ['approve', UserStatus.SUSPENDED],
+      ['reject', UserStatus.ACTIVE],
+      ['reject', UserStatus.SUSPENDED],
+      ['reject', UserStatus.REJECTED],
+      ['suspend', UserStatus.PENDING],
+      ['suspend', UserStatus.SUSPENDED],
+      ['reactivate', UserStatus.ACTIVE],
+      ['reactivate', UserStatus.PENDING],
+      ['reactivate', UserStatus.REJECTED],
+    ])('refuses to %s an account that is %s', async (action, status) => {
+      const id = await withStatus('lab_x', status);
+      const res = await asAdmin(http().post(`/api/v1/admin/users/${id}/${action}`)).expect(409);
+      expect(res.body.code).toBe('ACCOUNT_STATUS_UNCHANGED');
+      expect((await prisma.user.findUniqueOrThrow({ where: { id } })).status).toBe(status);
+    });
+
+    it('approves an account rejected by mistake', async () => {
+      const id = await withStatus('lab_x', UserStatus.REJECTED);
+      await asAdmin(http().post(`/api/v1/admin/users/${id}/approve`)).expect(200);
+    });
+  });
 });

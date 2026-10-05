@@ -58,6 +58,7 @@ export const ERROR_CODES = Object.freeze({
   WRONG_PASSWORD: 'كلمة المرور غير صحيحة',
   ORDERS_IN_PROGRESS: 'لديك طلبات لم تصل بعد. يمكنك حذف الحساب بعد وصولها أو إلغائها.',
   ACCOUNT_DELETED: 'حذف العميل هذا الحساب، ولا يمكن إعادته',
+  ACCOUNT_STATUS_UNCHANGED: 'لا يمكن تنفيذ هذا الإجراء على الحساب في حالته الحالية، حدّث الصفحة',
 } as const);
 
 export type ErrorCode = keyof typeof ERROR_CODES;

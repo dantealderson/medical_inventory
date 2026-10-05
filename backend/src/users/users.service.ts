@@ -39,7 +39,8 @@ export class UsersService {
   async list(query: ListUsersDto): Promise<UserPage> {
     const limit = query.limit ?? 50;
     const rows = await this.prisma.user.findMany({
-      where: { status: query.status },
+      // Clinics only: an admin listed here could suspend itself from its own row.
+      where: { status: query.status, role: Role.CLIENT },
       orderBy: { createdAt: 'desc' },
       take: limit + 1, // one extra row tells us whether another page exists
       ...(query.cursor ? { cursor: { id: query.cursor }, skip: 1 } : {}),
@@ -56,7 +57,9 @@ export class UsersService {
   }
 
   async approve(adminId: string, userId: string): Promise<SessionUser> {
-    const user = await this.transition(adminId, userId, UserStatus.ACTIVE, 'CLIENT_APPROVED', {
+    // From REJECTED too: a clinic turned away by mistake can still be let in.
+    const from = [UserStatus.PENDING, UserStatus.REJECTED];
+    const user = await this.transition(adminId, userId, from, UserStatus.ACTIVE, 'CLIENT_APPROVED', {
       approvedById: adminId,
       approvedAt: new Date(),
     });
@@ -65,7 +68,8 @@ export class UsersService {
   }
 
   async reject(adminId: string, userId: string): Promise<SessionUser> {
-    const user = await this.transition(adminId, userId, UserStatus.REJECTED, 'CLIENT_REJECTED');
+    const pending = [UserStatus.PENDING];
+    const user = await this.transition(adminId, userId, pending, UserStatus.REJECTED, 'CLIENT_REJECTED');
     await this.tell(userId, NotificationType.ACCOUNT_REJECTED, texts.accountRejected());
     return user;
   }
@@ -84,6 +88,7 @@ export class UsersService {
     const result = await this.transition(
       adminId,
       userId,
+      [UserStatus.ACTIVE],
       UserStatus.SUSPENDED,
       'CLIENT_SUSPENDED',
     );
@@ -94,7 +99,8 @@ export class UsersService {
   }
 
   reactivate(adminId: string, userId: string): Promise<SessionUser> {
-    return this.transition(adminId, userId, UserStatus.ACTIVE, 'CLIENT_REACTIVATED');
+    const suspended = [UserStatus.SUSPENDED];
+    return this.transition(adminId, userId, suspended, UserStatus.ACTIVE, 'CLIENT_REACTIVATED');
   }
 
   /**
@@ -118,9 +124,7 @@ export class UsersService {
    */
   async deleteForClient(adminId: string, userId: string): Promise<void> {
     const user = await this.findOrThrow(userId);
-    if (user.role !== Role.CLIENT) {
-      throw new AppException(HttpStatus.FORBIDDEN, 'FORBIDDEN', ERROR_CODES.FORBIDDEN);
-    }
+    this.refuseIfNotClinic(user);
     this.refuseIfDeleted(user);
     await this.erase(user, adminId, 'Deleted by an admin at the clinic’s request; personal details erased');
   }
@@ -195,7 +199,9 @@ export class UsersService {
   }
 
   async resetPassword(adminId: string, userId: string, newPassword: string): Promise<void> {
-    this.refuseIfDeleted(await this.findOrThrow(userId));
+    const user = await this.findOrThrow(userId);
+    this.refuseIfNotClinic(user);
+    this.refuseIfDeleted(user);
 
     const passwordHash = await this.passwords.hash(newPassword);
     await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
@@ -215,15 +221,29 @@ export class UsersService {
     });
   }
 
+  /**
+   * Moves a clinic's account from one of [from] to [status]. Anything else is
+   * refused: rejecting an active clinic left its sessions alive, and approving
+   * a suspended one sent it «your account was approved».
+   */
   private async transition(
     adminId: string,
     userId: string,
+    from: UserStatus[],
     status: UserStatus,
     action: string,
     extra: Record<string, unknown> = {},
   ): Promise<SessionUser> {
     const before = await this.findOrThrow(userId);
+    this.refuseIfNotClinic(before);
     this.refuseIfDeleted(before);
+    if (!from.includes(before.status)) {
+      throw new AppException(
+        HttpStatus.CONFLICT,
+        'ACCOUNT_STATUS_UNCHANGED',
+        ERROR_CODES.ACCOUNT_STATUS_UNCHANGED,
+      );
+    }
 
     const after = await this.prisma.user.update({
       where: { id: userId },
@@ -240,6 +260,17 @@ export class UsersService {
     });
 
     return toSessionUser(after);
+  }
+
+  /**
+   * Admins are seeded, not managed here. An admin able to suspend itself, or
+   * reset its own password from a clinic's page, could lock the business out
+   * with one mis-tap and no admin left to undo it.
+   */
+  private refuseIfNotClinic(user: User): void {
+    if (user.role !== Role.CLIENT) {
+      throw new AppException(HttpStatus.FORBIDDEN, 'FORBIDDEN', ERROR_CODES.FORBIDDEN);
+    }
   }
 
   /** A deleted account has no details left to sign in with or approve. */

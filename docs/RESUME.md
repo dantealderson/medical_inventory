@@ -9,8 +9,9 @@ The admin sidebar redesign is committed (its 5 failing tests were test drift). T
 - Admin: items can be edited and reactivated, categories renamed; deactivated items no longer vanish; all pages of items/clinics load (not just 50); clinics reachable by status chips; a clinic's page loads by id (it spun forever after suspending); «حذف» and «إلغاء التفعيل» ask first; batches show the item's name; the expiry picker is calendar-only (typing accepted only Arabic digits with hidden direction marks); the audit log reads in Arabic, not JSON; F5/bookmarks keep the page; unknown addresses go home; the add button no longer covers the last card; sidebar counters refresh.
 - Client: the cart re-reads itself on opening (another phone's change was invisible and «إرسال الطلب» sent what the server held).
 - Server: blank names, impossible dates (2027-02-30 stored as 03-02), overflowing quantities (500), nulls in edits (500), a 2 MB body (500), «%_%» matching the whole catalogue in search, and `?limit=` refused on /admin/users (the broadcast clinic picker never loaded).
-- **To take effect online:** restart `start-online.cmd` (it rebuilds the server and admin site), and push + run «Build the apps» for a new APK.
-- Minor, not fixed: registration accepts any phone text; no «confirm password» on registration; «اسم المختبر» label for clinics.
+- Registration now asks for the password twice («تأكيد كلمة المرور»).
+- Pushed to GitHub on 2026-10-05; the push rebuilds the APK and the admin site. **To take effect online:** restart `start-online.cmd` (it rebuilds the server and admin site).
+- Minor, not fixed: registration accepts any phone text; «اسم المختبر» label for clinics.
 
 ## >>> GO-LIVE PLAN AGREED (2026-10-01). The user is doing their hands-on steps 1–9; mine are 10–19
 

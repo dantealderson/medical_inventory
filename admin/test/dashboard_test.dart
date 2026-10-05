@@ -173,10 +173,10 @@ void main() {
     useScreenSize(tester, const Size(1280, 1400), dpr: 1);
     await pumpSignedIn(tester, world());
 
-    expect(find.text('أدرينالين — نفد'), findsOneWidget);
-    expect(find.text('سرنجة — ناقص: 2 علبة + 50 سرنجة'), findsOneWidget);
-    expect(find.text('OLD — سرنجة: منتهية منذ 2027-01-01'), findsOneWidget);
-    expect(find.text('B-7 — سرنجة: تنتهي في 2027-02-01'), findsOneWidget);
+    expect(find.text('أدرينالين: نفد'), findsOneWidget);
+    expect(find.text('سرنجة: ناقص، المتبقي 2 علبة + 50 سرنجة'), findsOneWidget);
+    expect(find.text('سرنجة (التشغيلة OLD): منتهية منذ 2027-01-01'), findsOneWidget);
+    expect(find.text('سرنجة (التشغيلة B-7): تنتهي في 2027-02-01'), findsOneWidget);
   });
 
   testWidgets('«تشغيل الآن» runs the nightly jobs and shows how it went', (tester) async {

@@ -79,6 +79,8 @@ class _Body extends StatelessWidget {
   }
 }
 
+/// The order at a glance: who, its status and the amount due first; then
+/// where it goes and how it got here.
 class _Header extends StatelessWidget {
   const _Header({required this.order});
 
@@ -87,9 +89,10 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
     final client = order.client;
     final disposition = order.cancelDisposition;
+    final muted = TextStyle(fontSize: 14, color: colors.textMuted);
 
     final timeline = <(String, DateTime?)>[
       (l10n.placedAt, order.placedAt),
@@ -99,45 +102,76 @@ class _Header extends StatelessWidget {
       (l10n.cancelledAt, order.cancelledAt),
     ];
 
+    Widget fact(IconData icon, String line) => Padding(
+      padding: const EdgeInsetsDirectional.only(top: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: colors.textMuted),
+          const SizedBox(width: 10),
+          Expanded(child: Text(line, style: const TextStyle(fontSize: 16))),
+        ],
+      ),
+    );
+
     return Card(
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(20),
+        padding: const EdgeInsetsDirectional.all(22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Text(
-                    client.clinicName ?? client.username,
-                    style: text.headlineSmall,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        client.clinicName ?? client.username,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(client.username, style: muted),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 OrderStatusChip(status: order.status),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(client.username, style: text.bodyMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 18),
+            Text(l10n.orderTotal, style: muted),
+            Text(
+              formatIqd(order.totalAmount),
+              semanticsLabel: '${l10n.orderTotal}: ${formatIqd(order.totalAmount)}',
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: colors.primaryDark),
+            ),
             // The snapshots taken at placement, not the clinic's current
             // profile: this is where the order was promised to go.
-            if (order.addressSnapshot != null)
-              Text('${l10n.addressLabel}: ${order.addressSnapshot}'),
-            if (order.phoneSnapshot != null) Text('${l10n.phoneLabel}: ${order.phoneSnapshot}'),
-            if (order.note != null) Text('${l10n.clientNote}: ${order.note}'),
-            const SizedBox(height: 12),
-            for (final (label, at) in timeline)
-              if (at != null) Text('$label: ${formatTimestamp(at)}', style: text.bodySmall),
-            if (disposition != null) ...[
-              const SizedBox(height: 8),
-              Text('${l10n.dispositionLabel}: ${dispositionText(l10n, disposition)}'),
+            if (order.addressSnapshot != null || order.phoneSnapshot != null || order.note != null) ...[
+              const SizedBox(height: 10),
+              const Divider(),
+              if (order.addressSnapshot != null)
+                fact(Icons.location_on_outlined, '${l10n.addressLabel}: ${order.addressSnapshot}'),
+              if (order.phoneSnapshot != null) fact(Icons.call_outlined, '${l10n.phoneLabel}: ${order.phoneSnapshot}'),
+              if (order.note != null) fact(Icons.sticky_note_2_outlined, '${l10n.clientNote}: ${order.note}'),
             ],
-            if (order.cancelReason != null) Text('${l10n.cancelReason}: ${order.cancelReason}'),
-            const SizedBox(height: 12),
-            Text('${l10n.orderTotal}: ${formatIqd(order.totalAmount)}', style: text.titleMedium),
+            const SizedBox(height: 14),
+            const Divider(),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 20,
+              runSpacing: 4,
+              children: [
+                for (final (label, at) in timeline)
+                  if (at != null) Text('$label: ${formatTimestamp(at)}', style: muted),
+              ],
+            ),
+            if (disposition != null) fact(Icons.inventory_2_outlined, '${l10n.dispositionLabel}: ${dispositionText(l10n, disposition)}'),
+            if (order.cancelReason != null) fact(Icons.info_outline_rounded, '${l10n.cancelReason}: ${order.cancelReason}'),
           ],
         ),
       ),
@@ -153,34 +187,44 @@ class _LineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
     final approved = line.qtyUnitsApproved;
 
+    final colors = context.appColors;
+    final qty = TextStyle(fontSize: 15, color: colors.onSurface);
+
     return Card(
-      margin: const EdgeInsetsDirectional.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 10),
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
+        padding: const EdgeInsetsDirectional.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(line.item.displayName, style: text.titleMedium),
-            const SizedBox(height: 4),
-            Text(
-              '${l10n.requestedQty}: ${lineUnits(l10n, line, line.qtyUnitsRequested)}',
-              style: text.bodySmall,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Text(line.item.displayName, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+                const SizedBox(width: 12),
+                Text(formatIqd(line.lineTotal), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              ],
             ),
-            // Null until confirmation, e.g. an order cancelled while PLACED.
-            if (approved != null) ...[
-              Text('${l10n.approvedQty}: ${lineUnits(l10n, line, approved)}', style: text.bodySmall),
-              Text(
-                '${l10n.fulfilledQty}: ${lineUnits(l10n, line, line.qtyUnitsFulfilled)}',
-                style: text.bodySmall,
-              ),
-            ],
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 18,
+              runSpacing: 4,
+              children: [
+                Text('${l10n.requestedQty}: ${lineUnits(l10n, line, line.qtyUnitsRequested)}', style: qty),
+                // Null until confirmation, e.g. an order cancelled while PLACED.
+                if (approved != null) ...[
+                  Text('${l10n.approvedQty}: ${lineUnits(l10n, line, approved)}', style: qty),
+                  Text('${l10n.fulfilledQty}: ${lineUnits(l10n, line, line.qtyUnitsFulfilled)}', style: qty),
+                ],
+              ],
+            ),
+            const SizedBox(height: 4),
             Text(
               '${l10n.pricePerBox}: ${formatIqd(line.pricePerBoxSnapshot)}'
               '  ·  ${l10n.lineTotal}: ${formatIqd(line.lineTotal)}',
-              style: text.bodySmall,
+              style: TextStyle(fontSize: 14, color: colors.textMuted),
             ),
             if (line.isPartial) ...[
               const SizedBox(height: 8),
@@ -202,14 +246,14 @@ class _LineCard extends StatelessWidget {
             ],
             if (line.allocations.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(l10n.allocatedBatches, style: text.labelLarge),
+              Text(l10n.allocatedBatches, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
               for (final a in line.allocations)
                 Text(
                   '${allocationText(l10n, line, batchNumber: a.batchNumber, expiryDate: a.expiryDate, qtyUnits: a.qtyUnits)}'
                   // A released row stays listed: a returned shipment still shows
                   // which batches went out and came back (D4).
                   '${a.released ? '  ·  ${l10n.releasedFlag}' : ''}',
-                  style: text.bodySmall,
+                  style: TextStyle(fontSize: 14, color: colors.textMuted),
                 ),
             ],
           ],

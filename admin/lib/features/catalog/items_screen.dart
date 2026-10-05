@@ -208,7 +208,10 @@ Future<void> _openItemEditor(BuildContext context, WidgetRef ref, {Item? existin
                       DropdownMenuItem(
                         value: c.id,
                         // Indent by level so the hierarchy reads in a flat list.
-                        child: Text('${'— ' * (c.level - 1)}${c.displayName}'),
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(start: 18.0 * (c.level - 1)),
+                          child: Text(c.displayName),
+                        ),
                       ),
                   ],
                   onChanged: (v) => categoryId = v ?? categoryId,

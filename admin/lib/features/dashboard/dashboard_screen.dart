@@ -91,11 +91,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               child: ListView(
                 padding: const EdgeInsetsDirectional.all(16),
                 children: [
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
+                  _CountRow(
                     children: [
                       _CountCard(
+                        icon: Icons.local_hospital_outlined,
                         label: l10n.pendingApprovalsCard,
                         count: data.pendingAccounts,
                         onTap: () {
@@ -104,6 +103,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         },
                       ),
                       _CountCard(
+                        icon: Icons.receipt_long_outlined,
                         label: l10n.ordersAwaitingCard,
                         count: data.ordersAwaitingConfirmation,
                         onTap: () {
@@ -115,6 +115,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                   if (data.outOfStockClinics.isNotEmpty) _OutOfStockCard(clinics: data.outOfStockClinics),
                   _ListCard(
+                    icon: Icons.warehouse_outlined,
                     title: l10n.warehouseAlertsTitle,
                     lines: [
                       for (final w in data.warehouse)
@@ -132,6 +133,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ],
                   ),
                   _ListCard(
+                    icon: Icons.event_busy_outlined,
                     title: l10n.expiringBatchesTitle,
                     lines: [
                       for (final b in data.expiringBatches)
@@ -156,31 +158,86 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 String _clinicLine(AppLocalizations l10n, OutOfStockClinic clinic) =>
     l10n.clinicOutLine(clinic.displayName, clinic.items.map((i) => i.nameAr).join('، '));
 
-class _CountCard extends StatelessWidget {
-  const _CountCard({required this.label, required this.count, required this.onTap});
+/// The two counts side by side on a wide screen, one above the other on a
+/// phone.
+class _CountRow extends StatelessWidget {
+  const _CountRow({required this.children});
 
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, box) => box.maxWidth >= 560
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final (i, child) in children.indexed) ...[
+                  if (i > 0) const SizedBox(width: 12),
+                  Expanded(child: child),
+                ],
+              ],
+            )
+          : Column(
+              children: [
+                for (final (i, child) in children.indexed) ...[if (i > 0) const SizedBox(height: 12), child],
+              ],
+            ),
+    );
+  }
+}
+
+/// What waits for the admin. Tinted when something waits, plain at zero, so
+/// the eye goes where the work is.
+class _CountCard extends StatelessWidget {
+  const _CountCard({required this.icon, required this.label, required this.count, required this.onTap});
+
+  final IconData icon;
   final String label;
   final int count;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return SizedBox(
-      width: 260,
-      child: Card(
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('$count', style: text.displaySmall),
-                const SizedBox(height: 4),
-                Text(label, style: text.titleMedium),
-              ],
-            ),
+    final colors = context.appColors;
+    final waiting = count > 0;
+    return Card(
+      color: waiting ? colors.tileCream : colors.surface,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(20),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$count',
+                      style: TextStyle(
+                        fontSize: 40,
+                        height: 1.1,
+                        fontWeight: FontWeight.w800,
+                        color: waiting ? colors.stockYellowInk : colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: waiting ? colors.surface : colors.tileSage,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: waiting ? colors.stockYellowInk : colors.textMuted),
+              ),
+            ],
           ),
         ),
       ),
@@ -198,32 +255,40 @@ class _OutOfStockCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.appColors;
-    final text = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsetsDirectional.only(top: 12),
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: colors.danger, width: 2),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      color: colors.stockRedSoft,
+      clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 12, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.error, color: colors.danger),
-                const SizedBox(width: 8),
-                Expanded(child: Text(l10n.outOfStockClinicsTitle, style: text.titleMedium)),
+                Icon(Icons.error_rounded, color: colors.stockRedInk),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.outOfStockClinicsTitle,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: colors.stockRedInk),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             for (final clinic in clinics)
               InkWell(
+                borderRadius: BorderRadius.circular(12),
                 onTap: () => context.go(Routes.clientInventory(clinic.clientId)),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-                  child: Text(_clinicLine(l10n, clinic), style: text.bodyLarge),
+                  padding: const EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 4),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(_clinicLine(l10n, clinic), style: const TextStyle(fontSize: 16))),
+                      Icon(Icons.chevron_left_rounded, color: colors.stockRedInk),
+                    ],
+                  ),
                 ),
               ),
           ],
@@ -233,31 +298,41 @@ class _OutOfStockCard extends StatelessWidget {
   }
 }
 
+/// A titled panel of short lines, or «لا يوجد» when there is nothing.
 class _ListCard extends StatelessWidget {
-  const _ListCard({required this.title, required this.lines});
+  const _ListCard({required this.icon, required this.title, required this.lines});
 
+  final IconData icon;
   final String title;
   final List<String> lines;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
     return Card(
       margin: const EdgeInsetsDirectional.only(top: 12),
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
+        padding: const EdgeInsetsDirectional.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: text.titleMedium),
-            const SizedBox(height: 8),
-            if (lines.isEmpty) Text(l10n.nothingToShow, style: text.bodyMedium),
-            for (final line in lines)
+            Row(
+              children: [
+                Icon(icon, size: 22, color: colors.primary),
+                const SizedBox(width: 10),
+                Expanded(child: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800))),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (lines.isEmpty) Text(l10n.nothingToShow, style: TextStyle(fontSize: 16, color: colors.textMuted)),
+            for (final (i, line) in lines.indexed) ...[
+              if (i > 0) const Divider(height: 1),
               Padding(
-                padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
-                child: Text(line, style: text.bodyLarge),
+                padding: const EdgeInsetsDirectional.symmetric(vertical: 10),
+                child: Text(line, style: const TextStyle(fontSize: 16)),
               ),
+            ],
           ],
         ),
       ),
@@ -306,15 +381,31 @@ class _NightlyCardState extends ConsumerState<_NightlyCard> {
     return Card(
       margin: const EdgeInsetsDirectional.only(top: 12),
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsetsDirectional.all(20),
+        child: Row(
           children: [
-            Text(l10n.nightlyTitle, style: text.titleMedium),
-            const SizedBox(height: 8),
-            if (run != null) Text(l10n.lastRunAt(formatTimestamp(run.startedAt))),
-            Text(status, style: text.bodyLarge),
-            const SizedBox(height: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.nightlight_outlined, size: 22, color: context.appColors.primary),
+                      const SizedBox(width: 10),
+                      Text(l10n.nightlyTitle, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (run != null)
+                    Text(
+                      l10n.lastRunAt(formatTimestamp(run.startedAt)),
+                      style: TextStyle(fontSize: 15, color: context.appColors.textMuted),
+                    ),
+                  Text(status, style: text.bodyLarge),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
             FilledButton(
               onPressed: _busy ? null : _runNow,
               child: _busy

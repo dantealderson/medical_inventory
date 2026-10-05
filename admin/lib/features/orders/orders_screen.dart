@@ -128,6 +128,8 @@ class _StatusFilter extends ConsumerWidget {
   }
 }
 
+/// One order in the queue, read across like a row: who, when, how many,
+/// how much, and its status. On a phone the same facts stack in two lines.
 class _OrderCard extends StatelessWidget {
   const _OrderCard({required this.order});
 
@@ -136,40 +138,77 @@ class _OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
+    final colors = context.appColors;
     final client = order.client;
+    final muted = TextStyle(fontSize: 15, color: colors.textMuted);
+
+    final who = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          client.clinicName ?? client.username,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(client.username, style: TextStyle(fontSize: 14, color: colors.textMuted), overflow: TextOverflow.ellipsis),
+      ],
+    );
+    final when = Text('${l10n.placedAt}: ${formatTimestamp(order.placedAt)}', style: muted);
+    final lines = Text('${l10n.lineCount}: ${order.lineCount}', style: muted);
+    final total = Text(
+      formatIqd(order.totalAmount),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+    );
 
     return Card(
-      margin: const EdgeInsetsDirectional.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 10),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.go(Routes.order(order.id)),
         child: Padding(
-          padding: const EdgeInsetsDirectional.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 16, 16),
+          child: LayoutBuilder(
+            builder: (context, box) {
+              if (box.maxWidth >= 640) {
+                return Row(
+                  children: [
+                    Expanded(flex: 4, child: who),
+                    Expanded(flex: 4, child: when),
+                    Expanded(flex: 2, child: lines),
+                    Expanded(flex: 3, child: total),
+                    OrderStatusChip(status: order.status),
+                    const SizedBox(width: 8),
+                    Icon(Icons.chevron_left_rounded, color: colors.textMuted),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      client.clinicName ?? client.username,
-                      style: text.titleMedium,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(child: who),
+                      const SizedBox(width: 8),
+                      OrderStatusChip(status: order.status),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  OrderStatusChip(status: order.status),
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [when, lines],
+                        ),
+                      ),
+                      total,
+                    ],
+                  ),
                 ],
-              ),
-              const SizedBox(height: 4),
-              Text(client.username, style: text.bodySmall),
-              const SizedBox(height: 8),
-              Text('${l10n.placedAt}: ${formatTimestamp(order.placedAt)}', style: text.bodySmall),
-              Text(
-                '${l10n.orderTotal}: ${formatIqd(order.totalAmount)}  ·  ${l10n.lineCount}: ${order.lineCount}',
-                style: text.bodySmall,
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

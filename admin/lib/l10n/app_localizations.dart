@@ -1459,13 +1459,13 @@ abstract class AppLocalizations {
   /// Phase 6: a warehouse item with no usable stock
   ///
   /// In ar, this message translates to:
-  /// **'{item} — نفد'**
+  /// **'{item}: نفد'**
   String warehouseOut(String item);
 
   /// Phase 6: a warehouse item below its minimum
   ///
   /// In ar, this message translates to:
-  /// **'{item} — ناقص: {qty}'**
+  /// **'{item}: ناقص، المتبقي {qty}'**
   String warehouseLow(String item, String qty);
 
   /// Phase 6: batches expiring soon
@@ -1477,13 +1477,13 @@ abstract class AppLocalizations {
   /// Phase 6: a batch expiring soon
   ///
   /// In ar, this message translates to:
-  /// **'{batch} — {item}: تنتهي في {date}'**
+  /// **'{item} (التشغيلة {batch}): تنتهي في {date}'**
   String batchExpiresLine(String batch, String item, String date);
 
   /// Phase 6: an expired batch still in stock
   ///
   /// In ar, this message translates to:
-  /// **'{batch} — {item}: منتهية منذ {date}'**
+  /// **'{item} (التشغيلة {batch}): منتهية منذ {date}'**
   String batchExpiredLine(String batch, String item, String date);
 
   /// Phase 6: an empty dashboard list

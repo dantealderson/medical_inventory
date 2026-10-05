@@ -88,7 +88,7 @@ String _label(AppLocalizations l10n, String key) => switch (key) {
 };
 
 String _value(AppLocalizations l10n, String key, Object? v) {
-  if (v == null) return '—';
+  if (v == null) return l10n.nothingToShow;
   if (v is bool) return v ? l10n.yes : l10n.no;
   return switch (key) {
     'pricePerBox' || 'totalAmount' => formatIqd('$v'),

@@ -738,12 +738,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String warehouseOut(String item) {
-    return '$item — نفد';
+    return '$item: نفد';
   }
 
   @override
   String warehouseLow(String item, String qty) {
-    return '$item — ناقص: $qty';
+    return '$item: ناقص، المتبقي $qty';
   }
 
   @override
@@ -751,12 +751,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String batchExpiresLine(String batch, String item, String date) {
-    return '$batch — $item: تنتهي في $date';
+    return '$item (التشغيلة $batch): تنتهي في $date';
   }
 
   @override
   String batchExpiredLine(String batch, String item, String date) {
-    return '$batch — $item: منتهية منذ $date';
+    return '$item (التشغيلة $batch): منتهية منذ $date';
   }
 
   @override

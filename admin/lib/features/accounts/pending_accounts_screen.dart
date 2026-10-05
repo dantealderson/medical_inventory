@@ -17,20 +17,71 @@ class PendingAccountsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final accounts = ref.watch(accountsProvider);
+    final status = ref.watch(accountsFilterProvider);
 
     return AdminShell(
       title: l10n.pendingAccounts,
-      child: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(accountsProvider),
-        child: accounts.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => _ErrorState(
-            messageAr: e is ApiException ? e.messageAr : l10n.retry,
-            onRetry: () => ref.invalidate(accountsProvider),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _StatusFilter(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async => ref.invalidate(accountsProvider),
+              child: accounts.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => _ErrorState(
+                  messageAr: e is ApiException ? e.messageAr : l10n.retry,
+                  onRetry: () => ref.invalidate(accountsProvider),
+                ),
+                data: (users) => users.isEmpty
+                    ? _EmptyState(message: status == 'PENDING' ? l10n.noPendingAccounts : l10n.noClinics)
+                    : _AccountList(users: users),
+              ),
+            ),
           ),
-          data: (users) => users.isEmpty
-              ? _EmptyState(message: l10n.noPendingAccounts)
-              : _AccountList(users: users),
+        ],
+      ),
+    );
+  }
+}
+
+/// Which clinics to list. Waiting ones first: approving them is the work.
+class _StatusFilter extends ConsumerWidget {
+  const _StatusFilter();
+
+  static const _statuses = <String?>['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED', null];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final selected = ref.watch(accountsFilterProvider);
+    String label(String? status) => switch (status) {
+      'PENDING' => l10n.clinicsWaiting,
+      'ACTIVE' => l10n.clinicsActive,
+      'SUSPENDED' => l10n.clinicsSuspended,
+      'REJECTED' => l10n.clinicsRejected,
+      _ => l10n.allStatuses,
+    };
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
+          // Wrap, not Row: five chips do not fit on one line at 390px.
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final status in _statuses)
+                ChoiceChip(
+                  label: Text(label(status)),
+                  selected: selected == status,
+                  onSelected: (_) => ref.read(accountsFilterProvider.notifier).setStatus(status),
+                ),
+            ],
+          ),
         ),
       ),
     );

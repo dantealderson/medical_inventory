@@ -24,8 +24,15 @@ final accountsFilterProvider = NotifierProvider<AccountsFilter, String?>(Account
 final accountsProvider = FutureProvider.autoDispose<List<SessionUser>>((ref) async {
   final api = ref.watch(adminUsersApiProvider);
   final status = ref.watch(accountsFilterProvider);
-  final page = await api.list(status: status);
-  return page.items;
+  // Every page: the screen has no «load more», and the list is short.
+  final users = <SessionUser>[];
+  String? cursor;
+  do {
+    final page = await api.list(status: status, cursor: cursor);
+    users.addAll(page.items);
+    cursor = page.nextCursor;
+  } while (cursor != null);
+  return users;
 });
 
 /// A single account, read from the loaded list so opening detail does not

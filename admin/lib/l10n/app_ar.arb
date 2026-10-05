@@ -46,6 +46,14 @@
     "description": "Pending approvals screen title"
   },
   "noPendingAccounts": "لا توجد طلبات جديدة",
+  "noClinics": "لا توجد عيادات هنا",
+  "clinicsWaiting": "بانتظار الموافقة",
+  "clinicsActive": "النشطة",
+  "clinicsSuspended": "الموقوفة",
+  "clinicsRejected": "المرفوضة",
+  "@noClinics": {
+    "description": "The clinics list is empty for the chosen status"
+  },
   "@noPendingAccounts": {
     "description": "Empty state for the approvals queue"
   },

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import '../../core/accounts_controller.dart';
 import '../../core/dashboard_controller.dart';
 import '../../core/formatting.dart';
 import '../../core/orders_controller.dart';
@@ -97,7 +98,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       _CountCard(
                         label: l10n.pendingApprovalsCard,
                         count: data.pendingAccounts,
-                        onTap: () => context.go(Routes.accounts),
+                        onTap: () {
+                          ref.read(accountsFilterProvider.notifier).setStatus('PENDING');
+                          context.go(Routes.accounts);
+                        },
                       ),
                       _CountCard(
                         label: l10n.ordersAwaitingCard,

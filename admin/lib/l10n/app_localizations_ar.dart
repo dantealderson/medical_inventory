@@ -57,6 +57,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noPendingAccounts => 'لا توجد طلبات جديدة';
 
   @override
+  String get noClinics => 'لا توجد عيادات هنا';
+
+  @override
+  String get clinicsWaiting => 'بانتظار الموافقة';
+
+  @override
+  String get clinicsActive => 'النشطة';
+
+  @override
+  String get clinicsSuspended => 'الموقوفة';
+
+  @override
+  String get clinicsRejected => 'المرفوضة';
+
+  @override
   String get approve => 'موافقة';
 
   @override

@@ -180,6 +180,44 @@ void main() {
   });
 
   group('Approvals queue', () {
+    testWidgets('status chips reach every clinic, not just the ones waiting', (tester) async {
+      final backend = await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users') {
+          return switch (req.query['status']) {
+            'PENDING' => [200, page([account('u1', 'lab_new', 'PENDING', clinicName: 'مختبر جديد')])],
+            'ACTIVE' => [200, page([account('u2', 'clinic_one', 'ACTIVE', clinicName: 'عيادة النور')])],
+            _ => [200, page([])],
+          };
+        }
+        return [404, null];
+      });
+      await openAccountsTab(tester);
+      expect(find.text('مختبر جديد'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'النشطة'));
+      await tester.pumpAndSettle();
+      expect(backend.lastTo('/admin/users').query['status'], 'ACTIVE');
+      expect(find.text('عيادة النور'), findsOneWidget);
+      expect(find.text('مختبر جديد'), findsNothing);
+    });
+
+    testWidgets('every page of clinics is shown, not only the first fifty', (tester) async {
+      await pumpSignedIn(tester, (req) {
+        if (req.path == '/auth/me') return [200, adminUser];
+        if (req.path == '/admin/users') {
+          return req.query['cursor'] == null
+              ? [200, {'items': [account('u1', 'lab_one', 'PENDING', clinicName: 'الأول')], 'nextCursor': 'c2'}]
+              : [200, page([account('u2', 'lab_two', 'PENDING', clinicName: 'الثاني')])];
+        }
+        return [404, null];
+      });
+      await openAccountsTab(tester);
+
+      expect(find.text('الأول'), findsOneWidget);
+      expect(find.text('الثاني'), findsOneWidget);
+    });
+
     testWidgets('lists pending accounts with their status', (tester) async {
       await pumpSignedIn(tester, (req) {
         if (req.path == '/auth/me') return [200, adminUser];

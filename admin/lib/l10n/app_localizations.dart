@@ -190,6 +190,36 @@ abstract class AppLocalizations {
   /// **'لا توجد طلبات جديدة'**
   String get noPendingAccounts;
 
+  /// The clinics list is empty for the chosen status
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد عيادات هنا'**
+  String get noClinics;
+
+  /// No description provided for @clinicsWaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار الموافقة'**
+  String get clinicsWaiting;
+
+  /// No description provided for @clinicsActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'النشطة'**
+  String get clinicsActive;
+
+  /// No description provided for @clinicsSuspended.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموقوفة'**
+  String get clinicsSuspended;
+
+  /// No description provided for @clinicsRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'المرفوضة'**
+  String get clinicsRejected;
+
   /// Approve a pending account
   ///
   /// In ar, this message translates to:

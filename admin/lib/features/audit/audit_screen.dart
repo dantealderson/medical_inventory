@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +6,7 @@ import '../../core/formatting.dart';
 import '../../core/settings_audit_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
+import 'audit_changes.dart';
 
 /// §7.9: who decided what, and when. Read-only, filterable by what was
 /// changed and by date.
@@ -153,7 +152,7 @@ class _AuditCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final text = Theme.of(context).textTheme;
-    String show(Object? v) => v == null ? '—' : jsonEncode(v);
+    final changes = auditChanges(l10n, entry);
 
     return Card(
       margin: const EdgeInsetsDirectional.only(bottom: 8),
@@ -167,12 +166,8 @@ class _AuditCard extends StatelessWidget {
               '${entry.actorUsername ?? entry.actorId} · ${formatTimestamp(entry.createdAt)}',
               style: text.bodySmall,
             ),
-            if (entry.before != null || entry.after != null) ...[
-              const SizedBox(height: 4),
-              Text('${l10n.beforeLabel}: ${show(entry.before)}', style: text.bodySmall),
-              Text('${l10n.afterLabel}: ${show(entry.after)}', style: text.bodySmall),
-            ],
-            if (entry.note != null) Text(entry.note!, style: text.bodySmall),
+            if (changes.isNotEmpty) const SizedBox(height: 4),
+            for (final line in changes) Text(line, style: text.bodyMedium),
           ],
         ),
       ),

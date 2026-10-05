@@ -147,6 +147,9 @@ void main() {
 
       expect(find.text('تغيير الإعدادات'), findsOneWidget);
       expect(find.textContaining('the_admin'), findsOneWidget);
+      // In words, not the recorded JSON.
+      expect(find.text('أحمر إذا كان المخزون يكفي أقل من (يوم): من 7 إلى 5'), findsOneWidget);
+      expect(find.textContaining('{'), findsNothing);
 
       await tapVisible(tester, find.byKey(const ValueKey('audit-entity')));
       await tapVisible(tester, find.text('الإعدادات').last);

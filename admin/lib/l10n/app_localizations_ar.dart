@@ -296,6 +296,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get categorySaved => 'تم حفظ القسم';
 
   @override
+  String auditFromTo(String field, String from, String to) {
+    return '$field: من $from إلى $to';
+  }
+
+  @override
+  String get auditOf => 'من';
+
+  @override
+  String get auditQtyReceived => 'الكمية المستلمة (وحدة)';
+
+  @override
+  String get auditCancelledFrom => 'ألغي وهو';
+
+  @override
+  String get auditReleasedUnits => 'الوحدات المعادة';
+
+  @override
+  String get auditLevel => 'المستوى';
+
+  @override
+  String get auditPicture => 'الصورة';
+
+  @override
+  String get auditPictureSet => 'صورة';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
   String get categoryDeleted => 'تم حذف القسم';
 
   @override
@@ -850,12 +882,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get invalidDate => 'اكتب التاريخ بالشكل 2027-01-31';
-
-  @override
-  String get beforeLabel => 'قبل';
-
-  @override
-  String get afterLabel => 'بعد';
 
   @override
   String get noAuditEntries => 'لا توجد سجلات';

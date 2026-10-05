@@ -345,6 +345,23 @@
     "description": "Phase 2 catalog: itemSaved"
   },
   "categorySaved": "تم حفظ القسم",
+  "auditFromTo": "{field}: من {from} إلى {to}",
+  "@auditFromTo": {
+    "placeholders": {
+      "field": {"type": "String"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "auditOf": "من",
+  "auditQtyReceived": "الكمية المستلمة (وحدة)",
+  "auditCancelledFrom": "ألغي وهو",
+  "auditReleasedUnits": "الوحدات المعادة",
+  "auditLevel": "المستوى",
+  "auditPicture": "الصورة",
+  "auditPictureSet": "صورة",
+  "yes": "نعم",
+  "no": "لا",
   "categoryDeleted": "تم حذف القسم",
   "confirmDeleteCategory": "هل تريد حذف القسم «{name}»؟",
   "@confirmDeleteCategory": {
@@ -1077,14 +1094,6 @@
   "invalidDate": "اكتب التاريخ بالشكل 2027-01-31",
   "@invalidDate": {
     "description": "Phase 6: Phase 6: bad date in the audit filter"
-  },
-  "beforeLabel": "قبل",
-  "@beforeLabel": {
-    "description": "Phase 6: Phase 6: audit before"
-  },
-  "afterLabel": "بعد",
-  "@afterLabel": {
-    "description": "Phase 6: Phase 6: audit after"
   },
   "noAuditEntries": "لا توجد سجلات",
   "@noAuditEntries": {

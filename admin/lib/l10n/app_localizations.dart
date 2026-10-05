@@ -652,6 +652,66 @@ abstract class AppLocalizations {
   /// **'تم حفظ القسم'**
   String get categorySaved;
 
+  /// No description provided for @auditFromTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'{field}: من {from} إلى {to}'**
+  String auditFromTo(String field, String from, String to);
+
+  /// No description provided for @auditOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'من'**
+  String get auditOf;
+
+  /// No description provided for @auditQtyReceived.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية المستلمة (وحدة)'**
+  String get auditQtyReceived;
+
+  /// No description provided for @auditCancelledFrom.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألغي وهو'**
+  String get auditCancelledFrom;
+
+  /// No description provided for @auditReleasedUnits.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوحدات المعادة'**
+  String get auditReleasedUnits;
+
+  /// No description provided for @auditLevel.
+  ///
+  /// In ar, this message translates to:
+  /// **'المستوى'**
+  String get auditLevel;
+
+  /// No description provided for @auditPicture.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصورة'**
+  String get auditPicture;
+
+  /// No description provided for @auditPictureSet.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة'**
+  String get auditPictureSet;
+
+  /// No description provided for @yes.
+  ///
+  /// In ar, this message translates to:
+  /// **'نعم'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا'**
+  String get no;
+
   /// No description provided for @categoryDeleted.
   ///
   /// In ar, this message translates to:
@@ -1665,18 +1725,6 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'اكتب التاريخ بالشكل 2027-01-31'**
   String get invalidDate;
-
-  /// Phase 6: Phase 6: audit before
-  ///
-  /// In ar, this message translates to:
-  /// **'قبل'**
-  String get beforeLabel;
-
-  /// Phase 6: Phase 6: audit after
-  ///
-  /// In ar, this message translates to:
-  /// **'بعد'**
-  String get afterLabel;
 
   /// Phase 6: Phase 6: empty audit log
   ///

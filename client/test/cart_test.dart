@@ -213,6 +213,20 @@ void main() {
       expect(find.text('29,000 د.ع'), findsNWidgets(2));
     });
 
+    testWidgets('opening the cart reads it again: another phone may have changed it', (tester) async {
+      var onServer = cartJson([cartLineJson(syringe, 5, lineTotal: '62500.00')], total: '62500.00');
+      await pumpSignedIn(tester, shop(cart: () => onServer));
+      // Home has read the cart for its badge. Then the clinic's other phone
+      // brings the syringes down to one box.
+      onServer = cartJson([cartLineJson(syringe, 1, lineTotal: '12500.00')], total: '12500.00');
+
+      await tester.tap(find.byTooltip('السلة'));
+      await tester.pumpAndSettle();
+
+      expect(onLine('سرنجة 5 مل', find.text('100 سرنجة')), findsOneWidget);
+      expect(find.text('12,500 د.ع'), findsWidgets);
+    });
+
     testWidgets('+ sends the new absolute quantity', (tester) async {
       final backend = await openCart(tester, twoLines);
 

@@ -31,6 +31,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   String? _errorAr;
 
   @override
+  void initState() {
+    super.initState();
+    // Read again on every visit: the badge keeps the cart in memory, and the
+    // clinic's other phone may have changed it. «إرسال الطلب» orders what the
+    // server holds, so the screen must show exactly that.
+    Future.microtask(() {
+      if (mounted) ref.invalidate(cartProvider);
+    });
+  }
+
+  @override
   void dispose() {
     _note.dispose();
     super.dispose();

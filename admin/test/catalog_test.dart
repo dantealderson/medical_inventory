@@ -356,6 +356,19 @@ void main() {
       expect(find.text('الثاني'), findsOneWidget);
     });
 
+    // Typing a date there accepted only Arabic-Indic digits with invisible
+    // right-to-left marks between them, which no keyboard types.
+    testWidgets('the expiry is chosen on the calendar, with no typing mode to get stuck in', (tester) async {
+      await openCatalog(tester, 'التشغيلات', routes(items: [item('i1', 'سرنجة 5 مل')]));
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'استلام تشغيلة'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('اختر التاريخ'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CalendarDatePicker), findsOneWidget);
+      expect(find.byTooltip('التبديل إلى الإدخال'), findsNothing);
+    });
+
     testWidgets('the receive-batch form offers items past the first page', (tester) async {
       await openCatalog(tester, 'التشغيلات', (req) {
         if (req.path == '/items') {

@@ -201,6 +201,11 @@ Future<void> _openIntake(BuildContext context, WidgetRef ref) async {
                             firstDate: now.add(const Duration(days: 1)),
                             lastDate: DateTime(now.year + 10),
                             initialDate: now.add(const Duration(days: 365)),
+                            // No typing mode: in Arabic it accepts only Arabic-
+                            // Indic digits with invisible direction marks, so a
+                            // date typed on a keyboard is always refused. The
+                            // calendar's year list reaches years ahead quickly.
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
                           );
                           if (picked != null) setLocal(() => expiry = picked);
                         },

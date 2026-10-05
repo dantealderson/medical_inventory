@@ -1,5 +1,17 @@
 # Resume Point
 
+## >>> 2026-10-05: browser deep test (Playwright), 20 bugs fixed, all suites green
+
+The admin sidebar redesign is committed (its 5 failing tests were test drift). Then both apps were driven in a real browser against a separate copy (`medinv_pw` on port 3100; the online server and `medinv_online` untouched), plus 100 hostile API probes and a database audit (no problems in either database). Fixed, each with tests:
+- **Admin lockout:** the clinics list held the admin itself, with «إيقاف»; one tap ended its own session and nobody could undo it. Admins are no longer listed or touched; status changes follow rules (approve pending/rejected, reject pending, suspend active, reactivate suspended; else 409).
+- **Sign-in throttle** counted every /auth call per address; through the tunnel all testers share one address, so a refused token refresh signed clinics out. Now only login (per username + address) and register are throttled.
+- Each app turned away the other's accounts (a clinic could enter the admin, and vice versa).
+- Admin: items can be edited and reactivated, categories renamed; deactivated items no longer vanish; all pages of items/clinics load (not just 50); clinics reachable by status chips; a clinic's page loads by id (it spun forever after suspending); «حذف» and «إلغاء التفعيل» ask first; batches show the item's name; the expiry picker is calendar-only (typing accepted only Arabic digits with hidden direction marks); the audit log reads in Arabic, not JSON; F5/bookmarks keep the page; unknown addresses go home; the add button no longer covers the last card; sidebar counters refresh.
+- Client: the cart re-reads itself on opening (another phone's change was invisible and «إرسال الطلب» sent what the server held).
+- Server: blank names, impossible dates (2027-02-30 stored as 03-02), overflowing quantities (500), nulls in edits (500), a 2 MB body (500), «%_%» matching the whole catalogue in search, and `?limit=` refused on /admin/users (the broadcast clinic picker never loaded).
+- **To take effect online:** restart `start-online.cmd` (it rebuilds the server and admin site), and push + run «Build the apps» for a new APK.
+- Minor, not fixed: registration accepts any phone text; no «confirm password» on registration; «اسم المختبر» label for clinics.
+
 ## >>> GO-LIVE PLAN AGREED (2026-10-01). The user is doing their hands-on steps 1–9; mine are 10–19
 
 **Changed the same evening:** Render asked for a card the user cannot use yet, so Render, Neon and the Play account wait for money. Testing runs from this PC instead: **`start-online.cmd`** (docs/FREE-HOSTING.md) serves the admin website and the API from one fixed **Microsoft dev tunnel** address (`%LOCALAPPDATA%\devtunnel\devtunnel.exe`, GitHub sign-in, 5 GB a month; ngrok is blocked in Iraq without a VPN, its name being too close to the banned Grok), with its own `medinv_online` database and the demo data. The tunnel ID is `tunnelId` in `online.local.json` (`medsupply-6399`); its address is random but fixed for the tunnel's life: **`https://3mp6l17q-3000.euw.devtunnels.ms`** (API `…/api/v1`), checked from outside on 2026-10-01. The script reads it from `devtunnel show -j` (`portUri`). Dev tunnels show their warning page only to a browser GET asking for HTML, so the apps need no special header. Settings in `online.local.json` (ignored; the demo clinics' password is there). Verified locally with `-NoTunnel` on 2026-10-01; the tunnel waits for the user's ngrok account.

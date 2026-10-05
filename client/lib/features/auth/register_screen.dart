@@ -23,6 +23,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _username = TextEditingController();
   final _password = TextEditingController();
+  final _confirm = TextEditingController();
   final _clinicName = TextEditingController();
   final _contactName = TextEditingController();
   final _phone = TextEditingController();
@@ -36,7 +37,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    for (final c in [_username, _password, _clinicName, _contactName, _phone, _address]) {
+    for (final c in [_username, _password, _confirm, _clinicName, _contactName, _phone, _address]) {
       c.dispose();
     }
     super.dispose();
@@ -118,6 +119,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   final value = v ?? '';
                   if (value.isEmpty) return l10n.passwordRequired;
                   if (value.length < 8) return l10n.passwordTooShort;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              // Typed twice: there is no self-service reset, so a typo here
+              // locks the clinic out until the admin resets it by phone.
+              TextFormField(
+                controller: _confirm,
+                decoration: InputDecoration(labelText: l10n.confirmPassword),
+                obscureText: true,
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  final value = v ?? '';
+                  if (value.isEmpty) return l10n.confirmPasswordRequired;
+                  if (value != _password.text) return l10n.passwordsDoNotMatch;
                   return null;
                 },
               ),

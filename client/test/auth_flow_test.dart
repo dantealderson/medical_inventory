@@ -261,7 +261,7 @@ void main() {
 
       await tester.enterText(fieldWithLabel('اسم المستخدم'), 'Lab Alnoor!');
       await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
-      await tester.tap(find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
       await tester.pumpAndSettle();
 
       expect(backend.seen.length, before);
@@ -273,10 +273,39 @@ void main() {
 
       await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_new');
       await tester.enterText(fieldWithLabel('كلمة المرور'), 'short');
-      await tester.tap(find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
       await tester.pumpAndSettle();
 
       expect(find.text('كلمة المرور يجب أن تكون 8 أحرف على الأقل'), findsOneWidget);
+    });
+
+    // There is no self-service reset: a typo here locks the clinic out until
+    // the admin resets it by phone.
+    testWidgets('the password must be typed twice, the same', (tester) async {
+      final backend = await pumpApp(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
+      await openRegister(tester);
+      final before = backend.seen.length;
+
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_new');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
+      await tester.enterText(fieldWithLabel('تأكيد كلمة المرور'), 'goodpasswrd1');
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('كلمتا المرور غير متطابقتين'), findsOneWidget);
+      expect(backend.seen.length, before, reason: 'nothing is sent');
+    });
+
+    testWidgets('an empty confirmation asks for it', (tester) async {
+      await pumpApp(tester, (_) => [401, envelope(401, 'UNAUTHORIZED', 'غير مصرح')]);
+      await openRegister(tester);
+
+      await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_new');
+      await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('أعد كتابة كلمة المرور'), findsOneWidget);
     });
 
     testWidgets('a successful registration lands on the waiting screen', (tester) async {
@@ -288,8 +317,9 @@ void main() {
 
       await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_new');
       await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
+      await tester.enterText(fieldWithLabel('تأكيد كلمة المرور'), 'goodpassword1');
       await tester.enterText(fieldWithLabel('اسم المختبر'), 'مختبر جديد');
-      await tester.tap(find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
       await tester.pumpAndSettle();
 
       expect(find.text('حسابك قيد المراجعة'), findsOneWidget);
@@ -314,7 +344,8 @@ void main() {
 
       await tester.enterText(fieldWithLabel('اسم المستخدم'), 'lab_alnoor');
       await tester.enterText(fieldWithLabel('كلمة المرور'), 'goodpassword1');
-      await tester.tap(find.widgetWithText(FilledButton, 'إنشاء حساب'));
+      await tester.enterText(fieldWithLabel('تأكيد كلمة المرور'), 'goodpassword1');
+      await tapVisible(tester, find.widgetWithText(FilledButton, 'إنشاء حساب'));
       await tester.pumpAndSettle();
 
       expect(find.text('اسم المستخدم مستخدم بالفعل'), findsOneWidget);

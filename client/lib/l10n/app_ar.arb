@@ -84,6 +84,9 @@
   "@passwordRequired": {
     "description": "Validation: password empty"
   },
+  "confirmPassword": "تأكيد كلمة المرور",
+  "confirmPasswordRequired": "أعد كتابة كلمة المرور",
+  "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
   "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
   "@passwordTooShort": {
     "description": "Validation: password under 8 chars"

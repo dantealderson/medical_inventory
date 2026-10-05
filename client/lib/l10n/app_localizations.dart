@@ -220,6 +220,24 @@ abstract class AppLocalizations {
   /// **'كلمة المرور مطلوبة'**
   String get passwordRequired;
 
+  /// No description provided for @confirmPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد كلمة المرور'**
+  String get confirmPassword;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد كتابة كلمة المرور'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمتا المرور غير متطابقتين'**
+  String get passwordsDoNotMatch;
+
   /// Validation: password under 8 chars
   ///
   /// In ar, this message translates to:

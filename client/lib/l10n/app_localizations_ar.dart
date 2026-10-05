@@ -73,6 +73,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordRequired => 'كلمة المرور مطلوبة';
 
   @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get confirmPasswordRequired => 'أعد كتابة كلمة المرور';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
   String get passwordTooShort => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
 
   @override

@@ -1,5 +1,14 @@
 # Resume Point
 
+## >>> 2026-10-05 (later): the chosen design finished across both apps
+
+The user picked "keep and finish" the 2026-10-01 design (teal, Tajawal). Done with the Taste skill's rules (hierarchy, one accent, one corner system, readable contrast, no em-dash): functionality, API calls and routes unchanged; every suite and the full browser regression pass.
+- **ui_kit:** `Pill` (five tones, each tested at 4.5:1 or better; replaces the faint outlined chips), `BrandMark`, `SectionTitle`, `InfoLine`, `EmptyState`, `SkeletonList`; small print is 14px (was 12); floating add buttons are solid teal.
+- **Admin:** detail pages keep the sidebar with a back arrow; orders as rows (clinic, date, items, bold total, status); the order page leads with status and a 30px total; dashboard tiles tinted when work waits; branded login; clinic page with delete apart at the foot; settings as label + compact field with a sticky «حفظ»; items as rows; categories as one card per branch, indented.
+- **Client:** login, register and waiting screens share the home's green header; register groups the account, then the clinic; orders show status pills; «حسابي» as menu rows.
+- Not restyled further (already in the theme): item page, notifications, stock count, inventory item.
+- The Flutter web apps load CanvasKit from Google's CDN at start; with no internet they show nothing (seen when the connection dropped). Expected online; for offline local tests build with `--no-web-resources-cdn`.
+
 ## >>> 2026-10-05: browser deep test (Playwright), 20 bugs fixed, all suites green
 
 The admin sidebar redesign is committed (its 5 failing tests were test drift). Then both apps were driven in a real browser against a separate copy (`medinv_pw` on port 3100; the online server and `medinv_online` untouched), plus 100 hostile API probes and a database audit (no problems in either database). Fixed, each with tests:

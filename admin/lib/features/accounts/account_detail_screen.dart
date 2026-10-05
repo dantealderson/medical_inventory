@@ -70,7 +70,7 @@ class _Body extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(user.clinicName ?? user.username, style: text.headlineSmall),
+                  Text(user.clinicName ?? user.username, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 8),
                   // A deleted account's username is a placeholder, not a name.
                   if (!user.isDeleted) Text(user.username, style: text.bodyMedium),
@@ -124,17 +124,32 @@ class _Body extends ConsumerWidget {
                           onPressed: () => _resetPassword(context, ref, user.id),
                           child: Text(l10n.resetPassword),
                         ),
-                        // For a clinic that asks without the app (the
-                        // privacy policy's web page promises this).
-                        if (user.role == 'CLIENT')
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(foregroundColor: context.appColors.danger),
-                            onPressed: () => _confirmDelete(context, ref, user.id),
-                            child: Text(l10n.deleteAccount),
-                          ),
                       ],
                     ),
                   if (user.role == 'CLIENT') _ClientOrders(clientId: user.id),
+                  // For a clinic that asks without the app (the privacy
+                  // policy's web page promises this). At the foot of the
+                  // page, apart from the everyday actions.
+                  if (user.role == 'CLIENT' && user.deletedAt == null) ...[
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: context.appColors.danger,
+                        side: BorderSide(color: context.appColors.stockRedSoft, width: 1.5),
+                      ),
+                      onPressed: () => _confirmDelete(context, ref, user.id),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.person_remove_outlined, size: 20),
+                          const SizedBox(width: 8),
+                          Text(l10n.deleteAccount),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -285,28 +300,32 @@ class _ClientOrders extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final text = Theme.of(context).textTheme;
     final orders = ref.watch(clientOrdersProvider(clientId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
-        Text(l10n.clientOrders, style: text.titleMedium),
-        const SizedBox(height: 8),
+        SectionTitle(l10n.clientOrders),
         ...orders.when(
           loading: () => [const LinearProgressIndicator()],
           error: (e, _) => [Text(e is ApiException ? e.messageAr : l10n.retry)],
           data: (page) => page.items.isEmpty
               ? [Text(l10n.noOrders)]
               : [
-                  for (final order in page.items)
+                  for (final (i, order) in page.items.indexed) ...[
+                    if (i > 0) const Divider(height: 1),
                     ListTile(
-                      contentPadding: EdgeInsetsDirectional.zero,
-                      title: Text('${formatTimestamp(order.placedAt)} · ${formatIqd(order.totalAmount)}'),
+                      contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+                      title: Text(
+                        formatIqd(order.totalAmount),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                      ),
+                      subtitle: Text(formatTimestamp(order.placedAt)),
                       trailing: OrderStatusChip(status: order.status),
                       onTap: () => context.go(Routes.order(order.id)),
                     ),
+                  ],
                 ],
         ),
       ],

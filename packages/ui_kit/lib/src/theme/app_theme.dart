@@ -61,6 +61,17 @@ abstract final class AppTheme {
             fontWeight: FontWeight.w700,
             color: c.onSurface,
           ),
+          // Material's 12px small print is too small for older clinic staff:
+          // details and dates read at 14, in the muted ink.
+          bodySmall: base.textTheme.bodySmall?.copyWith(
+            fontSize: 14,
+            height: 1.45,
+            color: c.textMuted,
+          ),
+          labelMedium: base.textTheme.labelMedium?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         );
 
     return base.copyWith(
@@ -146,6 +157,16 @@ abstract final class AppTheme {
           fontFamily: fontFamily,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      // The page's main action: solid brand colour, a readable label.
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: c.primary,
+        foregroundColor: c.onPrimary,
+        elevation: 3,
+        highlightElevation: 5,
+        shape: const StadiumBorder(),
+        extendedPadding: const EdgeInsetsDirectional.symmetric(horizontal: 22),
+        extendedTextStyle: bold.copyWith(fontSize: 16, fontFamily: fontFamily),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: c.chip,

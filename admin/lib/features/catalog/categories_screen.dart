@@ -33,8 +33,41 @@ class CategoriesScreen extends ConsumerWidget {
           isEmpty: (data) => data.isEmpty,
           builder: (roots) => ListView(
             padding: AdminShell.listPaddingWithFab,
-            children: [for (final root in roots) _CategoryTile(category: root)],
+            children: [for (final root in roots) _CategoryGroup(root: root)],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One top-level category and its whole branch, in a single card: each
+/// row indented by its depth, so the tree reads without level numbers.
+class _CategoryGroup extends StatelessWidget {
+  const _CategoryGroup({required this.root});
+
+  final Category root;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = <Category>[];
+    void walk(Category c) {
+      rows.add(c);
+      c.children.forEach(walk);
+    }
+
+    walk(root);
+    return Card(
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 18, vertical: 6),
+        child: Column(
+          children: [
+            for (final (i, c) in rows.indexed) ...[
+              if (i > 0) const Divider(height: 1),
+              _CategoryTile(category: c),
+            ],
+          ],
         ),
       ),
     );
@@ -50,76 +83,64 @@ class _CategoryTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.appColors;
-    final text = Theme.of(context).textTheme;
+    final depth = category.level - 1;
 
-    // Indent by level so the hierarchy is legible without a tree widget.
-    final indent = (category.level - 1) * 16.0;
+    final name = Row(
+      children: [
+        // A thin guide in front of a sub-category shows where it hangs.
+        if (depth > 0) ...[
+          Container(width: 3, height: 32, decoration: BoxDecoration(color: colors.border, borderRadius: BorderRadius.circular(2))),
+          const SizedBox(width: 10),
+        ],
+        CatalogPicture(imageUrl: category.imageUrl, size: 44),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            category.displayName,
+            style: TextStyle(fontSize: depth == 0 ? 18 : 16, fontWeight: depth == 0 ? FontWeight.w800 : FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+
+    final actions = Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        ...pictureButtons(
+          context,
+          ref,
+          imageUrl: category.imageUrl,
+          save: (bytes, name) => ref.read(catalogActionsProvider).setCategoryPicture(category.id, bytes, name),
+          remove: () => ref.read(catalogActionsProvider).removeCategoryPicture(category.id),
+        ),
+        OutlinedButton(
+          onPressed: () => _openEditor(context, ref, existing: category),
+          child: Text(l10n.edit),
+        ),
+        // A level-3 category cannot have children, so the action is hidden
+        // rather than offered and then rejected.
+        if (category.canHaveChildren)
+          OutlinedButton.icon(
+            onPressed: () => _openEditor(context, ref, parent: category),
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(l10n.addSubCategory),
+          ),
+        TextButton(
+          onPressed: () => _confirmDelete(context, ref, category),
+          child: Text(l10n.delete, style: TextStyle(color: colors.danger)),
+        ),
+      ],
+    );
 
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: indent, bottom: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsetsDirectional.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CatalogPicture(imageUrl: category.imageUrl, size: 48),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          category.displayName,
-                          style: text.titleMedium,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text('${category.level}', style: text.labelSmall),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Wrap, not Row: at 390px two buttons plus padding overflow.
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      ...pictureButtons(
-                        context,
-                        ref,
-                        imageUrl: category.imageUrl,
-                        save: (bytes, name) => ref
-                            .read(catalogActionsProvider)
-                            .setCategoryPicture(category.id, bytes, name),
-                        remove: () =>
-                            ref.read(catalogActionsProvider).removeCategoryPicture(category.id),
-                      ),
-                      OutlinedButton(
-                        onPressed: () => _openEditor(context, ref, existing: category),
-                        child: Text(l10n.edit),
-                      ),
-                      // A level-3 category cannot have children, so the action
-                      // is hidden rather than offered and then rejected.
-                      if (category.canHaveChildren)
-                        OutlinedButton.icon(
-                          onPressed: () => _openEditor(context, ref, parent: category),
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(l10n.addSubCategory),
-                        ),
-                      TextButton(
-                        onPressed: () => _confirmDelete(context, ref, category),
-                        child: Text(l10n.delete, style: TextStyle(color: colors.danger)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          for (final child in category.children) _CategoryTile(category: child),
-        ],
+      padding: EdgeInsetsDirectional.only(start: 28.0 * depth, top: 12, bottom: 12),
+      child: LayoutBuilder(
+        builder: (context, box) => box.maxWidth >= 760
+            ? Row(children: [Expanded(child: name), actions])
+            : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [name, const SizedBox(height: 10), actions]),
       ),
     );
   }

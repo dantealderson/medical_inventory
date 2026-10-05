@@ -54,91 +54,107 @@ class _ItemCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
     final text = Theme.of(context).textTheme;
 
+    final info = Row(
+      children: [
+        CatalogPicture(imageUrl: item.imageUrl),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      item.displayName,
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (!item.isActive) ...[
+                    const SizedBox(width: 8),
+                    Pill(label: l10n.inactive, tone: PillTone.neutral),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 4),
+              // Box size and price are the two numbers an admin scans for.
+              Text(
+                '${item.unitsPerBox} ${item.unitLabelAr} / ${l10n.boxesShort}'
+                '  ·  ${formatIqd(item.pricePerBox)}',
+                style: text.bodySmall,
+              ),
+              if (item.minQtyBoxes != null)
+                Text('${l10n.minStockBoxes}: ${item.minQtyBoxes}', style: text.bodySmall),
+            ],
+          ),
+        ),
+      ],
+    );
+    final actions = Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          OutlinedButton(
+            onPressed: () => _openItemEditor(context, ref, existing: item),
+            child: Text(l10n.edit),
+          ),
+          ...pictureButtons(
+            context,
+            ref,
+            imageUrl: item.imageUrl,
+            save: (bytes, name) =>
+                ref.read(catalogActionsProvider).setItemPicture(item.id, bytes, name),
+            remove: () => ref.read(catalogActionsProvider).removeItemPicture(item.id),
+          ),
+          if (item.isActive)
+            OutlinedButton(
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                // Asked first: the clinics stop seeing it at once.
+                final sure = await confirmAction(
+                  context,
+                  message: l10n.confirmDeactivateItem(item.displayName),
+                  action: l10n.deactivate,
+                );
+                if (!sure) return;
+                try {
+                  await ref.read(catalogActionsProvider).deactivateItem(item.id);
+                } on ApiException catch (e) {
+                  messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+                }
+              },
+              child: Text(l10n.deactivate),
+            )
+          else
+            OutlinedButton(
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  await ref.read(catalogActionsProvider).reactivateItem(item.id);
+                } on ApiException catch (e) {
+                  messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
+                }
+              },
+              child: Text(l10n.reactivate),
+            ),
+        ],
+      );
+
     return Card(
-      margin: const EdgeInsetsDirectional.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 10),
       child: Padding(
         padding: const EdgeInsetsDirectional.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CatalogPicture(imageUrl: item.imageUrl),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    item.displayName,
-                    style: text.titleMedium,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+        // One row on a wide screen; the actions under the item on a phone.
+        child: LayoutBuilder(
+          builder: (context, box) => box.maxWidth >= 820
+              ? Row(children: [Expanded(child: info), const SizedBox(width: 12), actions])
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [info, const SizedBox(height: 12), actions],
                 ),
-                if (!item.isActive)
-                  Text(l10n.inactive, style: text.labelSmall?.copyWith(color: colors.stockRed)),
-              ],
-            ),
-            const SizedBox(height: 4),
-            // Box size and price are the two numbers an admin scans for.
-            Text(
-              '${item.unitsPerBox} ${item.unitLabelAr} / ${l10n.boxesShort}'
-              '  ·  ${formatIqd(item.pricePerBox)}',
-              style: text.bodySmall,
-            ),
-            if (item.minQtyBoxes != null)
-              Text('${l10n.minStockBoxes}: ${item.minQtyBoxes}', style: text.bodySmall),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                OutlinedButton(
-                  onPressed: () => _openItemEditor(context, ref, existing: item),
-                  child: Text(l10n.edit),
-                ),
-                ...pictureButtons(
-                  context,
-                  ref,
-                  imageUrl: item.imageUrl,
-                  save: (bytes, name) =>
-                      ref.read(catalogActionsProvider).setItemPicture(item.id, bytes, name),
-                  remove: () => ref.read(catalogActionsProvider).removeItemPicture(item.id),
-                ),
-                if (item.isActive)
-                  OutlinedButton(
-                    onPressed: () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      // Asked first: the clinics stop seeing it at once.
-                      final sure = await confirmAction(
-                        context,
-                        message: l10n.confirmDeactivateItem(item.displayName),
-                        action: l10n.deactivate,
-                      );
-                      if (!sure) return;
-                      try {
-                        await ref.read(catalogActionsProvider).deactivateItem(item.id);
-                      } on ApiException catch (e) {
-                        messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
-                      }
-                    },
-                    child: Text(l10n.deactivate),
-                  )
-                else
-                  OutlinedButton(
-                    onPressed: () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      try {
-                        await ref.read(catalogActionsProvider).reactivateItem(item.id);
-                      } on ApiException catch (e) {
-                        messenger.showSnackBar(SnackBar(content: Text(e.messageAr)));
-                      }
-                    },
-                    child: Text(l10n.reactivate),
-                  ),
-              ],
-            ),
-          ],
         ),
       ),
     );

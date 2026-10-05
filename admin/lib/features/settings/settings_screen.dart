@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/settings_audit_controller.dart';
 import '../../l10n/app_localizations.dart';
@@ -98,22 +99,45 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
     }
   }
 
+  /// One setting: its question in full, readable words, and a small field
+  /// for its number beside it (under it on a phone). A two-digit value does
+  /// not need a field the width of the page.
   Widget _field(String key, String label) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(bottom: 12),
-      child: TextField(
-        key: ValueKey('setting-$key'),
-        controller: _controller(key),
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
-          LengthLimitingTextInputFormatter(5),
-        ],
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          errorText: _rejectedKey == key ? l10n.valueRejected : null,
+    final field = TextField(
+      key: ValueKey('setting-$key'),
+      controller: _controller(key),
+      keyboardType: TextInputType.number,
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+        LengthLimitingTextInputFormatter(5),
+      ],
+      decoration: InputDecoration(
+        isDense: true,
+        errorText: _rejectedKey == key ? l10n.valueRejected : null,
+      ),
+    );
+    final text = Text(label, style: const TextStyle(fontSize: 16));
+
+    return MergeSemantics(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+        child: LayoutBuilder(
+          builder: (context, box) => box.maxWidth < 440
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [text, const SizedBox(height: 8), field],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: Padding(padding: const EdgeInsetsDirectional.only(top: 12), child: text)),
+                    const SizedBox(width: 16),
+                    SizedBox(width: 140, child: field),
+                  ],
+                ),
         ),
       ),
     );
@@ -123,13 +147,13 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
     return Card(
       margin: const EdgeInsetsDirectional.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsetsDirectional.all(16),
+        padding: const EdgeInsetsDirectional.fromSTEB(22, 18, 22, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            ...fields,
+            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 6),
+            for (final (i, field) in fields.indexed) ...[if (i > 0) const Divider(height: 1), field],
           ],
         ),
       ),
@@ -139,12 +163,16 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 720),
-        child: ListView(
-          padding: const EdgeInsetsDirectional.all(16),
-          children: [
+    final colors = context.appColors;
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: ListView(
+                padding: const EdgeInsetsDirectional.all(16),
+                children: [
             _section(l10n.settingsStock, [
               _field('stock.redDaysOfCover', l10n.settingRedDays),
               _field('stock.yellowDaysOfCover', l10n.settingYellowDays),
@@ -175,15 +203,37 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
                 subtitle: Text('${widget.settings.values['business.timezone'] ?? ''}'),
               ),
             ]),
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              child: _busy
-                  ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.save),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
+        // Always in view: the page is long, and a save at its very end was
+        // easy to miss after changing a value at the top.
+        Material(
+          color: colors.surface,
+          elevation: 6,
+          shadowColor: colors.shadow,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(minimumSize: const Size(180, 52)),
+                    onPressed: _busy ? null : _save,
+                    child: _busy
+                        ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text(l10n.save),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

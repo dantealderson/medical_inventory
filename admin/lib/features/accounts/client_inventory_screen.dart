@@ -2,12 +2,12 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/client_inventory_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../shell/admin_shell.dart';
 
 /// One clinic's shelf as the admin sees it, and the three controls of
 /// requirement 4: auto-decrement on or off, a usage-rate override, and the
@@ -22,15 +22,10 @@ class ClientInventoryScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final inventory = ref.watch(clientInventoryProvider(clientId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.clientInventory),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.account(clientId)),
-        ),
-      ),
-      body: inventory.when(
+    return AdminShell(
+      title: l10n.clientInventory,
+      backTo: Routes.account(clientId),
+      child: inventory.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Column(

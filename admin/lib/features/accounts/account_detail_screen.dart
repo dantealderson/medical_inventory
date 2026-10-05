@@ -10,6 +10,7 @@ import '../../core/settings_audit_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../orders/order_widgets.dart';
+import '../shell/admin_shell.dart';
 import 'account_status_chip.dart';
 
 class AccountDetailScreen extends ConsumerWidget {
@@ -22,15 +23,10 @@ class AccountDetailScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(accountProvider(userId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.accountDetails),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.accounts),
-        ),
-      ),
-      body: user.when(
+    return AdminShell(
+      title: l10n.accountDetails,
+      backTo: Routes.accounts,
+      child: user.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Column(
@@ -79,7 +75,10 @@ class _Body extends ConsumerWidget {
                   // A deleted account's username is a placeholder, not a name.
                   if (!user.isDeleted) Text(user.username, style: text.bodyMedium),
                   const SizedBox(height: 16),
-                  Row(
+                  // Wrap, not Row: with large text the pill must go to the
+                  // next line rather than past the edge.
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text('${l10n.status}: ', style: text.bodyMedium),
                       AccountStatusChip(status: user.status, deleted: user.isDeleted),

@@ -38,9 +38,14 @@ class StockBadge extends StatelessWidget {
       child: ExcludeSemantics(
         child: Container(
           constraints: const BoxConstraints(minHeight: 32),
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 10,
+            vertical: 4,
+          ),
           decoration: BoxDecoration(
-            color: isUnknown ? colors.surfaceMuted : tone.withValues(alpha: 0.15),
+            color: isUnknown
+                ? colors.surfaceMuted
+                : tone.withValues(alpha: 0.15),
             border: Border.all(color: isUnknown ? colors.border : tone),
             borderRadius: BorderRadius.circular(16),
           ),

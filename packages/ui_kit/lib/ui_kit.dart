@@ -7,5 +7,7 @@ export 'src/layout/breakpoints.dart';
 export 'src/lint/color_literal_scanner.dart';
 export 'src/format/money_format.dart';
 export 'src/format/quantity_format.dart';
+export 'src/widgets/page_parts.dart';
+export 'src/widgets/pill.dart';
 export 'src/widgets/plus_button.dart';
 export 'src/widgets/stock_badge.dart';

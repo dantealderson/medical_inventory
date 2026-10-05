@@ -4,15 +4,10 @@ import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
 import '../../l10n/app_localizations.dart';
-import '../shell/status_pill.dart';
 
-/// Colour-coded order status.
-///
-/// Reuses the stock tokens, as AccountStatusChip does, rather than adding new
-/// ones:
-/// - Yellow is every state still waiting on the admin. In this queue it means
-///   "your move".
-/// - Green is done and red is stopped.
+/// Colour-coded order status:
+/// - Yellow is waiting on the admin: in this queue it means "your move".
+/// - Blue is under way (confirmed, on the road), green is done, red stopped.
 /// - A status this build does not know (a newer server) gets a neutral pill,
 ///   never a crash or a false green.
 class OrderStatusChip extends StatelessWidget {
@@ -23,17 +18,15 @@ class OrderStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
-
-    final color = switch (status) {
-      OrderStatus.placed || OrderStatus.confirmed || OrderStatus.outForDelivery =>
-        colors.stockYellow,
-      OrderStatus.delivered => colors.stockGreen,
-      OrderStatus.cancelled => colors.stockRed,
-      OrderStatus.unknown => colors.border,
+    final tone = switch (status) {
+      OrderStatus.placed => PillTone.warning,
+      OrderStatus.confirmed || OrderStatus.outForDelivery => PillTone.info,
+      OrderStatus.delivered => PillTone.success,
+      OrderStatus.cancelled => PillTone.danger,
+      OrderStatus.unknown => PillTone.neutral,
     };
 
-    return StatusPill(label: orderStatusLabel(l10n, status), color: color);
+    return Pill(label: orderStatusLabel(l10n, status), tone: tone);
   }
 }
 

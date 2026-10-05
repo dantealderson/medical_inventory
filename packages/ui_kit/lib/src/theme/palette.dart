@@ -38,6 +38,9 @@ abstract final class Palette {
   static const cream = Color(0xFFFFF2CF);
   static const sageTile = Color(0xFFE7EFEC);
 
+  /// Words on the sky tile: «on its way» status.
+  static const skyInk = Color(0xFF1D4F86);
+
   // Stock status: a bright colour for bars and dots, a dark one for words.
   static const coral = Color(0xFFE4572E);
   static const rust = Color(0xFFB4300A);

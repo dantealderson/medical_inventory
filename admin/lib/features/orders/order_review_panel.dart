@@ -5,7 +5,6 @@ import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/orders_controller.dart';
 import '../../l10n/app_localizations.dart';
-import '../shell/status_pill.dart';
 import 'order_actions.dart';
 import 'order_widgets.dart';
 
@@ -147,7 +146,6 @@ class _ReviewLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
     final text = Theme.of(context).textTheme;
     final planned = preview;
     final change = onChanged;
@@ -212,9 +210,9 @@ class _ReviewLine extends StatelessWidget {
                 ),
               if (planned.shortByUnits > 0) ...[
                 const SizedBox(height: 4),
-                StatusPill(
+                Pill(
                   label: '${l10n.shortFlag}: ${lineUnits(l10n, line, planned.shortByUnits)}',
-                  color: colors.stockRed,
+                  tone: PillTone.danger,
                 ),
               ],
               const SizedBox(height: 4),

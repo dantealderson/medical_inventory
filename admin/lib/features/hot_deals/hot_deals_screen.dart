@@ -7,7 +7,6 @@ import '../../core/formatting.dart';
 import '../../core/hot_deals_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
-import '../shell/status_pill.dart';
 
 /// The admin side of the client home's rotating strip (§7.7).
 class HotDealsScreen extends ConsumerWidget {
@@ -156,7 +155,7 @@ class _EntryCard extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                StatusPill(label: _kindLabel(l10n, entry.kind), color: colors.primary),
+                Pill(label: _kindLabel(l10n, entry.kind), tone: PillTone.info),
               ],
             ),
             if (!item.isActive) ...[

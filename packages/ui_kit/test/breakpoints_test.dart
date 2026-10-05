@@ -27,7 +27,9 @@ void main() {
       expect(Breakpoints.of(Breakpoints.desktopMin - 1), ScreenSize.tablet);
     });
 
-    testWidgets('context.screenSize reads the media query width', (tester) async {
+    testWidgets('context.screenSize reads the media query width', (
+      tester,
+    ) async {
       late ScreenSize size;
       await tester.pumpWidget(
         MediaQuery(

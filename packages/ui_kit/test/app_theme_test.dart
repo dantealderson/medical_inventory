@@ -49,7 +49,9 @@ void main() {
       expect(mid, isA<AppColors>());
     });
 
-    testWidgets('context.appColors resolves inside a themed subtree', (tester) async {
+    testWidgets('context.appColors resolves inside a themed subtree', (
+      tester,
+    ) async {
       late AppColors resolved;
       await tester.pumpWidget(
         MaterialApp(

@@ -18,30 +18,15 @@ class AccountStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
-
-    final (label, color) = switch (status) {
-      _ when deleted => (l10n.statusDeleted, colors.onSurface),
-      'PENDING' => (l10n.statusPending, colors.stockYellow),
-      'ACTIVE' => (l10n.statusActive, colors.stockGreen),
-      'SUSPENDED' => (l10n.statusSuspended, colors.stockRed),
-      'REJECTED' => (l10n.statusRejected, colors.stockRed),
-      _ => (status, colors.border),
+    final (label, tone) = switch (status) {
+      _ when deleted => (l10n.statusDeleted, PillTone.neutral),
+      'PENDING' => (l10n.statusPending, PillTone.warning),
+      'ACTIVE' => (l10n.statusActive, PillTone.success),
+      'SUSPENDED' => (l10n.statusSuspended, PillTone.danger),
+      'REJECTED' => (l10n.statusRejected, PillTone.danger),
+      _ => (status, PillTone.neutral),
     };
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        border: Border.all(color: color),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 4),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: color),
-        ),
-      ),
-    );
+    return Pill(label: label, tone: tone);
   }
 }

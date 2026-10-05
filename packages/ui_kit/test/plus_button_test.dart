@@ -2,27 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-Future<void> pumpButton(WidgetTester tester, Widget button) => tester.pumpWidget(
-  MaterialApp(
-    theme: AppTheme.build(),
-    home: Scaffold(body: Center(child: button)),
-  ),
-);
+Future<void> pumpButton(WidgetTester tester, Widget button) =>
+    tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.build(),
+        home: Scaffold(body: Center(child: button)),
+      ),
+    );
 
 void main() {
-  testWidgets('has no visible words: no Text and no Tooltip (requirement 18)', (tester) async {
-    await pumpButton(tester, PlusButton(onPressed: () {}, semanticLabel: 'أضف إلى السلة'));
+  testWidgets('has no visible words: no Text and no Tooltip (requirement 18)', (
+    tester,
+  ) async {
+    await pumpButton(
+      tester,
+      PlusButton(onPressed: () {}, semanticLabel: 'أضف إلى السلة'),
+    );
 
     expect(find.byIcon(Icons.add), findsOneWidget);
-    expect(find.descendant(of: find.byType(PlusButton), matching: find.byType(Text)), findsNothing);
     expect(
-      find.descendant(of: find.byType(PlusButton), matching: find.byType(Tooltip)),
+      find.descendant(of: find.byType(PlusButton), matching: find.byType(Text)),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(PlusButton),
+        matching: find.byType(Tooltip),
+      ),
       findsNothing,
     );
   });
 
-  testWidgets('is at least 48×48 however small it is asked to be', (tester) async {
-    await pumpButton(tester, PlusButton(onPressed: () {}, semanticLabel: 'x', size: 30));
+  testWidgets('is at least 48×48 however small it is asked to be', (
+    tester,
+  ) async {
+    await pumpButton(
+      tester,
+      PlusButton(onPressed: () {}, semanticLabel: 'x', size: 30),
+    );
     final size = tester.getSize(find.byType(PlusButton));
     expect(size.width, greaterThanOrEqualTo(48));
     expect(size.height, greaterThanOrEqualTo(48));
@@ -35,7 +52,10 @@ void main() {
 
   testWidgets('a tap calls onPressed', (tester) async {
     var taps = 0;
-    await pumpButton(tester, PlusButton(onPressed: () => taps++, semanticLabel: 'x'));
+    await pumpButton(
+      tester,
+      PlusButton(onPressed: () => taps++, semanticLabel: 'x'),
+    );
 
     await tester.tap(find.byType(PlusButton));
     await tester.pumpAndSettle();
@@ -43,21 +63,32 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('without onPressed it is disabled and uses the border colour', (tester) async {
-    await pumpButton(tester, const PlusButton(onPressed: null, semanticLabel: 'x'));
+  testWidgets('without onPressed it is disabled and uses the border colour', (
+    tester,
+  ) async {
+    await pumpButton(
+      tester,
+      const PlusButton(onPressed: null, semanticLabel: 'x'),
+    );
 
     await tester.tap(find.byType(PlusButton), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     final material = tester.widget<Material>(
-      find.descendant(of: find.byType(PlusButton), matching: find.byType(Material)),
+      find.descendant(
+        of: find.byType(PlusButton),
+        matching: find.byType(Material),
+      ),
     );
     expect(material.color, AppColors.light.border);
   });
 
   testWidgets('while busy it shows progress and ignores taps', (tester) async {
     var taps = 0;
-    await pumpButton(tester, PlusButton(onPressed: () => taps++, semanticLabel: 'x', busy: true));
+    await pumpButton(
+      tester,
+      PlusButton(onPressed: () => taps++, semanticLabel: 'x', busy: true),
+    );
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.byIcon(Icons.add), findsNothing);
@@ -68,17 +99,25 @@ void main() {
 
   testWidgets('carries its label for screen readers', (tester) async {
     final semantics = tester.ensureSemantics();
-    await pumpButton(tester, PlusButton(onPressed: () {}, semanticLabel: 'أضف سرنجة إلى السلة'));
+    await pumpButton(
+      tester,
+      PlusButton(onPressed: () {}, semanticLabel: 'أضف سرنجة إلى السلة'),
+    );
 
     expect(find.bySemanticsLabel('أضف سرنجة إلى السلة'), findsOneWidget);
     semantics.dispose();
   });
 
-  testWidgets('shrinks while pressed and springs back, without errors', (tester) async {
+  testWidgets('shrinks while pressed and springs back, without errors', (
+    tester,
+  ) async {
     await pumpButton(tester, PlusButton(onPressed: () {}, semanticLabel: 'x'));
-    double scale() => tester.widget<AnimatedScale>(find.byType(AnimatedScale)).scale;
+    double scale() =>
+        tester.widget<AnimatedScale>(find.byType(AnimatedScale)).scale;
 
-    final gesture = await tester.startGesture(tester.getCenter(find.byType(PlusButton)));
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(PlusButton)),
+    );
     await tester.pump(const Duration(milliseconds: 50));
     expect(scale(), lessThan(1));
 

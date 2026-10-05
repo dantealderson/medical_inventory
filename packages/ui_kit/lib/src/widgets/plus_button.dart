@@ -45,7 +45,9 @@ class _PlusButtonState extends State<PlusButton> {
     final colors = context.appColors;
     final size = math.max(widget.size, 48.0);
     // Busy still looks active: it IS working. Only "cannot" is greyed out.
-    final background = (_enabled || widget.busy) ? colors.primary : colors.border;
+    final background = (_enabled || widget.busy)
+        ? colors.primary
+        : colors.border;
 
     return Semantics(
       button: true,
@@ -68,9 +70,16 @@ class _PlusButtonState extends State<PlusButton> {
                 child: widget.busy
                     ? SizedBox.square(
                         dimension: size * 0.4,
-                        child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.onPrimary),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: colors.onPrimary,
+                        ),
                       )
-                    : Icon(Icons.add, size: size * 0.55, color: colors.onPrimary),
+                    : Icon(
+                        Icons.add,
+                        size: size * 0.55,
+                        color: colors.onPrimary,
+                      ),
               ),
             ),
           ),

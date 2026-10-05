@@ -14,7 +14,10 @@ abstract final class AppTheme {
     final c = colors ?? AppColors.light;
 
     final scheme =
-        ColorScheme.fromSeed(seedColor: c.primary, brightness: Brightness.light).copyWith(
+        ColorScheme.fromSeed(
+          seedColor: c.primary,
+          brightness: Brightness.light,
+        ).copyWith(
           // Pin the roles we care about so the scheme follows our tokens rather
           // than whatever fromSeed derived.
           primary: c.primary,
@@ -30,14 +33,35 @@ abstract final class AppTheme {
     const stadium = StadiumBorder();
     const bold = TextStyle(fontWeight: FontWeight.w700);
 
-    final base = ThemeData(useMaterial3: true, colorScheme: scheme, fontFamily: fontFamily);
-    final text = base.textTheme.apply(bodyColor: c.onSurface, displayColor: c.onSurface).copyWith(
-      bodyLarge: base.textTheme.bodyLarge?.copyWith(fontSize: 17, color: c.onSurface),
-      bodyMedium: base.textTheme.bodyMedium?.copyWith(fontSize: 16, color: c.onSurface),
-      titleLarge: base.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: c.onSurface),
-      titleMedium: base.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: c.onSurface),
-      titleSmall: base.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: c.onSurface),
+    final base = ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      fontFamily: fontFamily,
     );
+    final text = base.textTheme
+        .apply(bodyColor: c.onSurface, displayColor: c.onSurface)
+        .copyWith(
+          bodyLarge: base.textTheme.bodyLarge?.copyWith(
+            fontSize: 17,
+            color: c.onSurface,
+          ),
+          bodyMedium: base.textTheme.bodyMedium?.copyWith(
+            fontSize: 16,
+            color: c.onSurface,
+          ),
+          titleLarge: base.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: c.onSurface,
+          ),
+          titleMedium: base.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: c.onSurface,
+          ),
+          titleSmall: base.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: c.onSurface,
+          ),
+        );
 
     return base.copyWith(
       scaffoldBackgroundColor: c.surfaceMuted,
@@ -61,7 +85,9 @@ abstract final class AppTheme {
         shadowColor: c.shadow,
         elevation: 2,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(cardRadius),
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -87,7 +113,10 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: c.surface,
-        contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsetsDirectional.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: c.border),
@@ -104,12 +133,18 @@ abstract final class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: c.surface,
         surfaceTintColor: c.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(cardRadius),
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: c.onSurface,
-        contentTextStyle: TextStyle(fontSize: 16, color: c.surface, fontFamily: fontFamily),
+        contentTextStyle: TextStyle(
+          fontSize: 16,
+          color: c.surface,
+          fontFamily: fontFamily,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       chipTheme: ChipThemeData(
@@ -117,7 +152,11 @@ abstract final class AppTheme {
         selectedColor: c.primary,
         side: BorderSide.none,
         shape: stadium,
-        labelStyle: TextStyle(fontSize: 16, color: c.onSurface, fontFamily: fontFamily),
+        labelStyle: TextStyle(
+          fontSize: 16,
+          color: c.onSurface,
+          fontFamily: fontFamily,
+        ),
       ),
     );
   }

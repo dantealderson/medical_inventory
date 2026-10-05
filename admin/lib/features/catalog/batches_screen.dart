@@ -52,17 +52,16 @@ class _BatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
     final text = Theme.of(context).textTheme;
 
     final days = batch.daysUntilExpiry();
     // Reuses the stock status tokens rather than new ones, so "needs
     // attention" reads the same colour everywhere in the product.
-    final (label, color) = batch.isExpired
-        ? (l10n.expired, colors.stockRed)
+    final (label, tone) = batch.isExpired
+        ? (l10n.expired, PillTone.danger)
         : days <= _warnWithinDays
-        ? (l10n.expiringSoon, colors.stockYellow)
-        : (null, colors.stockGreen);
+        ? (l10n.expiringSoon, PillTone.warning)
+        : (null, PillTone.success);
 
     return Card(
       margin: const EdgeInsetsDirectional.only(bottom: 12),
@@ -80,21 +79,7 @@ class _BatchCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (label != null)
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      border: Border.all(color: color),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      child: Text(label, style: text.labelMedium?.copyWith(color: color)),
-                    ),
-                  ),
+                if (label != null) Pill(label: label, tone: tone),
               ],
             ),
             const SizedBox(height: 6),

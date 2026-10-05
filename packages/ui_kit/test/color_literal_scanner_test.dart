@@ -4,7 +4,10 @@ import 'package:ui_kit/src/lint/color_literal_scanner.dart';
 void main() {
   group('scanSource', () {
     test('flags a hex Color literal', () {
-      final v = scanSource(file: 'a.dart', source: 'final c = Color(0xFF00FF00);');
+      final v = scanSource(
+        file: 'a.dart',
+        source: 'final c = Color(0xFF00FF00);',
+      );
       expect(v, hasLength(1));
       expect(v.single.line, 1);
       expect(v.single.file, 'a.dart');
@@ -16,40 +19,59 @@ void main() {
     });
 
     test('reports the correct line number', () {
-      final v = scanSource(file: 'a.dart', source: 'line1\nline2\nfinal c = Colors.blue;\n');
+      final v = scanSource(
+        file: 'a.dart',
+        source: 'line1\nline2\nfinal c = Colors.blue;\n',
+      );
       expect(v.single.line, 3);
     });
 
     test('flags every violation, not just the first', () {
-      final v = scanSource(file: 'a.dart', source: 'Colors.red;\nColor(0xFF112233);\n');
+      final v = scanSource(
+        file: 'a.dart',
+        source: 'Colors.red;\nColor(0xFF112233);\n',
+      );
       expect(v, hasLength(2));
     });
 
     test('allows semantic token usage', () {
       final v = scanSource(
         file: 'a.dart',
-        source: 'final c = context.appColors.primary;\nfinal d = colors.stockRed;',
+        source:
+            'final c = context.appColors.primary;\nfinal d = colors.stockRed;',
       );
       expect(v, isEmpty);
     });
 
     test('ignores matches inside line comments', () {
-      final v = scanSource(file: 'a.dart', source: '// use Colors.red here? no.');
+      final v = scanSource(
+        file: 'a.dart',
+        source: '// use Colors.red here? no.',
+      );
       expect(v, isEmpty);
     });
 
     test('ignores matches inside doc comments', () {
-      final v = scanSource(file: 'a.dart', source: '/// Prefer tokens over Color(0xFF000000).');
+      final v = scanSource(
+        file: 'a.dart',
+        source: '/// Prefer tokens over Color(0xFF000000).',
+      );
       expect(v, isEmpty);
     });
 
     test('does not flag a variable whose name merely contains "color"', () {
-      final v = scanSource(file: 'a.dart', source: 'final backgroundColor = tokens.surface;');
+      final v = scanSource(
+        file: 'a.dart',
+        source: 'final backgroundColor = tokens.surface;',
+      );
       expect(v, isEmpty);
     });
 
     test('does not flag the ColorScheme type name', () {
-      final v = scanSource(file: 'a.dart', source: 'final ColorScheme s = theme.colorScheme;');
+      final v = scanSource(
+        file: 'a.dart',
+        source: 'final ColorScheme s = theme.colorScheme;',
+      );
       expect(v, isEmpty);
     });
 

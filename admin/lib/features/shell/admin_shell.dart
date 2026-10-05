@@ -20,12 +20,17 @@ class AdminShell extends ConsumerWidget {
     required this.title,
     required this.child,
     this.floatingAction,
+    this.backTo,
     super.key,
   });
 
   final String title;
   final Widget child;
   final Widget? floatingAction;
+
+  /// A detail page's parent: shows a back arrow to it beside the title. The
+  /// sidebar stays, so opening an order does not feel like leaving the app.
+  final String? backTo;
 
   /// From this width the sidebar stays open beside the page.
   static const sidebarBreakpoint = 760.0;
@@ -51,13 +56,15 @@ class AdminShell extends ConsumerWidget {
       return Scaffold(
         appBar: AppBar(
           title: Text(title),
-          leading: Builder(
-            builder: (context) => IconButton(
-              tooltip: l10n.menu,
-              icon: const Icon(Icons.menu_rounded),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
-          ),
+          leading: backTo != null
+              ? IconButton(icon: const BackButtonIcon(), onPressed: () => context.go(backTo!))
+              : Builder(
+                  builder: (context) => IconButton(
+                    tooltip: l10n.menu,
+                    icon: const Icon(Icons.menu_rounded),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                ),
         ),
         drawer: Drawer(
           width: 300,
@@ -83,8 +90,18 @@ class AdminShell extends ConsumerWidget {
                   elevation: 1,
                   shadowColor: colors.shadow,
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(28, 18, 28, 18),
-                    child: Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                    padding: EdgeInsetsDirectional.fromSTEB(backTo != null ? 12 : 28, 14, 28, 14),
+                    child: Row(
+                      children: [
+                        if (backTo != null) ...[
+                          IconButton(icon: const BackButtonIcon(), onPressed: () => context.go(backTo!)),
+                          const SizedBox(width: 4),
+                        ],
+                        Expanded(
+                          child: Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(child: page),

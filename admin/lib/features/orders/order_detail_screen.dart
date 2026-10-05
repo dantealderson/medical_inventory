@@ -1,7 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../core/formatting.dart';
@@ -9,7 +8,6 @@ import '../../core/orders_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../shell/admin_shell.dart';
-import '../shell/status_pill.dart';
 import 'order_actions.dart';
 import 'order_review_panel.dart';
 import 'order_widgets.dart';
@@ -28,15 +26,10 @@ class OrderDetailScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final order = ref.watch(orderDetailProvider(orderId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.orderDetails),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.orders),
-        ),
-      ),
-      body: AsyncSection<Order>(
+    return AdminShell(
+      title: l10n.orderDetails,
+      backTo: Routes.orders,
+      child: AsyncSection<Order>(
         value: order,
         onRetry: () => ref.invalidate(orderDetailProvider(orderId)),
         // A single order is never "empty". A missing one is a 404, which the
@@ -160,7 +153,6 @@ class _LineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = context.appColors;
     final text = Theme.of(context).textTheme;
     final approved = line.qtyUnitsApproved;
 
@@ -199,11 +191,11 @@ class _LineCard extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   if (line.adjustedBySupplier)
-                    StatusPill(label: l10n.adjustedFlag, color: colors.stockYellow),
+                    Pill(label: l10n.adjustedFlag, tone: PillTone.warning),
                   if (line.shortByUnits > 0)
-                    StatusPill(
+                    Pill(
                       label: '${l10n.shortFlag}: ${lineUnits(l10n, line, line.shortByUnits)}',
-                      color: colors.stockRed,
+                      tone: PillTone.danger,
                     ),
                 ],
               ),

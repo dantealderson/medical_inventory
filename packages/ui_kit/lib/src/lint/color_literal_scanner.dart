@@ -1,6 +1,10 @@
 /// A colour literal found outside the palette file.
 class ColorViolation {
-  const ColorViolation({required this.file, required this.line, required this.snippet});
+  const ColorViolation({
+    required this.file,
+    required this.line,
+    required this.snippet,
+  });
 
   final String file;
   final int line;
@@ -23,7 +27,10 @@ final _materialColors = RegExp(r'(^|[^A-Za-z0-9_.])Colors\s*\.\s*[a-zA-Z]');
 
 /// Scans one Dart source file for colour literals. Pure function — no I/O —
 /// so the rule itself is unit-testable rather than only observable via CI.
-List<ColorViolation> scanSource({required String file, required String source}) {
+List<ColorViolation> scanSource({
+  required String file,
+  required String source,
+}) {
   final normalised = file.replaceAll(r'\', '/');
   if (normalised.endsWith(_exemptSuffix)) return const [];
 

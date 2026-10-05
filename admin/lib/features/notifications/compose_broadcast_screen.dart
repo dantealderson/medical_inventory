@@ -7,6 +7,7 @@ import 'package:ui_kit/ui_kit.dart';
 import '../../core/notifications_controller.dart';
 import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
+import '../shell/admin_shell.dart';
 
 /// Requirement 13: a message to every active clinic, or to chosen ones.
 class ComposeBroadcastScreen extends ConsumerStatefulWidget {
@@ -65,15 +66,10 @@ class _ComposeBroadcastScreenState extends ConsumerState<ComposeBroadcastScreen>
     final colors = context.appColors;
     String? required(String? v) => (v ?? '').trim().isEmpty ? l10n.requiredField : null;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.newMessage),
-        leading: IconButton(
-          icon: const BackButtonIcon(),
-          onPressed: () => context.go(Routes.notifications),
-        ),
-      ),
-      body: Center(
+    return AdminShell(
+      title: l10n.newMessage,
+      backTo: Routes.notifications,
+      child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
           child: Form(

@@ -37,6 +37,7 @@ class AppColors extends ThemeExtension<AppColors> {
     this.stockRedSoft = Palette.rose,
     this.stockYellowInk = Palette.ochre,
     this.stockGreenInk = Palette.teal,
+    this.tileSkyInk = Palette.skyInk,
   });
 
   final Color primary;
@@ -95,6 +96,9 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color stockRedSoft;
   final Color stockYellowInk;
   final Color stockGreenInk;
+
+  /// Readable words on [tileSky].
+  final Color tileSkyInk;
 
   static const AppColors light = AppColors(
     primary: Palette.teal,
@@ -156,6 +160,7 @@ class AppColors extends ThemeExtension<AppColors> {
       stockRedSoft: stockRedSoft,
       stockYellowInk: stockYellowInk,
       stockGreenInk: stockGreenInk,
+      tileSkyInk: tileSkyInk,
     );
   }
 
@@ -195,6 +200,7 @@ class AppColors extends ThemeExtension<AppColors> {
       stockRedSoft: mix(stockRedSoft, other.stockRedSoft),
       stockYellowInk: mix(stockYellowInk, other.stockYellowInk),
       stockGreenInk: mix(stockGreenInk, other.stockGreenInk),
+      tileSkyInk: mix(tileSkyInk, other.tileSkyInk),
     );
   }
 }
@@ -202,5 +208,6 @@ class AppColors extends ThemeExtension<AppColors> {
 extension AppColorsContext on BuildContext {
   /// Falls back to [AppColors.light] so a widget tested outside a themed
   /// subtree renders instead of throwing.
-  AppColors get appColors => Theme.of(this).extension<AppColors>() ?? AppColors.light;
+  AppColors get appColors =>
+      Theme.of(this).extension<AppColors>() ?? AppColors.light;
 }

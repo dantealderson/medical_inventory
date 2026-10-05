@@ -1,8 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-String fmt(int units, int unitsPerBox) =>
-    formatQuantity(units: units, unitsPerBox: unitsPerBox, boxLabel: 'علبة', unitLabel: 'سرنجة');
+String fmt(int units, int unitsPerBox) => formatQuantity(
+  units: units,
+  unitsPerBox: unitsPerBox,
+  boxLabel: 'علبة',
+  unitLabel: 'سرنجة',
+);
 
 void main() {
   test('boxes and a remainder', () {
@@ -27,7 +31,12 @@ void main() {
 
   test('uses only the labels it is given', () {
     expect(
-      formatQuantity(units: 150, unitsPerBox: 100, boxLabel: 'box', unitLabel: 'glove'),
+      formatQuantity(
+        units: 150,
+        unitsPerBox: 100,
+        boxLabel: 'box',
+        unitLabel: 'glove',
+      ),
       '1 box + 50 glove',
     );
   });

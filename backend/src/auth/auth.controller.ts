@@ -8,12 +8,10 @@ import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
+import { LoginThrottlerGuard } from './guards/login-throttler.guard';
 import { TokenService, type AccessTokenPayload, type AuthTokens } from './token.service';
 
 @ApiTags('auth')
-// Brute-force protection. Without it an 8-character minimum password policy
-// is one unthrottled script away from meaningless.
-@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -21,7 +19,12 @@ export class AuthController {
     private readonly tokens: TokenService,
   ) {}
 
+  // Brute-force protection is on the two calls that take a password. Without
+  // it an 8-character minimum password policy is one unthrottled script away
+  // from meaningless. Never on refresh or me: every clinic can share one
+  // address, and a refused refresh signs the clinic out.
   @Public()
+  @UseGuards(ThrottlerGuard)
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   register(@Body() dto: RegisterDto): Promise<SessionUser> {
@@ -29,6 +32,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseGuards(LoginThrottlerGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto): Promise<{ user: SessionUser } & AuthTokens> {

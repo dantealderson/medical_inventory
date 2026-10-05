@@ -31,7 +31,7 @@ class CategoriesScreen extends ConsumerWidget {
           emptyMessage: l10n.noCategories,
           isEmpty: (data) => data.isEmpty,
           builder: (roots) => ListView(
-            padding: const EdgeInsetsDirectional.all(16),
+            padding: AdminShell.listPaddingWithFab,
             children: [for (final root in roots) _CategoryTile(category: root)],
           ),
         ),

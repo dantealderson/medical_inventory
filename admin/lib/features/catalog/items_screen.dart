@@ -35,7 +35,7 @@ class ItemsScreen extends ConsumerWidget {
           emptyMessage: l10n.noItems,
           isEmpty: (data) => data.isEmpty,
           builder: (list) => ListView.builder(
-            padding: const EdgeInsetsDirectional.all(16),
+            padding: AdminShell.listPaddingWithFab,
             itemCount: list.length,
             itemBuilder: (context, i) => _ItemCard(item: list[i]),
           ),

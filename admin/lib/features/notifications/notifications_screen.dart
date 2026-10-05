@@ -49,7 +49,7 @@ class NotificationsScreen extends ConsumerWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 720),
                   child: ListView(
-                    padding: const EdgeInsetsDirectional.all(16),
+                    padding: AdminShell.listPaddingWithFab,
                     children: [
                       if (data.anyUnread)
                         Align(

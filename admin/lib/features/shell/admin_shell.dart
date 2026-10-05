@@ -30,6 +30,10 @@ class AdminShell extends ConsumerWidget {
   /// From this width the sidebar stays open beside the page.
   static const sidebarBreakpoint = 760.0;
 
+  /// Padding for a list under a floating add button: room below the last card
+  /// so the button never covers its actions.
+  static const listPaddingWithFab = EdgeInsetsDirectional.fromSTEB(16, 16, 16, 96);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;

@@ -34,7 +34,7 @@ class BatchesScreen extends ConsumerWidget {
           emptyMessage: l10n.noBatches,
           isEmpty: (data) => data.isEmpty,
           builder: (list) => ListView.builder(
-            padding: const EdgeInsetsDirectional.all(16),
+            padding: AdminShell.listPaddingWithFab,
             itemCount: list.length,
             itemBuilder: (context, i) => _BatchCard(batch: list[i]),
           ),

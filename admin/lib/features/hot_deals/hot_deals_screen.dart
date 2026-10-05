@@ -43,7 +43,7 @@ class HotDealsScreen extends ConsumerWidget {
                 emptyMessage: l10n.noHotDeals,
                 isEmpty: (data) => data.entries.isEmpty,
                 builder: (data) => ListView.builder(
-                  padding: const EdgeInsetsDirectional.all(16),
+                  padding: AdminShell.listPaddingWithFab,
                   itemCount: data.entries.length,
                   itemBuilder: (context, i) => _EntryCard(entry: data.entries[i]),
                 ),

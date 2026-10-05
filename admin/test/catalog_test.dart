@@ -325,6 +325,27 @@ void main() {
       expectFitsHorizontally(tester, find.byType(Card), 390);
     });
 
+    testWidgets("the add button never covers the last item's buttons at 390px", (tester) async {
+      useScreenSize(tester, const Size(390, 844));
+      await openCatalog(
+        tester,
+        'الأصناف',
+        routes(items: [for (var i = 0; i < 8; i++) item('i$i', 'صنف $i')]),
+      );
+      await tester.dragUntilVisible(find.text('صنف 7'), find.byType(Scrollable).first, const Offset(0, -300));
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -2000));
+      await tester.pumpAndSettle();
+
+      final fab = tester.getRect(find.byType(FloatingActionButton));
+      final lastButtons = find.descendant(
+        of: find.ancestor(of: find.text('صنف 7'), matching: find.byType(Card)),
+        matching: find.byType(OutlinedButton),
+      );
+      for (final button in lastButtons.evaluate()) {
+        expect(tester.getRect(find.byWidget(button.widget)).overlaps(fab), isFalse);
+      }
+    });
+
     testWidgets('at 390px the sections sit behind the menu, which fits and reaches them all', (tester) async {
       useScreenSize(tester, const Size(390, 844));
       await pumpSignedIn(tester, routes());
